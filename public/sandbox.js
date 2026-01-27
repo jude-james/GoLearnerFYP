@@ -1,0 +1,102 @@
+const outputConsole = document.querySelector(".console");
+const fileName = document.querySelector(".fileName");
+const runButton = document.querySelector(".runButton");
+
+const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+    lineNumbers: true,
+    smartIndent: true,
+    indentUnit: 4,
+    indentWithTabs: true,
+    styleActiveLine: true,
+    /*readOnly: true,*/ /* TODO use later for readonly sections */
+    mode: "text/x-go",
+    theme: "xq-light",
+});
+
+const initialCode = editor.getValue();
+
+// Listen for changes from text editor
+editor.on("change", () => {
+    sessionStorage.setItem("autosave", editor.getValue());
+});
+
+// If data was saved then update text editor
+const saved = sessionStorage.getItem("autosave");
+if (saved !== null) {
+    editor.setValue(saved);
+}
+
+runButton.addEventListener("click", () => {
+    updateConsoleColour(false);
+    updateConsole("Loading remote server...");
+    runButton.disabled = true;
+    sendRequest();
+});
+
+document.querySelector(".resetButton").addEventListener("click", () => {
+    editor.setValue(initialCode);
+});
+
+document.querySelector(".copyButton").addEventListener("click", () => {
+    navigator.clipboard.writeText(editor.getValue()).then(() => {
+        console.log("Copied to clipboard");
+        // TODO add message saying if copied successfully, in the same area as error message, but green
+    }).catch(err => {
+        console.error("Failed to copy:", err);
+        // TODO display this error message in the same area as the backend server error messages
+    });
+});
+
+async function sendRequest() {
+    console.log("Sending POST request.");
+    
+    const url = "/run";
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ fileName: fileName.innerText, code: editor.getValue() })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        console.log(result);
+
+        runButton.disabled = false;
+        displayOutput(result);
+    } 
+    catch (error) {
+        console.error(error.message);
+    }
+}
+
+function displayOutput(result) {
+    if ("issue" in result) {
+        // TODO add separate UI element for generic backend errors
+        console.log(result.issue); 
+    }
+    else if ("error" in result) {
+        updateConsoleColour(true);
+        updateConsole(result.error);
+    }
+    else {
+        updateConsole(result.output);
+    }
+}
+
+function updateConsole(output) {
+    outputConsole.textContent = output;
+}
+
+function updateConsoleColour(error) {
+    if (error)
+        outputConsole.classList.add("error");
+    else 
+        outputConsole.classList.remove("error");
+}

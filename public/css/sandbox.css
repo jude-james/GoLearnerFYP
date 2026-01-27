@@ -1,0 +1,111 @@
+.container {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.fileName, .consoleHeader {
+    border-bottom: 3px solid #555;
+}
+
+.goFileIcon {
+    width: 22px;
+    height: 22px;
+}
+
+.editor {
+    flex: 2;
+    display: flex;
+    min-height: 0;
+}
+
+.CodeMirror {
+    border: none;
+    outline: none;
+    resize: none;
+    /*resize: vertical;*/ /* TODO fix codemirror resizing */
+    /*overflow: auto !important;*/
+
+    height: 100% !important;
+    width: 100% !important;
+
+    overscroll-behavior-y: none;
+
+    padding: 0;
+    line-height: 1.1;
+}
+
+.CodeMirror-code {
+    font-family: var(--font-name), sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 350;
+    font-style: normal;
+    font-size: 1.2rem;
+}
+
+.buttonWrapper {
+    display: flex;
+}
+
+.runButton, .resetButton, .copyButton {
+    background-color: var(--dark-grey);
+    color: var(--off-white);
+
+    font-family: var(--font-name), sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-size: 1.5rem;
+
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    width: 50%;
+}
+
+.runButton {
+    background-color: #18223b;
+    border: 1.5px solid var(--off-white);
+}
+
+.runButton:hover {
+    background-color: #1c2b4e;
+}
+
+.runButton:disabled {
+    background-color: var(--dark-grey);
+    color: #bebebe;
+}
+
+.resetButton:hover, .copyButton:hover {
+    background-color: #202020;
+}
+
+.runButton:active, .resetButton:active, .copyButton:active {
+    background-color: #272727;
+}
+
+.runBtnIcon, .resetBtnIcon, .copyBtnIcon {
+    width: 18px;
+    height: 18px;
+}
+
+.console {
+    background-color: var(--dark-grey);
+
+    font-family: var(--font-name), sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 350;
+    font-style: normal;
+    font-size: 1.2rem;
+    color: var(--off-off-white);
+
+    margin: 0;
+    flex: 1;
+    overflow-y: auto;
+
+    overscroll-behavior-y: none;
+}
+
+.error {
+    color: var(--red);
+}
