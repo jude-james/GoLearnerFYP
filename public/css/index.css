@@ -1,0 +1,64 @@
+.landing-page {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    padding: 20px;
+    gap: 2rem;
+}
+
+.hero {
+    min-height: 70vh;            
+    background-image: url("../images/index-background.png");
+    background-size: cover;       
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align:center;
+}
+
+.hero h1, h2 {
+    color: black;
+    background-color: var(--off-white);
+    border-radius: 10px;
+    /*border: 1px solid var(--off-white);*/
+    padding: 10px;
+}
+
+.button {
+    background: none;
+    color: var(--off-white);
+
+    font-family: var(--font-name), sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-size: 1.2rem;
+    text-align: left;
+
+    border: 1px solid var(--off-white);
+    box-shadow: 5px 10px var(--off-white);
+    padding: 10px;
+    width: 50%;
+
+    cursor: pointer;
+}
+
+.button:hover {
+    color: var(--grey);
+    background-color: var(--off-white);
+}
+
+#sandbox:hover {
+    box-shadow: 5px 10px var(--green);
+}
+
+#tutorial:hover {
+    box-shadow: 5px 10px var(--yellow);
+}
+
+#tutorial-concurrency:hover {
+    box-shadow: 5px 10px var(--red);
+}
