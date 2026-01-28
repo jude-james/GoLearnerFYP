@@ -23,8 +23,15 @@
     border: none;
     outline: none;
     resize: none;
-    /*resize: vertical;*/ /* TODO fix codemirror resizing */
-    /*overflow: auto !important;*/
+
+    /* TODO fix codemirror resizing */
+    /*
+    resize: vertical; 
+    overflow: auto !important;
+    height: 100%;
+    */
+
+    resize: auto;
 
     height: 100% !important;
     width: 100% !important;
