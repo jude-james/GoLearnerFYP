@@ -8,21 +8,29 @@
         <link rel="stylesheet" href="css/base.css">    
         <link rel="stylesheet" href="css/sandbox.css">
 
+        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,200..700;1,200..700&family=Handjet:wght@100..900&family=Sometype+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
 
+        <!-- CodeMirror -->
         <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
         <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/go/go.min.js"></script>
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/selection/active-line.min.js"></script>
 
+        <!-- CodeMirror themes -->
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"></link>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/xq-light.min.css"></link>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/ayu-mirage.min.css"></link>
 
-        <!-- TODO favicon icon -->
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96"/>
+        <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg"/>
+        <link rel="shortcut icon" href="/assets/images/favicon.ico"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png"/>
+        <link rel="manifest" href="/assets/images/site.webmanifest"/>
     </head>
+
     <body>
         <div class="topnav">
             <a href="index.html">GoLearner</a>
@@ -32,8 +40,8 @@
         </div>
 
         <div class="container"> 
-            <div class="fileName">
-                <img src="images/code-file.png" alt="" class="goFileIcon">main.go
+            <div class="filename">
+                <img src="assets/images/go-file-icon.png" alt="" class="go-file-icon">main.go
             </div>
             <div class="editor">
                 <textarea id="code" spellcheck="false">
@@ -46,28 +54,28 @@ func main() {
 }</textarea>
             </div>
             
-            <div class="buttonWrapper">
-                <button class="runButton">
-                    <img src="images/run-button.png" alt="" class="runBtnIcon">
+            <div class="button-wrapper">
+                <button class="button" id="run">
+                    <img src="assets/images/run-icon.png" alt="" class="button-icon">
                     Run
                 </button>
-                <button class="resetButton">
-                    <img src="images/reset-button.png" alt="" class="resetBtnIcon">
+                <button class="button" id="reset">
+                    <img src="assets/images/reset-icon.png" alt="" class="button-icon">
                     Reset
                 </button>
-                <button class="copyButton">
-                    <img src="images/copy-button.png" alt="" class="copyBtnIcon">
+                <button class="button" id="copy">
+                    <img src="assets/images/copy-icon.png" alt="" class="button-icon">
                     Copy to clipboard
                 </button>
             </div>
 
-            <div class="consoleHeader">
+            <div class="console-header">
                 Output
             </div>
             <pre class="console">
             </pre>
         </div>
 
-        <script src="sandbox.js"></script>
+        <script src="js/sandbox.js"></script>
     </body>
 </html>

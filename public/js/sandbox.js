@@ -1,6 +1,6 @@
 const outputConsole = document.querySelector(".console");
-const fileName = document.querySelector(".fileName");
-const runButton = document.querySelector(".runButton");
+const fileName = document.querySelector(".filename");
+const runButton = document.getElementById("run");
 
 const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
@@ -27,17 +27,16 @@ if (saved !== null) {
 }
 
 runButton.addEventListener("click", () => {
-    updateConsoleColour(false);
-    updateConsole("Loading remote server...");
     runButton.disabled = true;
+    updateConsole("Loading remote server...", false);
     sendRequest();
 });
 
-document.querySelector(".resetButton").addEventListener("click", () => {
+document.getElementById("reset").addEventListener("click", () => {
     editor.setValue(initialCode);
 });
 
-document.querySelector(".copyButton").addEventListener("click", () => {
+document.getElementById("copy").addEventListener("click", () => {
     navigator.clipboard.writeText(editor.getValue()).then(() => {
         console.log("Copied to clipboard");
         // TODO add message saying if copied successfully, in the same area as error message, but green
@@ -79,24 +78,23 @@ async function sendRequest() {
 function displayOutput(result) {
     if ("issue" in result) {
         // TODO add separate UI element for generic backend errors
-        console.log(result.issue); 
+        console.error(result.issue); 
     }
     else if ("error" in result) {
-        updateConsoleColour(true);
-        updateConsole(result.error);
+        updateConsole(result.error, true);
     }
     else {
-        updateConsole(result.output);
+        updateConsole(result.output, false);
     }
 }
 
-function updateConsole(output) {
+function updateConsole(output, err) {
     outputConsole.textContent = output;
-}
 
-function updateConsoleColour(error) {
-    if (error)
-        outputConsole.classList.add("error");
-    else 
-        outputConsole.classList.remove("error");
+    if (err) {
+        outputConsole.classList.add("console-error");
+    }
+    else {
+        outputConsole.classList.remove("console-error");
+    }
 }

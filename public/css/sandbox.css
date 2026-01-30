@@ -4,11 +4,11 @@
     flex-direction: column;
 }
 
-.fileName, .consoleHeader {
+.filename, .console-header {
     border-bottom: 3px solid #555;
 }
 
-.goFileIcon {
+.go-file-icon {
     width: 22px;
     height: 22px;
 }
@@ -50,13 +50,13 @@
     font-size: 1.2rem;
 }
 
-.buttonWrapper {
+.button-wrapper {
     display: flex;
 }
 
-.runButton, .resetButton, .copyButton {
-    background-color: var(--dark-grey);
-    color: var(--off-white);
+.button {
+    background-color: var(--signature-black);
+    color: var(--signature-white);
 
     font-family: var(--font-name), sans-serif;
     font-optical-sizing: auto;
@@ -65,46 +65,51 @@
 
     border: none;
     padding: 10px;
-    cursor: pointer;
     width: 50%;
+
+    cursor: pointer;
 }
 
-.runButton {
-    background-color: #18223b;
-    border: 1.5px solid var(--off-white);
-}
-
-.runButton:hover {
-    background-color: #1c2b4e;
-}
-
-.runButton:disabled {
-    background-color: var(--dark-grey);
-    color: #bebebe;
-}
-
-.resetButton:hover, .copyButton:hover {
+.button:hover {
     background-color: #202020;
 }
 
-.runButton:active, .resetButton:active, .copyButton:active {
+.button:active {
     background-color: #272727;
 }
 
-.runBtnIcon, .resetBtnIcon, .copyBtnIcon {
+#run {
+    background-color: #18223b;
+    border: 1.5px solid var(--signature-white);
+}
+
+#run:hover {
+    background-color: #1c2b4e;
+}
+
+#run:active {
+    background-color: #23355d;
+}
+
+#run:disabled {
+    background-color: var(--signature-black);
+    color: #bebebe;
+}
+
+.button-icon {
     width: 18px;
     height: 18px;
 }
 
 .console {
-    background-color: var(--dark-grey);
+    background-color: var(--signature-black);
 
     font-family: var(--font-name), sans-serif;
     font-optical-sizing: auto;
     font-weight: 350;
     font-style: normal;
     font-size: 1.2rem;
-    color: var(--off-off-white);
+    color: var(--signature-white);
 
     margin: 0;
     flex: 1;
@@ -113,6 +118,6 @@
     overscroll-behavior-y: none;
 }
 
-.error {
+.console-error {
     color: var(--red);
 }

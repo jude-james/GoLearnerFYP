@@ -8,11 +8,19 @@
         <link rel="stylesheet" href="css/base.css">
         <link rel="stylesheet" href="css/index.css">
 
+        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,200..700;1,200..700&family=Handjet:wght@100..900&family=Sometype+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-        <!-- TODO favicon icon -->
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png" sizes="96x96"/>
+        <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg"/>
+        <link rel="shortcut icon" href="/assets/images/favicon.ico"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png"/>
+        <link rel="manifest" href="/assets/images/site.webmanifest"/>
     </head>
+
     <body>
         <div class="topnav">
             <a class="active" href="index.html">GoLearner</a>
@@ -21,27 +29,30 @@
             <a href="#exercises">Exercises</a>
         </div>
 
-        <section class="hero">
-            <h1>GoLearner</h1>
-            <h2>An Interactive Tutorial for Golang</h2>
-        </section>
-        
         <div class="landing-page">
-            <a href="sandbox.html" class="button" id="sandbox" style="text-decoration:none">
-                <h1>Sandbox</h1>
-                <p>Experiment with Go yourself using the Go Sandbox (Reword...)</p>
-            </a>
+            <section class="hero">
+                <h1>GoLearner</h1>
+                <h2>An Interactive Tutorial for Golang</h2>
+            </section>
 
-            <a href="tutorial.html" class="button" id="tutorial" style="text-decoration:none">
-                <h1>Tutorial</h1>
-                <p>Progress through the Go tutorial, getting up to speed with Go (Reword...)</p>
-            </a>
+            <section class="content">
+                <a href="sandbox.html" class="button" id="sandbox" style="text-decoration:none">
+                    <h1>Sandbox</h1>
+                    <p>Write, run, and experiment with Go code directly in your browser</p>
+                </a>
+                <a href="tutorial.html" class="button" id="tutorial" style="text-decoration:none">
+                    <h1>Tutorial</h1>
+                    <p>Progress through Go's fundamentals with structured lessons, examples, and exercises</p>
+                </a>
+                <a href="tutorial-concurrency.html" class="button" id="tutorial-concurrency" style="text-decoration:none">
+                    <h1>Concurrency Tutorial</h1>
+                    <p>Understand Go's concurrency with interactive examples and visualisations</p>
+                </a>
+            </section>
 
-            <a href="tutorial-concurrency.html" class="button" id="tutorial-concurrency" style="text-decoration:none">
-                <h1>Concurrency Tutorial</h1>
-                <p>Understand Go's concurrency with our interactive tutorials and exercises (Reword...)</p>
-            </a>
+            <section class="information">
+                <p>TODO What is GoLearner, why it exists, and a quick info on Go</p>
+            </section>
         </div>
-        
     </body>
 </html>
