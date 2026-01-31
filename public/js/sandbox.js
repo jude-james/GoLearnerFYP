@@ -9,7 +9,6 @@ const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     indentUnit: 4,
     indentWithTabs: true,
     styleActiveLine: true,
-    /*readOnly: true,*/ /* TODO use later for readonly sections */
     mode: "text/x-go",
     theme: "xq-light",
 });
@@ -44,12 +43,15 @@ document.getElementById("dismiss").addEventListener("click", () => {
 document.getElementById("copy").addEventListener("click", () => {
     navigator.clipboard.writeText(editor.getValue()).then(() => {
         console.log("Copied to clipboard");
-    }).catch(err => {
-        console.error("Failed to copy:", err);
-        displayError("Failed to copy:", err)
+    }).catch(error => {
+        console.warn("Failed to copy:", error);
+        displayError("Failed to copy:", error)
     });
 });
 
+/**
+ * Sends POST request to /ask endpoint with fileName and code as json object
+ */
 async function sendRequest() {
     console.log("Sending POST request.");
     
@@ -72,15 +74,19 @@ async function sendRequest() {
         console.log(result);
 
         runButton.disabled = false;
-        displayOutput(result);
+        displayResult(result);
     } 
-    catch (err) {
-        console.error(err.message);
+    catch (error) {
+        console.error(error.message);
         displayError("Couldn't connect to remote server")
     }
 }
 
-function displayOutput(result) {
+/**
+ * Displays the result fetched, checking the type of JSON returned
+ * @param {any} result - The JSON object returned from backend
+ */
+function displayResult(result) {
     if ("issue" in result) {
         console.error(result.issue);
         displayError(result.issue)
@@ -93,18 +99,28 @@ function displayOutput(result) {
     }
 }
 
-function displayError(message) {
-    document.querySelector('.error-message p').textContent = `Error: ${message}`;
-    errorMessage.classList.add("error-visible");
-}
-
-function updateConsole(output, err) {
+/**
+ * Updates the console output and text colour.
+ * @param {string} output - The output to be printed to the console.
+ * @param {boolean} isError - If the output was an error message.
+ */
+function updateConsole(output, isError) {
     outputConsole.textContent = output;
 
-    if (err) {
+    if (isError) {
         outputConsole.classList.add("console-error");
     }
     else {
         outputConsole.classList.remove("console-error");
     }
+}
+
+/**
+ * Displays the generic error window and updates the message.
+ * @param {string} message - The error message to be displayed
+ */
+function displayError(message) {
+    document.querySelector('.error-message p').textContent = `Error: ${message}`;
+    errorMessage.classList.add("error-visible");
+    updateConsole("", false)
 }

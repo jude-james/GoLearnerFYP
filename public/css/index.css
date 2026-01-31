@@ -33,13 +33,6 @@
     justify-items: center;
 }
 
-.information {
-    background-color: var(--signature-white);
-    color: var(--signature-black);
-    text-align: center;
-    justify-items: center;
-}
-
 .button {
     background: none;
     color: var(--signature-white);
@@ -58,10 +51,6 @@
     cursor: pointer;
 }
 
-#tutorial {
-    box-shadow: -5px 10px var(--signature-white);
-}
-
 .button:hover {
     color: var(--signature-grey);
     background-color: var(--signature-white);
@@ -77,9 +66,17 @@
 }
 
 #tutorial:hover {
-    box-shadow: -5px 10px var(--signature-yellow);
+    box-shadow: 5px 10px var(--signature-yellow);
 }
 
 #tutorial-concurrency:hover {
     box-shadow: 5px 10px var(--signature-red);
+}
+
+.information {
+    background-color: var(--signature-white);
+    color: var(--signature-black);
+    text-align: center;
+    justify-items: center;
+    padding: 20px;
 }

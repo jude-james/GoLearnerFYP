@@ -9,6 +9,9 @@
     --signature-black: #141414;
     --signature-grey: #1e1e1e;
 
+    --font-size: 1.8rem;
+    --code-font-size: 1.2rem;
+
     --font-name: "Cascadia Code";
 }
 
@@ -21,7 +24,7 @@ body {
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.8rem;
+    font-size: var(--font-size);
     color: var(--signature-white);
 }
 

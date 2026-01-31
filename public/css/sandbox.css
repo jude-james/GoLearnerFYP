@@ -47,7 +47,7 @@
     font-optical-sizing: auto;
     font-weight: 350;
     font-style: normal;
-    font-size: 1.2rem;
+    font-size: var(--code-font-size);
 }
 
 .button-wrapper {
@@ -108,7 +108,7 @@
     font-optical-sizing: auto;
     font-weight: 350;
     font-style: normal;
-    font-size: 1.2rem;
+    font-size: var(--code-font-size);
     color: var(--signature-white);
 
     margin: 0;
@@ -166,5 +166,5 @@
 }
 
 .error-visible {
-  visibility: visible;
+    visibility: visible;
 }
