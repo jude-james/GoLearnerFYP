@@ -1,13 +1,14 @@
+/* Global variables */
 :root {
-    --signature-green: #087455;
-    --signature-yellow: #f4d950;
-    --signature-red: #bf4640;
+    --green: #087455;
+    --yellow: #f4d950;
+    --red: #bf4640;
 
-    --signature-blue: #1c3471;
+    --blue: #1c3471;
 
-    --signature-white: #f5f5f5;
-    --signature-black: #141414;
-    --signature-grey: #1e1e1e;
+    --white: #f5f5f5;
+    --black: #141414;
+    --grey: #1e1e1e;
 
     --font-size: 1.8rem;
     --code-font-size: 1.2rem;
@@ -15,48 +16,104 @@
     --font-name: "Cascadia Code";
 }
 
+/* Global settings */
 body {
-    background-color: var(--signature-grey);
-
     margin: 0;
+    background-color: var(--grey);
 
+    /* Font settings */
+    color: var(--white);
     font-family: var(--font-name), sans-serif;
-    font-optical-sizing: auto;
+    font-size: var(--font-size);
     font-weight: 400;
     font-style: normal;
-    font-size: var(--font-size);
-    color: var(--signature-white);
+    font-optical-sizing: auto;
+}
+
+button, input, select, textarea, a, pre {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-optical-sizing: inherit;
+    color: inherit;
 }
 
 * {
     box-sizing: border-box;
 }
 
+/* Navbar settings */
 .topnav {    
     overflow: hidden;
-    background-color: var(--signature-black);
+    background-color: var(--black);
 }
 
 .topnav a {
     float: left;
-    color: var(--signature-white);
+    color: var(--white);
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
     font-size: 1.5rem;
 }
 
-.topnav a.active {
-    background-color: var(--signature-blue);
-    color: white;
-}
-
 .topnav a:hover {
-    background-color: var(--signature-white);
-    color: var(--signature-black);
+    background-color: var(--white);
+    color: var(--black);
 }
 
 .topnav a:active {
     background-color: white;
-    color: var(--signature-black);
+    color: var(--black);
+}
+
+.topnav a.active {
+    background-color: var(--blue);
+    color: white;
+}
+
+/* Error popup settings */
+.error-message {
+    background: #ffc2c2;
+    border: 1px solid #363636;
+    border-radius: 3px;
+    visibility: hidden;
+
+    z-index: 9999;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 1rem;
+
+    color: var(--black);
+    font-size: 1rem;
+    text-align: center;
+}
+
+.error-visible {
+    visibility: visible;
+}
+
+#dismiss-button {
+    background: none;
+    color: var(--black);
+
+    font-size: 1rem;
+
+    border: 1.5px solid #363636;
+    border-radius: 3px;
+
+    padding: 10px;
+
+    cursor: pointer;
+}
+
+#dismiss-button:hover {
+    background-color: #fbb2b2;
+}
+
+#dismiss-button:active {
+    background-color: #f5a0a0;
 }

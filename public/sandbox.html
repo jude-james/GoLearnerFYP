@@ -35,8 +35,8 @@
         <div class="topnav">
             <a href="index.html">GoLearner</a>
             <a class="active" href="sandbox.html">Sandbox</a>
-            <a href="#lessons">Lessons</a>
-            <a href="#exercises">Exercises</a>
+            <a href="tutorial.html">Tutorial</a>
+            <a href="tutorial-concurrency.html">Concurrency</a>
         </div>
 
         <div class="container"> 
@@ -55,15 +55,15 @@ func main() {
             </div>
             
             <div class="button-wrapper">
-                <button class="button" id="run">
+                <button id="run-button">
                     <img src="assets/images/run-icon.png" alt="" class="button-icon">
                     Run
                 </button>
-                <button class="button" id="reset">
+                <button id="reset-button">
                     <img src="assets/images/reset-icon.png" alt="" class="button-icon">
                     Reset
                 </button>
-                <button class="button" id="copy">
+                <button id="copy-button">
                     <img src="assets/images/copy-icon.png" alt="" class="button-icon">
                     Copy to clipboard
                 </button>
@@ -78,9 +78,9 @@ func main() {
 
         <div class="error-message">
             <p>Error: Something went wrong</p>
-            <button id="dismiss">Dismiss</button>
+            <button id="dismiss-button">Dismiss</button>
         </div>
 
-        <script src="js/sandbox.js"></script>
+        <script type="module" src="js/sandbox.js"></script>
     </body>
 </html>

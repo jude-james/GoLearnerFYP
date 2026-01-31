@@ -1,7 +1,8 @@
+import { displayError } from "./errorPopup.js";
+
 const outputConsole = document.querySelector(".console");
 const fileName = document.querySelector(".filename");
-const runButton = document.getElementById("run");
-const errorMessage = document.querySelector(".error-message");
+const runButton = document.getElementById("run-button");
 
 const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
@@ -20,7 +21,7 @@ editor.on("change", () => {
     sessionStorage.setItem("autosave", editor.getValue());
 });
 
-// If data was saved then update text editor
+// If data was saved then restore the text editor
 const saved = sessionStorage.getItem("autosave");
 if (saved !== null) {
     editor.setValue(saved);
@@ -32,15 +33,11 @@ runButton.addEventListener("click", () => {
     sendRequest();
 });
 
-document.getElementById("reset").addEventListener("click", () => {
+document.getElementById("reset-button").addEventListener("click", () => {
     editor.setValue(initialCode);
 });
 
-document.getElementById("dismiss").addEventListener("click", () => {
-    errorMessage.classList.remove("error-visible");
-});
-
-document.getElementById("copy").addEventListener("click", () => {
+document.getElementById("copy-button").addEventListener("click", () => {
     navigator.clipboard.writeText(editor.getValue()).then(() => {
         console.log("Copied to clipboard");
     }).catch(error => {
@@ -113,14 +110,4 @@ function updateConsole(output, isError) {
     else {
         outputConsole.classList.remove("console-error");
     }
-}
-
-/**
- * Displays the generic error window and updates the message.
- * @param {string} message - The error message to be displayed
- */
-function displayError(message) {
-    document.querySelector('.error-message p').textContent = `Error: ${message}`;
-    errorMessage.classList.add("error-visible");
-    updateConsole("", false)
 }

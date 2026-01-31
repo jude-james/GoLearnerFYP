@@ -14,14 +14,14 @@
 }
 
 .hero h1, h2 {
-    color: var(--signature-white);
-    border: 5px solid var(--signature-white);
-    box-shadow: 5px 10px var(--signature-blue);
+    color: var(--white);
+    border: 5px solid var(--white);
+    box-shadow: 5px 10px var(--blue);
     padding: 15px;
 }
 
 .hero h2 {
-    box-shadow: -5px 10px var(--signature-blue);
+    box-shadow: -5px 10px var(--blue);
 }
 
 .content {
@@ -35,16 +35,12 @@
 
 .button {
     background: none;
-    color: var(--signature-white);
-
-    font-family: var(--font-name), sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
+    
     font-size: 1.2rem;
     text-align: left;
 
-    border: 1px solid var(--signature-white);
-    box-shadow: 5px 10px var(--signature-white);
+    border: 1px solid var(--white);
+    box-shadow: 5px 10px var(--white);
     padding: 10px;
     width: 50%;
 
@@ -52,31 +48,30 @@
 }
 
 .button:hover {
-    color: var(--signature-grey);
-    background-color: var(--signature-white);
+    color: var(--grey);
+    background-color: var(--white);
 }
 
 .button:active {
-    color: var(--signature-grey);
+    color: var(--grey);
     background-color: white;
 }
 
 #sandbox:hover {
-    box-shadow: 5px 10px var(--signature-green);
+    box-shadow: 5px 10px var(--green);
 }
 
 #tutorial:hover {
-    box-shadow: 5px 10px var(--signature-yellow);
+    box-shadow: 5px 10px var(--yellow);
 }
 
 #tutorial-concurrency:hover {
-    box-shadow: 5px 10px var(--signature-red);
+    box-shadow: 5px 10px var(--red);
 }
 
 .information {
-    background-color: var(--signature-white);
-    color: var(--signature-black);
+    background-color: var(--white);
+    color: var(--black);
     text-align: center;
-    justify-items: center;
     padding: 20px;
 }

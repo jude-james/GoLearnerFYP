@@ -54,13 +54,10 @@
     display: flex;
 }
 
-.button {
-    background-color: var(--signature-black);
-    color: var(--signature-white);
+button {
+    background-color: var(--black);
+    color: var(--white);
 
-    font-family: var(--font-name), sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
     font-size: 1.5rem;
 
     border: none;
@@ -70,29 +67,29 @@
     cursor: pointer;
 }
 
-.button:hover {
+button:hover {
     background-color: #202020;
 }
 
-.button:active {
+button:active {
     background-color: #272727;
 }
 
-#run {
+#run-button {
     background-color: #18223b;
-    border: 1.5px solid var(--signature-white);
+    border: 1.5px solid var(--white);
 }
 
-#run:hover {
+#run-button:hover {
     background-color: #1c2b4e;
 }
 
-#run:active {
+#run-button:active {
     background-color: #23355d;
 }
 
-#run:disabled {
-    background-color: var(--signature-black);
+#run-button:disabled {
+    background-color: var(--black);
     color: #bebebe;
 }
 
@@ -102,15 +99,10 @@
 }
 
 .console {
-    background-color: var(--signature-black);
+    background-color: var(--black);
 
-    font-family: var(--font-name), sans-serif;
-    font-optical-sizing: auto;
     font-weight: 350;
-    font-style: normal;
     font-size: var(--code-font-size);
-    color: var(--signature-white);
-
     margin: 0;
     flex: 1;
     overflow-y: auto;
@@ -119,52 +111,5 @@
 }
 
 .console-error {
-    color: var(--signature-red);
-}
-
-.error-message {
-    background: #ffc2c2;
-    border: 1px solid #363636;
-    border-radius: 3px;
-    visibility: hidden;
-
-    z-index: 9999;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 1rem;
-
-    color: var(--signature-black);
-    font-size: 1rem;
-    text-align: center;
-}
-
-#dismiss {
-    background: none;
-    color: var(--signature-black);
-
-    font-family: var(--font-name), sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-    font-size: 1rem;
-
-    border: 1.5px solid #363636;
-    border-radius: 3px;
-
-    padding: 10px;
-
-    cursor: pointer;
-}
-
-#dismiss:hover {
-    background-color: #fbb2b2;
-}
-
-#dismiss:active {
-    background-color: #f5a0a0;
-}
-
-.error-visible {
-    visibility: visible;
+    color: var(--red);
 }
