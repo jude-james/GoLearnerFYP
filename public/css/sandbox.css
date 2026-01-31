@@ -119,5 +119,52 @@
 }
 
 .console-error {
-    color: var(--red);
+    color: var(--signature-red);
+}
+
+.error-message {
+    background: #ffc2c2;
+    border: 1px solid #363636;
+    border-radius: 3px;
+    visibility: hidden;
+
+    z-index: 9999;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 1rem;
+
+    color: var(--signature-black);
+    font-size: 1rem;
+    text-align: center;
+}
+
+#dismiss {
+    background: none;
+    color: var(--signature-black);
+
+    font-family: var(--font-name), sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-size: 1rem;
+
+    border: 1.5px solid #363636;
+    border-radius: 3px;
+
+    padding: 10px;
+
+    cursor: pointer;
+}
+
+#dismiss:hover {
+    background-color: #fbb2b2;
+}
+
+#dismiss:active {
+    background-color: #f5a0a0;
+}
+
+.error-visible {
+  visibility: visible;
 }

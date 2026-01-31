@@ -69,7 +69,7 @@ app.post("/run", async (req, res) => {
     }
     catch (err) {
         console.error(err);
-        res.json({ issue: "File error." });
+        res.json({ issue: "File error" });
     }
 })
 
