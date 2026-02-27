@@ -1,6 +1,6 @@
 .hero {
-    min-height: 70vh;            
-    background-image: url("../assets/images/index-background.png");
+    min-height: 100vh;            
+    background-image: url("../assets/images/dots-background.jpg");
     background-size: cover;       
     background-position: center;
     background-repeat: no-repeat;
@@ -10,18 +10,36 @@
     justify-content: center;
     align-items: center;
 
-    text-align:center;
+    gap: 4rem;
+    
+    border-bottom: 1px dashed #929292;
 }
 
-.hero h1, h2 {
+.hero h1 {
+    background-color: var(--black);
     color: var(--white);
-    border: 5px solid var(--white);
-    box-shadow: 5px 10px var(--blue);
+
+    border: 1px solid var(--white);
+    box-shadow: 0 0 20px 2px #fdfdfd;
+
     padding: 15px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.hero h2 {
-    box-shadow: -5px 10px var(--blue);
+.logo-icon {
+    height: 1.5em;
+    width: auto;
+}
+
+.code-box {
+    border: 1px dotted var(--white);
+    width: 60%;
+    min-width: 400px;
+    
+    margin-bottom: 2rem;
 }
 
 .content {
@@ -31,6 +49,9 @@
     gap: 2rem;
 
     justify-items: center;
+
+    background-color: black;
+    border-bottom: 1px dashed #929292
 }
 
 .button {
@@ -43,6 +64,7 @@
     box-shadow: 5px 10px var(--white);
     padding: 10px;
     width: 50%;
+    min-width: 300px;
 
     cursor: pointer;
 }
@@ -70,8 +92,46 @@
 }
 
 .information {
-    background-color: var(--white);
-    color: var(--black);
-    text-align: center;
-    padding: 20px;
+    width: 100%; 
+    aspect-ratio: 1 / 1;
+
+    background-image: url("../assets/images/grid-background.jpg");
+    background-size: cover;       
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    justify-items: center;
+
+    padding: 40px;
+    gap: 8rem;
+
+    border-bottom: 1px dashed #929292
+}
+
+.info-box {
+    border: 1px solid var(--blue);
+    background-color: black;
+    color: var(--white);
+    width: 60%;
+    min-width: 300px;
+    padding: 40px;
+
+    font-size: 1.3rem;
+}
+
+.end {
+    min-height: 85vh;            
+    background-image: url("../assets/images/gopher-background.png");
+    background-size: cover;       
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align:center;
 }

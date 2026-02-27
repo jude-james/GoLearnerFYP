@@ -11,7 +11,7 @@ const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     indentWithTabs: true,
     styleActiveLine: true,
     mode: "text/x-go",
-    theme: "xq-light",
+    theme: "material-darker"
 });
 
 const initialCode = editor.getValue();

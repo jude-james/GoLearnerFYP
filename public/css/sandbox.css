@@ -19,37 +19,6 @@
     min-height: 0;
 }
 
-.CodeMirror {
-    border: none;
-    outline: none;
-    resize: none;
-
-    /* TODO fix codemirror resizing */
-    /*
-    resize: vertical; 
-    overflow: auto !important;
-    height: 100%;
-    */
-
-    resize: auto;
-
-    height: 100% !important;
-    width: 100% !important;
-
-    overscroll-behavior-y: none;
-
-    padding: 0;
-    line-height: 1.1;
-}
-
-.CodeMirror-code {
-    font-family: var(--font-name), sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 350;
-    font-style: normal;
-    font-size: var(--code-font-size);
-}
-
 .button-wrapper {
     display: flex;
 }
@@ -61,7 +30,7 @@ button {
     font-size: 1.5rem;
 
     border: none;
-    padding: 10px;
+    padding: 5px;
     width: 50%;
 
     cursor: pointer;
@@ -103,6 +72,7 @@ button:active {
 
     font-weight: 350;
     font-size: var(--code-font-size);
+
     margin: 0;
     flex: 1;
     overflow-y: auto;

@@ -45,17 +45,26 @@ button, input, select, textarea, a, pre {
 
 /* Navbar settings */
 .topnav {    
+    display: flex;
     overflow: hidden;
-    background-color: var(--black);
+    background-color: black;
+    border-bottom: 1px solid var(--white);
 }
 
 .topnav a {
-    float: left;
     color: var(--white);
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
-    font-size: 1.5rem;
+    font-size: var(--font-size);
+}
+
+.topnav a:first-child {
+    margin-right: auto;
+
+    transform: scale(0.85);
+    color: var(--white);
+    border: 2px solid var(--white);
 }
 
 .topnav a:hover {
@@ -71,6 +80,29 @@ button, input, select, textarea, a, pre {
 .topnav a.active {
     background-color: var(--blue);
     color: white;
+}
+
+/* CodeMirror settings */
+.CodeMirror {
+    border: none;
+    outline: none;
+
+    height: 100% !important;
+    width: 100% !important;
+
+    resize: auto;
+    padding: 0;
+    line-height: 1.1;
+
+    overscroll-behavior-y: none;
+}
+
+.CodeMirror-code {
+    font-family: var(--font-name), sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 350;
+    font-style: normal;
+    font-size: var(--code-font-size);
 }
 
 /* Error popup settings */

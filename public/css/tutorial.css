@@ -1,0 +1,78 @@
+.table-of-contents {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+}
+
+.header {
+    background-color: #061a44;
+    color: var(--white);
+
+    padding: 18px;
+    width: 65%;
+
+    border: 1px solid var(--white);
+    text-align: left;
+    outline: none;
+}
+
+.header h1 {
+    font-size: 1.8rem;
+}
+
+.header p {
+    font-size: 1.3rem;
+    font-weight: 350;
+}
+
+.collapsible {
+    background-color: var(--black);
+    color: var(--white);
+
+    padding: 18px;
+    width: 65%;
+
+    border: 1px solid var(--white);
+    text-align: left;
+    outline: none;
+
+    cursor: pointer;
+}
+
+.collapsible h1 {
+    font-size: 1.8rem;
+}
+
+.collapsible p {
+    font-size: 1.3rem;
+    font-weight: 350;
+}
+
+.active {
+    background-color: #23355d;
+}
+
+.collapsible:hover {
+    background-color: var(--blue);
+}
+
+.content {
+    background-color: var(--black);
+
+    font-size: 1.3rem;
+    font-weight: 350;
+
+    padding: 0 30px 0 30px;
+    width: 65%;
+    max-height: 0;
+    
+    border-left: 1px solid var(--white);
+    border-right: 1px solid var(--white);
+
+    overflow: hidden;
+
+    transition: max-height 0.2s ease-out;
+}
