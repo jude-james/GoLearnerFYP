@@ -1,3 +1,9 @@
+// Code for loading md file in
+/*const response = await fetch(`../content/test.md`);
+    const markdown = await response.text();
+    const html = marked.parse(markdown);
+    document.querySelector(".left-panel").innerHTML = html;*/
+
 const lessons = [
     {
         title: "Functions",

@@ -19,6 +19,21 @@
     outline: none;
 }
 
+.header button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #2c81dc;
+    
+    font-size: 1.4rem;
+
+    cursor: pointer;
+}
+
+.header button:hover {
+    text-decoration: underline;
+}
+
 .header h1 {
     font-size: 1.8rem;
 }
@@ -51,11 +66,11 @@
     font-weight: 350;
 }
 
-.active {
-    background-color: #23355d;
+.collapsible:hover {
+    background-color: var(--blue);
 }
 
-.collapsible:hover {
+.active {
     background-color: var(--blue);
 }
 
@@ -75,4 +90,12 @@
     overflow: hidden;
 
     transition: max-height 0.2s ease-out;
+}
+
+.content a {
+    text-decoration: none;
+}
+
+.content a:hover {
+    text-decoration: underline;
 }

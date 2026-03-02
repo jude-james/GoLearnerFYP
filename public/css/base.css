@@ -109,7 +109,6 @@ button, input, select, textarea, a, pre {
 .error-message {
     background: #ffc2c2;
     border: 1px solid #363636;
-    border-radius: 3px;
     visibility: hidden;
 
     z-index: 9999;

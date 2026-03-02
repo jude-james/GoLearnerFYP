@@ -34,64 +34,67 @@
                 <h1>Fundamentals</h1>
                 <p>6 chapters • 5 exercises</p>
                 <p>Skill level: <b>Beginner</b> • Time to complete: <b>2 hours</b></p>
+                <button id="expand-collapse-button">Expand All</button>
             </div>
             <button class="collapsible">
                 <h1>1 Introduction</h1>
-                <p>Learn the basics of a go package</p>
+                <p>Learn the basics of a Go program</p>
             </button>
             <div class="content">
                 <p>
                     <ol>
                         <li>
-                            Lesson - Introduction
+                            <a href="layout1.html">Lesson - Introduction</a>
                         </li>
                         <li>
                             Quiz - Example
                         </li>
                         <li>
-                            Exercise - Bunny's
+                            Exercise - Example
                         </li>
                     </ol>
                 </p>
             </div>
             <button class="collapsible">
                 <h1>2 Variables</h1>
-                <p>Learn about creating and storing values in Go</p>
+                <p>Learn about creating and storing variables in Go</p>
             </button>
             <div class="content">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p>
+                    <ol>
+                        <li>
+                            Lesson - Example
+                        </li>
+                        <li>
+                            Quiz - Example
+                        </li>
+                        <li>
+                            Exercise - Example
+                        </li>
+                    </ol>
+                </p>
             </div>
             <button class="collapsible">
                 <h1>3 Functions</h1>
                 <p>Learn how to write Go functions</p>
             </button>
             <div class="content">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p>
+                    <ol>
+                        <li>
+                            Lesson - Example
+                        </li>
+                        <li>
+                            Quiz - Example
+                        </li>
+                        <li>
+                            Exercise - Example
+                        </li>
+                    </ol>
+                </p>
             </div>
         </section>
 
-        <!-- The modular content to be injected and displayed -->
-        <div class="main"></div>
-        
-        <!-- Handles collapsable sections -->
-        <script>
-            var coll = document.getElementsByClassName("collapsible");
-            var i;
-
-            for (i = 0; i < coll.length; i++) {
-                coll[i].addEventListener("click", function() {
-                    this.classList.toggle("active");
-                    var content = this.nextElementSibling;
-                    if (content.style.maxHeight) {
-                        content.style.maxHeight = null;
-                    } 
-                    else {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                    } 
-                });
-            }
-        </script>
-
-        <script type="module" src="js/tutorial.js"></script>
+        <script src="js/tutorial.js"></script>
     </body>
 </html>

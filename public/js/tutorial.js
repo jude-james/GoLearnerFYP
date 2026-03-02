@@ -1,47 +1,41 @@
-import { chapters } from "./content.js";
+var expandCollapseBtn = document.getElementById("expand-collapse-button");
+var collapsable = document.getElementsByClassName("collapsible");
 
-window.onload = function() {
-    console.log("Loaded");
+var expanded = false;
 
-    // On load function, checks number in URL, if there is none then it should show
-    // the contents page
-    renderTableOfContents();
-}
-
-function goTo(index, chapter) {
-    console.log("Chapter:", chapter);
-    console.log("Index:", index);
-
-    // now access that from the content list, or just attach the data to the button?
-}
-
-function renderTableOfContents() {
-    let html = "<h1>Table of Contents</h1><ul>";
-
-    chapters.forEach((chapter, i) => {
-        html += `<p> ${i + 1} - ${chapter.title} </p>`;
-        chapter.chapter.forEach((content, j) => {
-            html += `
-            <li>
-                <a href="tutorial/${chapter.title}/${j + 1}" class="content-button" data-index=${j} data-chapter=${i}>
-                    ${j + 1} - ${content.type}  - ${content.content.title}
-                </a>
-            </li>`;
-        });
+// Expand or collapse individual chapter sections on click
+for (let i = 0; i < collapsable.length; i++) {
+    collapsable[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        content = this.nextElementSibling;
+        if (content.style.maxHeight) {
+            content.style.maxHeight = null;
+        } 
+        else {
+            content.style.maxHeight = content.scrollHeight + "px";
+        }
     });
-
-    html += "</ul>";
-
-    document.querySelector(".main").innerHTML = html;
 }
 
-document.addEventListener("click", function (e) {
-    if (e.target.classList.contains("content-button")) {
-        e.preventDefault();
-
-        const i = parseInt(e.target.dataset.index);
-        const chapter = parseInt(e.target.dataset.chapter);
-        
-        goTo(i, chapter);
+// Expand or collapse all chapter sections
+expandCollapseBtn.addEventListener("click", () => {
+    if (expanded) {
+        expandCollapseBtn.textContent = "Expand All";
+        // Force collapse all
+        for (let i = 0; i < collapsable.length; i++) {
+            collapsable[i].classList.remove("active");
+            content = collapsable[i].nextElementSibling
+            content.style.maxHeight = null;
+        }
     }
+    else {
+        expandCollapseBtn.textContent = "Collapse All";
+        // Force expand all
+        for (let i = 0; i < collapsable.length; i++) {
+            collapsable[i].classList.add("active");
+            content = collapsable[i].nextElementSibling;
+            content.style.maxHeight = content.scrollHeight + "px";
+        }
+    }
+    expanded = !expanded;
 });
