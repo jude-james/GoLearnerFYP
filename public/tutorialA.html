@@ -3,10 +3,10 @@
     <head>
         <meta charset="UTF-8"/>
         
-        <title>Tutorial - Welcome</title>
+        <title>TutorialA</title>
 
         <link rel="stylesheet" href="css/base.css"> 
-        <link rel="stylesheet" href="css/layout1.css">    
+        <link rel="stylesheet" href="css/tutorialA.css">    
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,14 +38,14 @@
         <div class="topnav">
             <a href="index.html">GoLearner</a>
             <a href="sandbox.html">Sandbox</a>
-            <a class="active" href="tutorial.html">Tutorial</a>
+            <a class="active" href="table-of-contents.html">Tutorial</a>
             <a href="extra.html">Extra</a>
         </div>
 
         <div class="tutorial-nav"> 
-            <button id="prev">< Previous</button>
-            <div id="current">Welcome (1/20)</div>
-            <button id="next">Next ></button>
+            <button id="prev-button">< Previous</button>
+            <div id="current">Current</div>
+            <button id="next-button">Next ></button>
         </div>
 
         <div class="container"> 
@@ -53,18 +53,12 @@
             </div>
 
             <div class="right-panel"> 
-                <div class="filename">
-                    <img src="assets/images/go-file-icon.png" alt="" class="go-file-icon">welcome.go
+                <div class="file-header">
+                    <img src="assets/images/go-file-icon.png" alt="" class="go-file-icon">
+                    <span class="file-name"></span>
                 </div>
                 <div class="editor">
-                    <textarea id="code" spellcheck="false">
-package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("This is the welcome tutorial")
-}</textarea>
+                    <textarea id="code" spellcheck="false"></textarea>
                 </div>
                 
                 <div class="button-wrapper">
@@ -95,6 +89,7 @@ func main() {
             <button id="dismiss-button">Dismiss</button>
         </div>
 
-        <script type="module" src="js/sandbox.js"></script>
+        <script type="module" src="../js/contentLoader.js"></script>
+        <script type="module" src="../js/sandbox.js"></script>
     </body>
 </html>

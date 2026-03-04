@@ -1,7 +1,9 @@
 import { displayError } from "./errorPopup.js";
 
+import { getCurrentTopicCode } from "./contentManager.js";
+
 const outputConsole = document.querySelector(".console");
-const fileName = document.querySelector(".filename");
+const fileName = document.querySelector(".file-name");
 const runButton = document.getElementById("run-button");
 
 const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
@@ -14,15 +16,17 @@ const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     theme: "material-darker"
 });
 
-const initialCode = editor.getValue();
+export function getEditor() {
+    return editor;
+}
 
 // Listen for changes from text editor
-editor.on("change", () => {
-    sessionStorage.setItem("autosave", editor.getValue());
+editor.on("change", () => {    
+    sessionStorage.setItem(window.location.pathname + window.location.search, editor.getValue());
 });
 
 // If data was saved then restore the text editor
-const saved = sessionStorage.getItem("autosave");
+const saved = sessionStorage.getItem(window.location.pathname + window.location.search);
 if (saved !== null) {
     editor.setValue(saved);
 }
@@ -33,8 +37,14 @@ runButton.addEventListener("click", () => {
     sendRequest();
 });
 
-document.getElementById("reset-button").addEventListener("click", () => {
-    editor.setValue(initialCode);
+document.getElementById("reset-button").addEventListener("click", async () => {
+    const code = await getCurrentTopicCode();
+    if (code) {
+        editor.setValue(code);
+    }
+    else {
+        displayError("Failed to reset");
+    }
 });
 
 document.getElementById("copy-button").addEventListener("click", () => {
@@ -59,7 +69,7 @@ async function sendRequest() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ fileName: fileName.innerText, code: editor.getValue() })
+            body: JSON.stringify({ fileName: fileName.textContent, code: editor.getValue() })
         });
 
         if (!response.ok) {

@@ -1,8 +1,6 @@
+/*
 // Code for loading md file in
-/*const response = await fetch(`../content/test.md`);
-    const markdown = await response.text();
-    const html = marked.parse(markdown);
-    document.querySelector(".left-panel").innerHTML = html;*/
+
 
 const lessons = [
     {
@@ -87,4 +85,93 @@ export const chapters = [ // rename to syllabus?
         title: "Basics", 
         chapter: chapter2
     }
-]
+]*/
+
+// list of objects, is this json?
+const topics = [
+    {     // object literal
+        // type: "tutorial-basic", // dont even need type? just do if statemets for all the fields and use layout
+        title: "Introduction",
+        slug: "introduction",
+        layout: "tutorialA.html",
+        markdown: "intro.md",
+        goFile: "welcome.go",
+    },
+    {
+        title: "Functions",
+        slug: "functions",
+        layout: "tutorialA.html",
+        markdown: "functions.md",
+        goFile: "funcs.go",
+    },
+    {
+        title: "Variables",
+        slug: "variables",
+        layout: "tutorialA.html",
+        markdown: "variables.md",
+        goFile: "vars.go",
+    },
+];
+
+// TODO add comments
+export function getCurrentTopic() {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("topic");
+    return topics.find(t => t.slug === slug);
+}
+
+export function getCurrentIndex() {
+    const current = getCurrentTopic();
+    return topics.findIndex(t => t.slug === current.slug) + 1;
+}
+
+export function getTopicsLength() {
+    return topics.length;
+}
+
+export function getNextTopic() {
+    const current = getCurrentTopic();
+    if (!current) {
+        return null;
+    }
+
+    const i = topics.findIndex(t => t.slug === current.slug);
+    return topics[i + 1] || null;
+}
+
+export function getPreviousTopic() {
+    const current = getCurrentTopic();
+    if (!current) {
+        return null;
+    }
+
+    const i = topics.findIndex(t => t.slug === current.slug);
+    return topics[i - 1] || null;
+}
+
+// TODO add comments
+export async function getCurrentTopicCode() {
+    let url;
+    const current = getCurrentTopic();
+
+    if (current) {
+        url = `/content/${current.slug}/${current.goFile}`;
+    }
+    else {
+        url = `/content/sandbox.go`;
+    }
+
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const code = await response.text();   
+        return code;
+    } 
+    catch (error) {
+        console.error(error.message);
+    }
+}

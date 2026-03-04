@@ -4,8 +4,14 @@
     flex-direction: column;
 }
 
-.filename, .console-header {
+.file-header, .console-header {
     border-bottom: 3px solid #555;
+}
+
+.file-header {
+    display: flex;
+    align-items: center;
+    gap: 3px;
 }
 
 .go-file-icon {
@@ -33,6 +39,10 @@ button {
     padding: 5px;
     width: 50%;
 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
     cursor: pointer;
 }
 

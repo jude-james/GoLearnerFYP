@@ -3,12 +3,21 @@
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
 
+    overflow: hidden;
+
     background-color: var(--grey);
     border-bottom: 1px solid grey;
 }
 
 .tutorial-nav button {
-    width: 40%;
+    width: 70%;
+    border: 1.5px solid var(--yellow);
+}
+
+.tutorial-nav button:disabled {
+    background-color: var(--black);
+    color: #bebebe;
+    cursor: default;
 }
 
 .tutorial-nav button:first-child {
@@ -19,7 +28,7 @@
     justify-self: end;
 }
 
-.current {
+#current {
     text-align: center;
 }
 
@@ -35,10 +44,34 @@
     background-color: var(--black);
     border-right: 5px solid grey;
 
+    word-break: break-word;
+    overflow-y: auto;
+
     font-size: 1.2rem;
     font-weight: 350;
     
     padding: 10px;
+}
+
+.left-panel code {
+    font-size: 1rem;
+    color: #e1e1e1;
+    background: var(--grey);
+
+    padding: 5px;
+    border-radius: 6px;
+}
+
+.left-panel pre code {
+    font-size: 1rem;
+    color: #e1e1e1;
+    background: var(--grey);
+
+    padding: 10px;
+    border-radius: 6px;
+
+    overflow-x: auto;
+    display: block;
 }
 
 .right-panel {
@@ -49,8 +82,14 @@
     flex-direction: column;
 }
 
-.filename, .console-header {
+.file-header, .console-header {
     border-bottom: 3px solid #555;
+}
+
+.file-header {
+    display: flex;
+    align-items: center;
+    gap: 3px;
 }
 
 .go-file-icon {
@@ -77,6 +116,10 @@ button {
     border: none;
     padding: 5px;
     width: 50%;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     cursor: pointer;
 }

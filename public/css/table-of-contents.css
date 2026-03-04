@@ -50,7 +50,10 @@
     padding: 18px;
     width: 65%;
 
-    border: 1px solid var(--white);
+    border: none;
+    border-left: 1px solid var(--white);
+    border-right: 1px solid var(--white);
+
     text-align: left;
     outline: none;
 
@@ -86,6 +89,7 @@
     
     border-left: 1px solid var(--white);
     border-right: 1px solid var(--white);
+    border-bottom: 1px solid var(--white);
 
     overflow: hidden;
 

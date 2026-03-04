@@ -3,23 +3,13 @@ package main
 import "fmt"
 
 func main() {
-    fmt.Println("This is the welcome tutorial")
-}package main
+	fmt.Println("This is the intro Go code")
+		fmt.Println("This is the intro Go code")
 
-import "fmt"
+		fmt.Println("This is the intro Go code")
 
-func main() {
-    fmt.Println("This is the welcome tutorial")
-}package main
+		fmt.Println("This is the intro Go code")
 
-import "fmt"
+		fmt.Println("This is the intro Go code")
 
-func main() {
-    fmt.Println("This is the welcome tutorial")
-}package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("This is the welcome tutorial")
 }
