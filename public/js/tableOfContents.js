@@ -2,7 +2,7 @@ import { content } from "./contentManager.js";
 
 const tableOfContents = document.querySelector(".table-of-contents");
 
-// TODO add comments
+// Creates the HTML elements and populates them with the content managers content
 content.forEach(chapter => {
     const button = document.createElement("button");
     button.className = "collapsible";
@@ -17,6 +17,7 @@ content.forEach(chapter => {
 
     const ol = document.createElement("ol");
 
+    // For each topic, it is added to the ordered list and the link is set
     chapter.topics.forEach(topic => {
         const li = document.createElement("li");
 

@@ -4,6 +4,7 @@ import {
     getPreviousTopic,
     getCurrentChapterLength,
     getCurrentTopicIndex,
+    getCurrentTopicMarkdown,
     getCurrentTopicCode
 } from "./contentManager.js";
 
@@ -21,7 +22,9 @@ const prevTopic = getPreviousTopic();
 
 init();
 
-// TODO add comments
+/**
+ * Loads the relevant topic data from the content manager onto the page
+ */
 async function init() {
     if (!topic) {
         window.location.href = "/index.html";
@@ -32,7 +35,16 @@ async function init() {
     current.textContent = topic.title + ` (${getCurrentTopicIndex()}/${getCurrentChapterLength()})`;
 
     if (topic.markdown) {
-        loadMarkdown(topic.markdown);
+        const markdown = await getCurrentTopicMarkdown();
+
+        if (markdown) {
+            // Parse the markdown to HTML using the marked library
+            const html = marked.parse(markdown);
+            document.querySelector(".left-panel").innerHTML = html;
+        }
+        else {
+            displayError(`Cannot find markdown file: ${topic.markdown}`);
+        }
     }
 
     // TODO comment all this
@@ -41,6 +53,7 @@ async function init() {
         
         const editor = getEditor();
 
+        // Check that there is no existing session state before updating the editor code
         const saved = sessionStorage.getItem(window.location.pathname + window.location.search);
         if (saved === null) {
             const code = await getCurrentTopicCode();
@@ -48,7 +61,7 @@ async function init() {
                 editor.setValue(code);
             }
             else {
-                displayError("Cannot find Go file");
+                displayError(`Cannot find Go file: ${topic.goFile}`);
             }
         }
     }
@@ -57,8 +70,7 @@ async function init() {
         nextButton.textContent = nextTopic.title + " >";
 
         nextButton.onclick = () => {
-            window.location.href =
-            `/${nextTopic.layout}?topic=${nextTopic.slug}`;
+            window.location.href = `/${nextTopic.layout}?topic=${nextTopic.slug}`;
         };
     }
     else {
@@ -69,30 +81,10 @@ async function init() {
         prevButton.textContent = "< " + prevTopic.title;
 
         prevButton.onclick = () => {
-            window.location.href =
-            `/${prevTopic.layout}?topic=${prevTopic.slug}`;
+            window.location.href = `/${prevTopic.layout}?topic=${prevTopic.slug}`;
         };
     }
     else {
         prevButton.disabled = true;
-    }
-}
-
-// TODO add comments
-async function loadMarkdown(fileName) {
-    try {
-        const response = await fetch(`/content/${topic.slug}/${fileName}`);
-
-        if (!response.ok) {
-            displayError(`Cannot find markdown file: ${fileName}`)
-            return;
-        }
-
-        const markdown = await response.text();
-        const html = marked.parse(markdown);
-        document.querySelector(".left-panel").innerHTML = html;
-    } 
-    catch (error) {
-        console.error(error.message);
     }
 }

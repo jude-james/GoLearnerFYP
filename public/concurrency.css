@@ -1,3 +1,5 @@
+/* TODO again a lot of this code is repeated and needsd to be in a single place */
+
 .tutorial-nav {
     display: grid;
     grid-template-columns: 1fr auto 1fr;

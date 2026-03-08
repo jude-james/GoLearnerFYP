@@ -1,8 +1,7 @@
-// TODO when adding exercises, hold the solution in another go file and fetch that too
-
-// Content array, holding all the content as a list of objects, which are divided into chapters
-// Each chapter is divided into topics, each topic is unique and has a unique identifier
-// Then each topic is divided into 3 forms: tutorial, quiz or exercise.
+/* Content array, holding all the content as a list of objects, which are divided into chapters
+Each chapter is divided into topics, each topic is unique and has a unique identifier
+Then each topic is divided into 3 forms: tutorial, quiz or exercise. 
+*/
 
 // eventually split this into courses? since it will have to be split into fundamentals and concurrency
 // so order becomes content (everything) -> courses (fundamentals/concurrency) -> chapters -> topics -> (tutorial/quiz/exercise)
@@ -54,7 +53,9 @@ export const content = [
     }
 ]
 
-// Add comments
+/**
+ * Reads the current page slug then searches the content array to find the topic details
+ */
 function getCurrentTopicData() {
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("topic");
@@ -76,7 +77,12 @@ function getCurrentTopicData() {
 
 export function getCurrentTopic() {
     const result = getCurrentTopicData();
-    return result.topic;
+    if (result) {
+        return result.topic;
+    }
+    else {
+        return null;
+    }
 }
 
 export function getNextTopic() {
@@ -109,14 +115,39 @@ export function getCurrentTopicIndex() {
     return result.topicIndex + 1;
 }
 
+/**
+ * Fetches the current topics markdown file, then returns the file as text
+ */
+export async function getCurrentTopicMarkdown() {
+    const topic = getCurrentTopic();
+
+    try {
+        const response = await fetch(`/content/${topic.slug}/${topic.markdown}`);
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const markdown = await response.text();
+        return markdown;
+    } 
+    catch (error) {
+        console.error(error.message);
+    }
+}
+
+/**
+ * Fetches the current topics Go source file, then returns the file as text.
+ * If the page has no topic, it returns the sandbox.go code
+ */
 export async function getCurrentTopicCode() {
     let url;
-    const current = getCurrentTopic();
+    const topic = getCurrentTopic();
 
-    if (current) {
-        url = `/content/${current.slug}/${current.goFile}`;
+    if (topic) {
+        url = `/content/${topic.slug}/${topic.goFile}`;
     }
-    else {
+    else {        
         url = `/content/sandbox.go`;
     }
 
