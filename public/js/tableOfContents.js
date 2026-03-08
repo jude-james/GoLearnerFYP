@@ -1,3 +1,39 @@
+import { content } from "./contentManager.js";
+
+const tableOfContents = document.querySelector(".table-of-contents");
+
+// TODO add comments
+content.forEach(chapter => {
+    const button = document.createElement("button");
+    button.className = "collapsible";
+
+    button.innerHTML = `
+        <h1>${chapter.title}</h1>
+        <p>${chapter.description}</p>
+    `;
+
+    const div = document.createElement("div");
+    div.className = "section";
+
+    const ol = document.createElement("ol");
+
+    chapter.topics.forEach(topic => {
+        const li = document.createElement("li");
+
+        const link = document.createElement("a");
+        link.href = `${topic.layout}?topic=${topic.slug}`;
+        link.textContent = topic.title;
+
+        li.appendChild(link);
+        ol.appendChild(li);
+    });
+
+    div.appendChild(ol);
+
+    tableOfContents.appendChild(button);
+    tableOfContents.appendChild(div);
+});
+
 var expandCollapseBtn = document.getElementById("expand-collapse-button");
 var collapsable = document.getElementsByClassName("collapsible");
 
@@ -7,12 +43,12 @@ var expanded = false;
 for (let i = 0; i < collapsable.length; i++) {
     collapsable[i].addEventListener("click", function() {
         this.classList.toggle("active");
-        content = this.nextElementSibling;
-        if (content.style.maxHeight) {
-            content.style.maxHeight = null;
+        let section = this.nextElementSibling;
+        if (section.style.maxHeight) {
+            section.style.maxHeight = null;
         } 
         else {
-            content.style.maxHeight = content.scrollHeight + "px";
+            section.style.maxHeight = section.scrollHeight + "px";
         }
     });
 }
@@ -24,8 +60,8 @@ expandCollapseBtn.addEventListener("click", () => {
         // Force collapse all
         for (let i = 0; i < collapsable.length; i++) {
             collapsable[i].classList.remove("active");
-            content = collapsable[i].nextElementSibling
-            content.style.maxHeight = null;
+            let section = collapsable[i].nextElementSibling;
+            section.style.maxHeight = null;
         }
     }
     else {
@@ -33,8 +69,8 @@ expandCollapseBtn.addEventListener("click", () => {
         // Force expand all
         for (let i = 0; i < collapsable.length; i++) {
             collapsable[i].classList.add("active");
-            content = collapsable[i].nextElementSibling;
-            content.style.maxHeight = content.scrollHeight + "px";
+            let section = collapsable[i].nextElementSibling;
+            section.style.maxHeight = section.scrollHeight + "px";
         }
     }
     expanded = !expanded;

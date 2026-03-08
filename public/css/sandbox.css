@@ -80,7 +80,7 @@ button:active {
 .console {
     background-color: var(--black);
 
-    font-weight: 350;
+    font-weight: var(--small-font-weight);
     font-size: var(--code-font-size);
 
     margin: 0;

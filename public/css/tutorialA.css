@@ -46,29 +46,34 @@
 
     word-break: break-word;
     overflow-y: auto;
+    overscroll-behavior-y: none;
 
-    font-size: 1.2rem;
-    font-weight: 350;
+    font-size: var(--md-font-size);
+    font-weight: var(--small-font-weight);
     
     padding: 10px;
 }
 
 .left-panel code {
-    font-size: 1rem;
-    color: #e1e1e1;
+    font-size: var(--md-code-font-size);
+
+    color: #bc5a5a;
     background: var(--grey);
 
-    padding: 5px;
-    border-radius: 6px;
+    border: 1px solid #4d4d4d;
+    padding: 2px;
+    border-radius: 7px;
 }
 
 .left-panel pre code {
-    font-size: 1rem;
-    color: #e1e1e1;
+    font-size: var(--md-code-font-size);
+
+    color: #e6e6e6;
     background: var(--grey);
 
-    padding: 10px;
-    border-radius: 6px;
+    border: 1px solid #4d4d4d;
+    padding: 12px;
+    border-radius: 7px;
 
     overflow-x: auto;
     display: block;
@@ -158,7 +163,7 @@ button:active {
 .console {
     background-color: var(--black);
 
-    font-weight: 350;
+    font-weight: var(--small-font-weight);
     font-size: var(--code-font-size);
 
     margin: 0;

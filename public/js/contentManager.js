@@ -1,155 +1,114 @@
-/*
-// Code for loading md file in
+// TODO when adding exercises, hold the solution in another go file and fetch that too
 
+// Content array, holding all the content as a list of objects, which are divided into chapters
+// Each chapter is divided into topics, each topic is unique and has a unique identifier
+// Then each topic is divided into 3 forms: tutorial, quiz or exercise.
 
-const lessons = [
+// eventually split this into courses? since it will have to be split into fundamentals and concurrency
+// so order becomes content (everything) -> courses (fundamentals/concurrency) -> chapters -> topics -> (tutorial/quiz/exercise)
+export const content = [
     {
-        title: "Functions",
-        description: "This is a function...",
-        layout: 2,
-        code: "package main..."
+        title: "Chapter 1: Basics",
+        description: "Learn all about the basics",
+        topics: [
+            {
+                title: "Introduction",
+                slug: "introduction",
+                layout: "tutorialA.html",
+                markdown: "intro.md",
+                goFile: "welcome.go",
+            },
+            {
+                title: "Functions",
+                slug: "functions",
+                layout: "tutorialA.html",
+                markdown: "functions.md",
+                goFile: "funcs.go",
+            },
+            {
+                title: "Variables",
+                slug: "variables",
+                layout: "tutorialA.html",
+                markdown: "variables.md",
+                goFile: "vars.go",
+            }
+        ]
+    },
+    {
+        title: "Chapter 2",
+        description: "Ch2 description",
+        topics: [
+            {
+                title: "chp2 Topic 1",
+                slug: "ch2",
+                layout: "tutorialA.html",
+                markdown: "functions.md",
+                goFile: "funcs.go",
+            },
+            {
+                title: "chp2 Topic 2",
+                slug: "ch22",
+                layout: "tutorialA.html",
+            }
+        ]
     }
 ]
 
-lessons.customString = function() {
-    return "Lesson";
-};
-
-const exercises = [ // list of objects
-    {   // object literal
-        title: "Rabbit",
-        description: "Do some rabbit challenge...",
-        layout: 3, // layout will have to be different for exercises, how will it know?, just have exercise layout, then like lesson_quad, layout, quiz layout etc
-        code: "package...",
-        solution: "427"
-    },
-    {
-        title: "Fibonacci",
-        description: "In this exercise...",
-        layout: 3,
-        code: "package...",
-        solution: "12" // would have to be more complex sometimes, like multi line output
-    }
-]
-
-exercises.customString = function() {
-    return "Exercise";
-};
-
-const quizzes = [
-    {
-        title: "Functions Recap quiz",
-        option1: "fmt.Println...",
-        answer: "fmt.Println..."
-    }
-]
-
-quizzes.customString = function() {
-    return "Quiz";
-};
-
-const chapter1 = [
-    {
-        id: 1,
-        content: lessons[0],
-        type: lessons.customString()
-    },
-    {
-        id: 2,
-        content: exercises[0],
-        type: exercises.customString()
-    },
-]
-
-const chapter2 = [
-    {
-        id: 1, // dont need ids at all?
-        content: exercises[1],
-        type: exercises.customString()
-    },
-    {
-        id: 2,
-        content: quizzes[0],
-        type: quizzes.customString()
-    },
-]
-
-export const chapters = [ // rename to syllabus?
-    {
-        title: "Introduction", // then the url would be eg tutorial/introduction/1
-        chapter: chapter1,
-        time: 30,
-        difficulty: "easy"
-    },
-    {
-        title: "Basics", 
-        chapter: chapter2
-    }
-]*/
-
-// list of objects, is this json?
-const topics = [
-    {     // object literal
-        // type: "tutorial-basic", // dont even need type? just do if statemets for all the fields and use layout
-        title: "Introduction",
-        slug: "introduction",
-        layout: "tutorialA.html",
-        markdown: "intro.md",
-        goFile: "welcome.go",
-    },
-    {
-        title: "Functions",
-        slug: "functions",
-        layout: "tutorialA.html",
-        markdown: "functions.md",
-        goFile: "funcs.go",
-    },
-    {
-        title: "Variables",
-        slug: "variables",
-        layout: "tutorialA.html",
-        markdown: "variables.md",
-        goFile: "vars.go",
-    },
-];
-
-// TODO add comments
-export function getCurrentTopic() {
+// Add comments
+function getCurrentTopicData() {
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("topic");
-    return topics.find(t => t.slug === slug);
+
+    for (const chapter of content) {
+        const index = chapter.topics.findIndex(t => t.slug === slug);
+
+        if (index !== -1) {
+            return {
+                topic: chapter.topics[index],
+                topicIndex: index,
+                chapter,
+                chapterLength: chapter.topics.length
+            };
+        }
+    }
+    return null;
 }
 
-export function getCurrentIndex() {
-    const current = getCurrentTopic();
-    return topics.findIndex(t => t.slug === current.slug) + 1;
-}
-
-export function getTopicsLength() {
-    return topics.length;
+export function getCurrentTopic() {
+    const result = getCurrentTopicData();
+    return result.topic;
 }
 
 export function getNextTopic() {
-    const current = getCurrentTopic();
-    if (!current) {
+    const result = getCurrentTopicData();
+    if (!result) {
         return null;
     }
 
-    const i = topics.findIndex(t => t.slug === current.slug);
-    return topics[i + 1] || null;
+    const { chapter, topicIndex } = result;    
+    return chapter.topics[topicIndex + 1] || null;
 }
 
 export function getPreviousTopic() {
-    const current = getCurrentTopic();
-    if (!current) {
+    const result = getCurrentTopicData();
+    if (!result) {
         return null;
     }
 
-    const i = topics.findIndex(t => t.slug === current.slug);
-    return topics[i - 1] || null;
+    const { chapter, topicIndex } = result;
+    return chapter.topics[topicIndex - 1] || null;
 }
 
-// TODO add comments
+export function getCurrentChapterLength() {
+    const result = getCurrentTopicData();
+    return result.chapterLength;
+}
+
+export function getCurrentTopicIndex() {
+    const result = getCurrentTopicData();
+    return result.topicIndex + 1;
+}
+
 export async function getCurrentTopicCode() {
     let url;
     const current = getCurrentTopic();

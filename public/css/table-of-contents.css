@@ -40,7 +40,6 @@
 
 .header p {
     font-size: 1.3rem;
-    font-weight: 350;
 }
 
 .collapsible {
@@ -66,7 +65,6 @@
 
 .collapsible p {
     font-size: 1.3rem;
-    font-weight: 350;
 }
 
 .collapsible:hover {
@@ -77,11 +75,10 @@
     background-color: var(--blue);
 }
 
-.content {
+.section {
     background-color: var(--black);
 
     font-size: 1.3rem;
-    font-weight: 350;
 
     padding: 0 30px 0 30px;
     width: 65%;
@@ -96,10 +93,10 @@
     transition: max-height 0.2s ease-out;
 }
 
-.content a {
+.section a {
     text-decoration: none;
 }
 
-.content a:hover {
+.section a:hover {
     text-decoration: underline;
 }

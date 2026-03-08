@@ -11,8 +11,12 @@
     --grey: #1e1e1e;
 
     --font-size: 1.8rem;
+    --font-weight: 400;
+    --small-font-weight: 350;
     --code-font-size: 1.2rem;
-
+    --md-font-size: 1.2rem;
+    --md-code-font-size: 1.1rem;
+    
     --font-name: "Cascadia Code";
 }
 
@@ -25,7 +29,7 @@ body {
     color: var(--white);
     font-family: var(--font-name), sans-serif;
     font-size: var(--font-size);
-    font-weight: 400;
+    font-weight: var(--font-weight);
     font-style: normal;
     font-optical-sizing: auto;
 }
@@ -136,6 +140,10 @@ button, input, select, textarea, a, pre {
     border: 1.5px solid #363636;
     border-radius: 3px;
 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
     padding: 10px;
 
     cursor: pointer;

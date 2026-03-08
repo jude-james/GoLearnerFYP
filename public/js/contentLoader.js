@@ -1,9 +1,9 @@
 import {
     getCurrentTopic,
-    getCurrentIndex,
-    getTopicsLength,
     getNextTopic,
     getPreviousTopic,
+    getCurrentChapterLength,
+    getCurrentTopicIndex,
     getCurrentTopicCode
 } from "./contentManager.js";
 
@@ -29,7 +29,7 @@ async function init() {
     }
 
     document.title = topic.title;
-    current.textContent = topic.title + ` (${getCurrentIndex()}/${getTopicsLength()})`;
+    current.textContent = topic.title + ` (${getCurrentTopicIndex()}/${getCurrentChapterLength()})`;
 
     if (topic.markdown) {
         loadMarkdown(topic.markdown);
