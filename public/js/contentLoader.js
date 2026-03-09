@@ -2,15 +2,17 @@ import {
     getCurrentTopic,
     getNextTopic,
     getPreviousTopic,
+    getCurrentChapter,
+    getNextChapter,
+    getNextChapterStart,
+    getCurrentChapterStart,
     getCurrentChapterLength,
     getCurrentTopicIndex,
     getCurrentTopicMarkdown,
-    getCurrentTopicCode
+    getCurrentTopicCode,
 } from "./contentManager.js";
 
 import { displayError } from "./errorPopup.js";
-
-import { getEditor } from "./sandbox.js";
 
 const nextButton = document.getElementById("next-button");
 const prevButton = document.getElementById("prev-button");
@@ -47,13 +49,13 @@ async function init() {
         }
     }
 
-    // TODO comment all this
     if (topic.goFile) {
         document.querySelector(".file-name").textContent = topic.goFile;
         
+        const { getEditor } = await import("./sandbox.js");
         const editor = getEditor();
 
-        // Check that there is no existing session state before updating the editor code
+        // Checks there is no existing session state before updating the editor code
         const saved = sessionStorage.getItem(window.location.pathname + window.location.search);
         if (saved === null) {
             const code = await getCurrentTopicCode();
@@ -63,6 +65,33 @@ async function init() {
             else {
                 displayError(`Cannot find Go file: ${topic.goFile}`);
             }
+        }
+    }
+
+    if (topic.message) {
+        document.querySelector(".message").textContent = topic.message;
+
+        const firstTopic = getCurrentChapterStart();
+
+        const restartChapterButton = document.getElementById("restart-chapter-button");
+        restartChapterButton.textContent = `<-- Restart Chapter: ${getCurrentChapter().title}`;
+
+        restartChapterButton.onclick = () => {            
+            window.location.href = `/${firstTopic.layout}?topic=${firstTopic.slug}`;
+        };
+        
+        const nextChapterStart = getNextChapterStart();
+        const nextChapterButton = document.getElementById("next-chapter-button");
+
+        if (nextChapterStart) {
+            nextChapterButton.textContent = `--> Next Chapter: ${getNextChapter().title}`;
+
+            nextChapterButton.onclick = () => {
+                window.location.href = `/${nextChapterStart.layout}?topic=${nextChapterStart.slug}`;
+            };
+        }
+        else {
+            nextChapterButton.disabled = true;
         }
     }
 

@@ -1,1 +1,58 @@
-// TODO at the end of list of topics, place this, with links to other pages
+<!DOCTYPE html>
+<html lang=en> 
+    <head>
+        <meta charset="UTF-8"/>
+        
+        <title>Chapter Complete</title>
+
+        <link rel="stylesheet" href="css/base.css">
+        <link rel="stylesheet" href="css/topic-navbar.css"> 
+        <link rel="stylesheet" href="css/chapter-complete.css">    
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,200..700;1,200..700&family=Handjet:wght@100..900&family=Sometype+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="/assets/favicon/favicon-96x96.png" sizes="96x96"/>
+        <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg"/>
+        <link rel="shortcut icon" href="/assets/favicon/favicon.ico"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png"/>
+        <link rel="manifest" href="/assets/favicon/site.webmanifest"/>
+    </head>
+
+    <body>
+        <div class="topnav">
+            <a href="index.html">GoLearner</a>
+            <a href="sandbox.html">Sandbox</a>
+            <a class="active" href="table-of-contents.html">Tutorial</a>
+            <a href="extra.html">Extra</a>
+        </div>
+
+        <div class="topic-nav"> 
+            <button id="prev-button">< Previous</button>
+            <div id="current">Current</div>
+            <button id="next-button">Next ></button>
+        </div>
+
+        <div class="container"> 
+            <div class="message">
+            </div>
+            <button class="button" id="next-chapter-button">
+                --> Next Chapter
+            </button>
+            <button class="button" id="restart-chapter-button">
+                <-- Restart Chapter
+            </button>
+            <a href="table-of-contents.html">Back to contents page</a>
+        </div>
+
+        <div class="error-message">
+            <p>Error: Something went wrong</p>
+            <button id="dismiss-button">Dismiss</button>
+        </div>
+
+        <script type="module" src="../js/contentLoader.js"></script>
+    </body>
+</html>

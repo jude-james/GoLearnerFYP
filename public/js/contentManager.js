@@ -7,7 +7,7 @@ Then each topic is divided into 3 forms: tutorial, quiz or exercise.
 // so order becomes content (everything) -> courses (fundamentals/concurrency) -> chapters -> topics -> (tutorial/quiz/exercise)
 export const content = [
     {
-        title: "Chapter 1: Basics",
+        title: "Basics",
         description: "Learn all about the basics",
         topics: [
             {
@@ -30,11 +30,17 @@ export const content = [
                 layout: "tutorialA.html",
                 markdown: "variables.md",
                 goFile: "vars.go",
+            },
+            {
+                title: "Chapter 1 Complete",
+                slug: "chapter1",
+                layout: "chapter-complete.html",
+                message: "Congratulations! You have completed chapter 1. You now understand..."
             }
         ]
     },
     {
-        title: "Chapter 2",
+        title: "Control Flow",
         description: "Ch2 description",
         topics: [
             {
@@ -48,6 +54,12 @@ export const content = [
                 title: "chp2 Topic 2",
                 slug: "ch22",
                 layout: "tutorialA.html",
+            },
+            {
+                title: "Chapter 2 Complete",
+                slug: "ch2end",
+                layout: "chapter-complete.html",
+                message: "Congratulations! You have completed chapter 2. You now understand..."
             }
         ]
     }
@@ -60,14 +72,16 @@ function getCurrentTopicData() {
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("topic");
 
-    for (const chapter of content) {
-        const index = chapter.topics.findIndex(t => t.slug === slug);
+    for (let i = 0; i < content.length; i++) {
+        const chapter = content[i];
+        const topicIndex = chapter.topics.findIndex(t => t.slug === slug);
 
-        if (index !== -1) {
+        if (topicIndex !== -1) {
             return {
-                topic: chapter.topics[index],
-                topicIndex: index,
+                topic: chapter.topics[topicIndex],
+                topicIndex: topicIndex,
                 chapter,
+                chapterIndex: i,
                 chapterLength: chapter.topics.length
             };
         }
@@ -103,6 +117,47 @@ export function getPreviousTopic() {
 
     const { chapter, topicIndex } = result;
     return chapter.topics[topicIndex - 1] || null;
+}
+
+export function getCurrentChapter() {
+    const result = getCurrentTopicData();
+    if (!result) {
+        return null;
+    }
+
+    return result.chapter;
+}
+
+export function getNextChapter() {
+    const result = getCurrentTopicData();
+    if (!result) {
+        return null;
+    }
+
+    const nextChapter = content[result.chapterIndex + 1];
+    if (!nextChapter) {
+        return null;
+    }
+
+    return nextChapter;
+}
+
+export function getNextChapterStart() {
+    const nextChapter = getNextChapter();
+    if (!nextChapter) {
+        return null;
+    }
+
+    return nextChapter.topics[0];
+}
+
+export function getCurrentChapterStart() {
+    const chapter = getCurrentChapter();
+    if (!chapter) {
+        return null;
+    }
+
+    return chapter.topics[0];
 }
 
 export function getCurrentChapterLength() {

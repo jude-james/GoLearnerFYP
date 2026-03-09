@@ -104,9 +104,9 @@ button, input, select, textarea, a, pre {
 .CodeMirror-code {
     font-family: var(--font-name), sans-serif;
     font-optical-sizing: auto;
-    font-weight: 350;
-    font-style: normal;
     font-size: var(--code-font-size);
+    font-weight: var(--small-font-weight);
+    font-style: normal;
 }
 
 /* Error popup settings */
