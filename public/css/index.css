@@ -55,7 +55,7 @@
 }
 
 .button {
-    background: none;
+    background: var(--black);
     
     font-size: 1.2rem;
     text-align: left;

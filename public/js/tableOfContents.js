@@ -3,12 +3,13 @@ import { content } from "./contentManager.js";
 const tableOfContents = document.querySelector(".table-of-contents");
 
 // Creates the HTML elements and populates them with the content managers content
-content.forEach(chapter => {
+for (let i = 0; i < content.length; i++) {
+    let chapter = content[i];
     const button = document.createElement("button");
     button.className = "collapsible";
 
     button.innerHTML = `
-        <h1>${chapter.title}</h1>
+        <h1>Chapter ${i+1}: ${chapter.title}</h1>
         <p>${chapter.description}</p>
     `;
 
@@ -33,7 +34,7 @@ content.forEach(chapter => {
 
     tableOfContents.appendChild(button);
     tableOfContents.appendChild(div);
-});
+}
 
 var expandCollapseBtn = document.getElementById("expand-collapse-button");
 var collapsable = document.getElementsByClassName("collapsible");

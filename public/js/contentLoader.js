@@ -95,18 +95,18 @@ async function init() {
         const firstTopic = getCurrentChapterStart();
 
         const restartChapterButton = document.getElementById("restart-chapter-button");
-        restartChapterButton.textContent = `<-- Restart Chapter: ${getCurrentChapter().title}`;
 
+        restartChapterButton.textContent = `<-- Restart Chapter: ${getCurrentChapter().title}`;
         restartChapterButton.onclick = () => {            
             window.location.href = `/${firstTopic.layout}?topic=${firstTopic.slug}`;
         };
         
         const nextChapterStart = getNextChapterStart();
+        
         const nextChapterButton = document.getElementById("next-chapter-button");
 
         if (nextChapterStart) {
             nextChapterButton.textContent = `--> Next Chapter: ${getNextChapter().title}`;
-
             nextChapterButton.onclick = () => {
                 window.location.href = `/${nextChapterStart.layout}?topic=${nextChapterStart.slug}`;
             };
@@ -116,6 +116,7 @@ async function init() {
         }
     }
 
+    // Set page navigation links
     if (nextTopic) {
         nextButton.textContent = nextTopic.title + " >";
 

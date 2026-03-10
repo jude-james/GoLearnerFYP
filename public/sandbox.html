@@ -32,7 +32,7 @@
         <link rel="manifest" href="/assets/favicon/site.webmanifest"/>
     </head>
 
-    <body>
+    <body style="visibility: hidden;">
         <div class="topnav">
             <a href="index.html">GoLearner</a>
             <a class="active" href="sandbox.html">Sandbox</a>
@@ -84,5 +84,7 @@ func main() {
         </div>
 
         <script type="module" src="js/sandbox.js"></script>
+        <script type="module" src="js/pageLoader.js"></script>
+        <noscript><style>body { visibility: visible; }</style></noscript>
     </body>
 </html>

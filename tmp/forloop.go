@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	for i := 1; i <= 10; i++ {
-		fmt.Println("This is line number", i)
+	for i := 1; i <= 120; i++ {
+		fmt.Println(i * i)
 	}
 }

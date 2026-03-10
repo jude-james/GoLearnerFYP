@@ -1,7 +1,7 @@
 /* 
 Content array, holding all the content as a list of objects, which are divided into chapters
 Each chapter is divided into topics, each topic is unique and has a unique identifier
-Then each topic is divided into 3 forms: tutorial, quiz or exercise. 
+Then each topic is divided into 3 formats: tutorial, quiz or exercise. 
 */
 // eventually split this into courses? since it will have to be split into fundamentals and concurrency
 // so order becomes content (everything) -> courses (fundamentals/concurrency) -> chapters -> topics -> (tutorial/quiz/exercise)
@@ -13,21 +13,21 @@ export const content = [
             {
                 title: "Introduction",
                 slug: "introduction",
-                layout: "tutorialA.html",
+                layout: "tutorial.html",
                 markdown: "test.md",
                 goFile: "welcome.go",
             },
             {
                 title: "Variables",
                 slug: "variables",
-                layout: "tutorialA.html",
+                layout: "tutorial.html",
                 markdown: "test.md",
                 goFile: "vars.go",
             },
             {
                 title: "Functions",
                 slug: "functions",
-                layout: "tutorialA.html",
+                layout: "tutorial.html",
                 markdown: "test.md",
                 goFile: "funcs.go",
             },
@@ -54,14 +54,14 @@ export const content = [
             {
                 title: "For loops",
                 slug: "forloops",
-                layout: "tutorialA.html",
+                layout: "tutorial.html",
                 markdown: "test.md",
                 goFile: "forloop.go",
             },
             {
                 title: "While Loops",
                 slug: "whileloops",
-                layout: "tutorialA.html",
+                layout: "tutorial.html",
                 markdown: "test.md",
                 goFile: "whileloop.go",
             },
