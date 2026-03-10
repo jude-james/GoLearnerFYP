@@ -4,12 +4,12 @@ import {
     getPreviousTopic,
     getCurrentChapter,
     getNextChapter,
-    getNextChapterStart,
     getCurrentChapterStart,
+    getNextChapterStart,
     getCurrentChapterLength,
     getCurrentTopicIndex,
-    getCurrentTopicCode,
     getCurrentTopicFile,
+    getCurrentTopicCode,
 } from "./contentManager.js";
 
 import { displayError } from "./errorPopup.js";
@@ -28,19 +28,25 @@ init();
  * Loads the relevant topic data from the content manager onto the page
  */
 async function init() {
-    if (!topic) {
+    // Check page layout matches with current topic layout, to prevent user from visiting a topic with a different html layout
+    const page = window.location.pathname.split("/").pop();
+    
+    // If pages topic slug doesn't exist, or topic layout doesn't match, return to index
+    if (!topic || (page != topic.layout)) {
         window.location.href = "/index.html";
         return;
     }
 
     document.title = topic.title;
+
+    // Set current topic title text and progress indicator
     current.textContent = topic.title + ` (${getCurrentTopicIndex()}/${getCurrentChapterLength()})`;
 
     if (topic.markdown) {
         const markdown = await getCurrentTopicFile(topic.markdown);
 
         if (markdown) {
-            // Parses the markdown to HTML using the marked library
+            // Parse the markdown to HTML using the marked library
             const html = marked.parse(markdown);
             document.querySelector(".markdown").innerHTML = html;
         }
@@ -55,11 +61,10 @@ async function init() {
         const { getEditor } = await import("./sandbox.js");
         const editor = getEditor();
 
-        // Checks there is no existing session state before updating the editor code
+        // Check there is no existing session state before updating the editor code
         const saved = sessionStorage.getItem(window.location.pathname + window.location.search);
         if (saved === null) {            
             const code = await getCurrentTopicCode();
-            console.log(code);
             
             if (code) {                
                 editor.setValue(code);

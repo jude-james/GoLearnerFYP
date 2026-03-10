@@ -22,8 +22,7 @@
 }
 
 .top-panel {
-    flex: 2;
-    min-width: 0;
+    flex: 1;
 
     background-color: var(--black);
 
@@ -35,4 +34,13 @@
 
 .bottom-panel {
     flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.code-window {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
 }

@@ -1,2 +1,0 @@
-package functionsexercise
-SOLUTION

@@ -4,10 +4,12 @@ const codeWindow = CodeMirror.fromTextArea(document.getElementById("code-solutio
     indentUnit: 4,
     indentWithTabs: true,
     styleActiveLine: true,
-    readOnly: "nocursor",
+    readOnly: "true",
     mode: "text/x-go",
     theme: "yonce",
 });
+
+codeWindow.setSize("100%", "100%");
 
 export function getCodeWindow() {
     return codeWindow;

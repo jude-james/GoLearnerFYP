@@ -91,8 +91,6 @@ button, input, select, textarea, a, pre {
     border: none;
     outline: none;
 
-    width: 100% !important;
-
     resize: auto;
     padding: 0;
     line-height: 1.1;
@@ -106,6 +104,10 @@ button, input, select, textarea, a, pre {
     font-size: var(--code-font-size);
     font-weight: var(--small-font-weight);
     font-style: normal;
+}
+
+.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
+    background: transparent !important;
 }
 
 /* Error popup settings */

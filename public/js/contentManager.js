@@ -3,7 +3,6 @@ Content array, holding all the content as a list of objects, which are divided i
 Each chapter is divided into topics, each topic is unique and has a unique identifier
 Then each topic is divided into 3 forms: tutorial, quiz or exercise. 
 */
-
 // eventually split this into courses? since it will have to be split into fundamentals and concurrency
 // so order becomes content (everything) -> courses (fundamentals/concurrency) -> chapters -> topics -> (tutorial/quiz/exercise)
 export const content = [
@@ -15,60 +14,74 @@ export const content = [
                 title: "Introduction",
                 slug: "introduction",
                 layout: "tutorialA.html",
-                markdown: "intro.md",
+                markdown: "test.md",
                 goFile: "welcome.go",
+            },
+            {
+                title: "Variables",
+                slug: "variables",
+                layout: "tutorialA.html",
+                markdown: "test.md",
+                goFile: "vars.go",
             },
             {
                 title: "Functions",
                 slug: "functions",
-                layout: "exercise.html",
-                markdown: "functions.md",
+                layout: "tutorialA.html",
+                markdown: "test.md",
                 goFile: "funcs.go",
             },
             {
                 title: "Functions Exercise",
                 slug: "functions_exercise",
                 layout: "exercise.html",
-                /*markdown: "functions.md",*/
+                markdown: "test.md",
                 goFile: "funcs.go",
                 goSolution: "funcs_solution.go"
-            },
-            {
-                title: "Variables",
-                slug: "variables",
-                layout: "tutorialA.html",
-                markdown: "variables.md",
-                goFile: "vars.go",
             },
             {
                 title: "Chapter 1 Complete",
                 slug: "chapter1",
                 layout: "chapter-complete.html",
-                message: "Congratulations! You have completed chapter 1. You now understand..."
+                message: "Congratulations! You have completed Chapter 1: Basics. You now understand..."
             }
         ]
     },
     {
-        title: "Control Flow",
-        description: "Ch2 description",
+        title: "Loops",
+        description: "Learn all about loops",
         topics: [
             {
-                title: "chp2 Topic 1",
-                slug: "ch2",
+                title: "For loops",
+                slug: "forloops",
                 layout: "tutorialA.html",
-                markdown: "functions.md",
-                goFile: "funcs.go",
+                markdown: "test.md",
+                goFile: "forloop.go",
             },
             {
-                title: "chp2 Topic 2",
-                slug: "ch22",
+                title: "While Loops",
+                slug: "whileloops",
                 layout: "tutorialA.html",
+                markdown: "test.md",
+                goFile: "whileloop.go",
             },
             {
                 title: "Chapter 2 Complete",
-                slug: "ch2end",
+                slug: "chapter2",
                 layout: "chapter-complete.html",
                 message: "Congratulations! You have completed chapter 2. You now understand..."
+            }
+        ]
+    },
+    {
+        title: "Methods & Interfaces",
+        description: "Learn all about methods and interfaces",
+        topics: [
+            {
+                title: "Chapter 3 Complete",
+                slug: "chapter3",
+                layout: "chapter-complete.html",
+                message: "Congratulations! You have completed Methods & Interfaces. You now understand..."
             }
         ]
     }
@@ -151,15 +164,9 @@ export function getNextChapter() {
     return nextChapter;
 }
 
-export function getNextChapterStart() {
-    const nextChapter = getNextChapter();
-    if (!nextChapter) {
-        return null;
-    }
-
-    return nextChapter.topics[0];
-}
-
+/**
+ * Returns the first topic of the current chapter
+ */
 export function getCurrentChapterStart() {
     const chapter = getCurrentChapter();
     if (!chapter) {
@@ -167,6 +174,18 @@ export function getCurrentChapterStart() {
     }
 
     return chapter.topics[0];
+}
+
+/**
+ * Returns the first topic of the next chapter
+ */
+export function getNextChapterStart() {
+    const nextChapter = getNextChapter();
+    if (!nextChapter) {
+        return null;
+    }
+
+    return nextChapter.topics[0];
 }
 
 export function getCurrentChapterLength() {
