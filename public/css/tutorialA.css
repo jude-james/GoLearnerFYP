@@ -10,39 +10,8 @@
     background-color: var(--black);
     border-right: 5px solid grey;
 
-    word-break: break-word;
     overflow-y: auto;
     overscroll-behavior-y: none;
-
-    font-size: var(--md-font-size);
-    font-weight: var(--small-font-weight);
-    
-    padding: 10px;
-}
-
-.left-panel code {
-    font-size: var(--md-code-font-size);
-
-    color: #bc5a5a;
-    background: var(--grey);
-
-    border: 1px solid #4d4d4d;
-    padding: 2px;
-    border-radius: 7px;
-}
-
-.left-panel pre code {
-    font-size: var(--md-code-font-size);
-
-    color: #e6e6e6;
-    background: var(--grey);
-
-    border: 1px solid #4d4d4d;
-    padding: 12px;
-    border-radius: 7px;
-
-    overflow-x: auto;
-    display: block;
 }
 
 .right-panel {

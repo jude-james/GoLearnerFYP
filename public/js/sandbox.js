@@ -16,6 +16,8 @@ const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     theme: "material-darker"
 });
 
+editor.setSize("100%", "100%");
+
 export function getEditor() {
     return editor;
 }

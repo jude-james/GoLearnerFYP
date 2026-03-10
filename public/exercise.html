@@ -3,13 +3,13 @@
     <head>
         <meta charset="UTF-8"/>
         
-        <title>TutorialA</title>
+        <title>Exercise</title>
 
-        <link rel="stylesheet" href="css/base.css"> 
+        <link rel="stylesheet" href="css/base.css">
         <link rel="stylesheet" href="css/topic-navbar.css"> 
-        <link rel="stylesheet" href="css/sandbox.css"> 
+        <link rel="stylesheet" href="css/sandbox.css">
         <link rel="stylesheet" href="css/markdown.css"> 
-        <link rel="stylesheet" href="css/tutorialA.css">    
+        <link rel="stylesheet" href="css/exercise.css">    
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,6 +25,7 @@
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"></link>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/xq-light.min.css"></link>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/material-darker.min.css"></link>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/yonce.min.css"></link>
 
         <!--Marked-->
         <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
@@ -52,11 +53,7 @@
         </div>
 
         <div class="container"> 
-            <div class="left-panel">
-                <div class="markdown"></div>
-            </div>
-
-            <div class="right-panel"> 
+            <div class="left-panel"> 
                 <div class="file-header">
                     <img src="assets/images/go-file-icon.png" alt="" class="go-file-icon">
                     <span class="file-name"></span>
@@ -86,6 +83,17 @@
                 <pre class="console">
                 </pre>
             </div>
+
+            <div class="right-panel">
+                <div class="top-panel">
+                    <div class="markdown"></div>
+                </div>
+                <div class="bottom-panel">
+                    <div class="code-window">
+                        <textarea id="code-solution" spellcheck="false"></textarea>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="error-message">
@@ -95,5 +103,6 @@
 
         <script type="module" src="js/contentLoader.js"></script>
         <script type="module" src="js/sandbox.js"></script>
+        <script type="module" src="js/exercise.js"></script>
     </body>
 </html>

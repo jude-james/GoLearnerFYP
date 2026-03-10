@@ -1,6 +1,7 @@
 const errorMessage = document.querySelector(".error-message");
 
 document.getElementById("dismiss-button").addEventListener("click", () => {
+    document.querySelector('.error-message p').textContent = "";
     errorMessage.classList.remove("error-visible");
 });
 
@@ -9,6 +10,6 @@ document.getElementById("dismiss-button").addEventListener("click", () => {
  * @param {string} message - The error message to be displayed
  */
 export function displayError(message) {
-    document.querySelector('.error-message p').textContent = `Error: ${message}`;
+    document.querySelector('.error-message p').textContent += `\n(Error) ${message}`;
     errorMessage.classList.add("error-visible");
 }

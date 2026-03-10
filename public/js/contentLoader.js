@@ -8,8 +8,8 @@ import {
     getCurrentChapterStart,
     getCurrentChapterLength,
     getCurrentTopicIndex,
-    getCurrentTopicMarkdown,
     getCurrentTopicCode,
+    getCurrentTopicFile,
 } from "./contentManager.js";
 
 import { displayError } from "./errorPopup.js";
@@ -37,12 +37,12 @@ async function init() {
     current.textContent = topic.title + ` (${getCurrentTopicIndex()}/${getCurrentChapterLength()})`;
 
     if (topic.markdown) {
-        const markdown = await getCurrentTopicMarkdown();
+        const markdown = await getCurrentTopicFile(topic.markdown);
 
         if (markdown) {
-            // Parse the markdown to HTML using the marked library
+            // Parses the markdown to HTML using the marked library
             const html = marked.parse(markdown);
-            document.querySelector(".left-panel").innerHTML = html;
+            document.querySelector(".markdown").innerHTML = html;
         }
         else {
             displayError(`Cannot find markdown file: ${topic.markdown}`);
@@ -57,14 +57,30 @@ async function init() {
 
         // Checks there is no existing session state before updating the editor code
         const saved = sessionStorage.getItem(window.location.pathname + window.location.search);
-        if (saved === null) {
+        if (saved === null) {            
             const code = await getCurrentTopicCode();
-            if (code) {
+            console.log(code);
+            
+            if (code) {                
                 editor.setValue(code);
             }
-            else {
+            else {                
                 displayError(`Cannot find Go file: ${topic.goFile}`);
             }
+        }
+    }
+
+    if (topic.goSolution) {
+        const { getCodeWindow } = await import("./exercise.js");
+        const codeWindow = getCodeWindow();
+
+        const solution = await getCurrentTopicFile(topic.goSolution);
+
+        if (solution) {
+            codeWindow.setValue(solution);
+        }
+        else {
+            displayError(`Cannot find Go file: ${topic.goSolution}`);
         }
     }
 

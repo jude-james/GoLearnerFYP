@@ -1,4 +1,4 @@
-const codeWindow = CodeMirror.fromTextArea(document.getElementById("code"), {
+const codeWindow = CodeMirror.fromTextArea(document.getElementById("code-solution"), {
     lineNumbers: true,
     smartIndent: true,
     indentUnit: 4,
@@ -6,7 +6,9 @@ const codeWindow = CodeMirror.fromTextArea(document.getElementById("code"), {
     styleActiveLine: true,
     readOnly: "nocursor",
     mode: "text/x-go",
-    theme: "material-darker",
+    theme: "yonce",
 });
 
-codeWindow.setSize("100%", "100%");
+export function getCodeWindow() {
+    return codeWindow;
+}

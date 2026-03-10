@@ -1,0 +1,28 @@
+.markdown {
+    font-size: var(--md-font-size);
+    font-weight: var(--small-font-weight);
+    
+    word-break: break-word;
+    
+    padding: 15px;
+}
+
+.markdown code {
+    font-size: var(--md-code-font-size);
+
+    color: #bc5a5a;
+    background: var(--grey);
+
+    border: 1px solid #4d4d4d;
+    padding: 2px;
+    border-radius: 7px;
+}
+
+.markdown pre code {
+    color: #e6e6e6;
+
+    padding: 12px;
+
+    overflow-x: auto;
+    display: block;
+}

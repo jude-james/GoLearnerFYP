@@ -34,7 +34,7 @@
     width: auto;
 }
 
-.code-box {
+.code-window {
     border: 1px dotted var(--white);
     width: 60%;
     min-width: 400px;
@@ -134,4 +134,12 @@
     align-items: center;
 
     text-align:center;
+}
+
+.page-button {
+    text-decoration: none;
+}
+
+.page-button:hover {
+    text-decoration: underline;
 }

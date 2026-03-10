@@ -91,7 +91,6 @@ button, input, select, textarea, a, pre {
     border: none;
     outline: none;
 
-    height: 100% !important;
     width: 100% !important;
 
     resize: auto;

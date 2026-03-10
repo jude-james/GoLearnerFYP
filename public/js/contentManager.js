@@ -1,4 +1,5 @@
-/* Content array, holding all the content as a list of objects, which are divided into chapters
+/* 
+Content array, holding all the content as a list of objects, which are divided into chapters
 Each chapter is divided into topics, each topic is unique and has a unique identifier
 Then each topic is divided into 3 forms: tutorial, quiz or exercise. 
 */
@@ -20,9 +21,17 @@ export const content = [
             {
                 title: "Functions",
                 slug: "functions",
-                layout: "tutorialA.html",
+                layout: "exercise.html",
                 markdown: "functions.md",
                 goFile: "funcs.go",
+            },
+            {
+                title: "Functions Exercise",
+                slug: "functions_exercise",
+                layout: "exercise.html",
+                /*markdown: "functions.md",*/
+                goFile: "funcs.go",
+                goSolution: "funcs_solution.go"
             },
             {
                 title: "Variables",
@@ -171,28 +180,17 @@ export function getCurrentTopicIndex() {
 }
 
 /**
- * Fetches the current topics markdown file, then returns the file as text
+ * Fetches the file from the current topics content folder, then returns the file as text
+ * @param {string} fileName - The name of the file to search for
  */
-export async function getCurrentTopicMarkdown() {
+export async function getCurrentTopicFile(fileName) {
     const topic = getCurrentTopic();
-
-    try {
-        const response = await fetch(`/content/${topic.slug}/${topic.markdown}`);
-
-        if (!response.ok) {
-            return null;
-        }
-
-        const markdown = await response.text();
-        return markdown;
-    } 
-    catch (error) {
-        console.error(error.message);
-    }
+    const url = `/content/${topic.slug}/${fileName}`;
+    return await getFileAsText(url);
 }
 
 /**
- * Fetches the current topics Go source file, then returns the file as text.
+ * Fetches the Go source file from the current topics content folder, then returns the file as text.
  * If the page has no topic, it returns the sandbox.go code
  */
 export async function getCurrentTopicCode() {
@@ -202,19 +200,27 @@ export async function getCurrentTopicCode() {
     if (topic) {
         url = `/content/${topic.slug}/${topic.goFile}`;
     }
-    else {        
+    else {
         url = `/content/sandbox.go`;
     }
 
-    try {
+    return await getFileAsText(url);
+}
+
+/**
+ * Fetches the file from the url, then returns the file as text.
+ * @param {string} url - The path
+ */
+async function getFileAsText(url) {
+    try {            
         const response = await fetch(url);
 
         if (!response.ok) {
             return null;
         }
 
-        const code = await response.text();   
-        return code;
+        const text = await response.text();
+        return text;
     } 
     catch (error) {
         console.error(error.message);

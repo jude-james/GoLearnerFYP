@@ -1,0 +1,38 @@
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.left-panel {
+    flex: 3;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    border-right: 5px solid grey;
+}
+
+.right-panel {
+    flex: 2;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.top-panel {
+    flex: 2;
+    min-width: 0;
+
+    background-color: var(--black);
+
+    overflow-y: auto;
+    overscroll-behavior-y: none;
+
+    border-bottom: 3px solid #555;
+}
+
+.bottom-panel {
+    flex: 1;
+}
