@@ -1,4 +1,4 @@
-package gobe
+package main
 
 import (
 	"go/ast"
@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	fn := "src.go"         // Later pass this as command line argument when calling from js, so pass args to main
-	dir := "tmp/run-uuid/" // Not sure how it will know?
+	fn := "src.go" // Later pass this as command line argument when calling from js, so pass args to main
+	dir := ""      // "tmp/run-uuid/" // Not sure how it will know?
 
 	// Parse the source code to create an AST file node
 	fset := token.NewFileSet()
@@ -27,21 +27,62 @@ func main() {
 	astutil.Apply(node, nil, func(c *astutil.Cursor) bool {
 		n := c.Node()
 		switch x := n.(type) {
-		// Once we hit a Go statement, insert the log command before that node, this is the easiest case
-		case *ast.GoStmt:
-			c.InsertBefore(createLogStmt("create-goroutine"))
 
-			// Now log when goroutine ends
+		// If we hit anon func
+		// Then we can both put a create-goroutine and end-goroutine before and after
+		// need to know parent ID and current ID
+
+		/*
+			go foo()
+		*/
+		// becomes...
+		/*
+			parentID := getGoroutineID()
+			go func() {
+				logEvent("create-goroutine", getGoroutineID(), parentID)
+				defer logEvent("end-goroutine", getGoroutineID())
+				foo()
+			}()
+		*/
+
+		// storeParentGoroutineId() go func() { logGoroutine("create-goroutine", getGoroutineId(), getParentGoroutineId()) defer logGoroutine("end-goroutine", getGoroutineID(), getParentGoroutineId() foo())
+		//}
+
+		/*
+			go func() {
+				foo()
+			}()
+		*/
+		// becomes...
+		/*
+			parentID := getGoroutineID()
+			go func() {
+				logEvent("create-goroutine", getGoroutineID(), parentID)
+				defer logEvent("end-goroutine", getGoroutineID())
+				foo()
+			}
+		*/
+
+		case *ast.GoStmt:
+			// In both cases, insert 'parentID := getGoroutineID()', before the Go stmt
+			//c.InsertBefore(createAssignStmt("parentId", "getGoroutineId"))
+			c.InsertBefore(createGetParentGoroutineIdStmt())
 			if funcLit, ok := x.Call.Fun.(*ast.FuncLit); ok {
-				deferStmt := createDeferStmt("goroutine-end")
-				funcLit.Body.List = append([]ast.Stmt{deferStmt}, funcLit.Body.List...)
+				// If anonymous function
+
+				// inline these 2 functions since they are now small enough
+				logStmt := createLogGoroutineStmt("create-goroutine", "getGoroutineId()", "getParentGoroutineId()")
+				deferStmt := createDeferLogGoroutineStmt("end-goroutine", "getGoroutineId()", "getParentGoroutineId()")
+
+				funcLit.Body.List = append([]ast.Stmt{logStmt, deferStmt}, funcLit.Body.List...)
 			} else {
-				c.Replace(createWrapperDefer(x.Call))
+				// If named function
+				c.Replace(createGoroutineCallWrapper(x.Call))
 			}
 
 		// Once we hit a send statement, insert log command before that node, another easy case
 		case *ast.SendStmt:
-			c.InsertBefore(createLogStmtWithId("channel-send", x.Chan.(*ast.Ident).Name))
+			//c.InsertBefore(createLogStmtWithId("channel-send", x.Chan.(*ast.Ident).Name))
 
 		// Detecting channel receive
 		// TODO
@@ -49,14 +90,14 @@ func main() {
 		// 1st case, by itself '<- c', this is an expression statement
 		case *ast.ExprStmt:
 			if unary, ok := x.X.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
-				c.InsertBefore(createLogStmt("channel-receive"))
+				//c.InsertBefore(createLogStmt("channel-receive"))
 			}
 
 		// 2nd case, within in assignment statement 'a := <-c'
 		case *ast.AssignStmt:
 			for _, rhs := range x.Rhs {
 				if unary, ok := rhs.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
-					c.InsertBefore(createLogStmt("channel-receive"))
+					//c.InsertBefore(createLogStmt("channel-receive"))
 				}
 			}
 
@@ -80,64 +121,99 @@ func main() {
 	}
 }
 
-func createLogStmt(message string) ast.Stmt {
-	// Create a new AST node, equivalent to calling logEvent(name) from tracer
-	newLogStmt := &ast.ExprStmt{
-		X: &ast.CallExpr{
-			Fun: &ast.Ident{
-				Name: "logEvent",
+/*func createAssignStmt(lhs string, rhs string) ast.Stmt {
+	newNode := &ast.AssignStmt{
+		Lhs: []ast.Expr{
+			&ast.Ident{
+				Name: lhs,
 			},
-			Lparen: 35,
-			Args: []ast.Expr{
-				&ast.BasicLit{
-					Kind:  token.STRING,
-					Value: strconv.Quote(message),
+		},
+		Tok: token.DEFINE,
+		Rhs: []ast.Expr{
+			&ast.CallExpr{
+				Fun: &ast.Ident{
+					Name: rhs,
 				},
+				Lparen:   53,
+				Ellipsis: 0,
 			},
-			Ellipsis: 0,
 		},
 	}
 
-	return newLogStmt
-}
+	return newNode
+}*/
 
-func createLogStmtWithId(message string, id string) ast.Stmt {
-	newLogStmt := &ast.ExprStmt{
+func createGetParentGoroutineIdStmt() *ast.ExprStmt {
+	newNode := &ast.ExprStmt{
 		X: &ast.CallExpr{
 			Fun: &ast.Ident{
-				Name: "logEvent",
+				Name: "storeParentGoroutineId",
 			},
-			Lparen: 35,
-			Args: []ast.Expr{
-				&ast.BasicLit{
-					Kind:  token.STRING,
-					Value: strconv.Quote(message),
-				},
-				&ast.BasicLit{
-					Kind:  token.STRING,
-					Value: id,
-				},
-			},
+			Lparen:   47,
 			Ellipsis: 0,
 		},
 	}
-
-	return newLogStmt
+	return newNode
 }
 
-func createDeferStmt(message string) ast.Stmt {
+// TODO has to be goroutine specific, rename
+func createLogGoroutineCallExpr(msg string, id string, parentId string) *ast.CallExpr {
+	return &ast.CallExpr{
+		Fun: &ast.Ident{
+			Name: "logGoroutine",
+		},
+		Lparen: 35,
+		Args: []ast.Expr{
+			&ast.Ident{
+				Name: strconv.Quote(msg),
+			},
+			&ast.Ident{
+				Name: id,
+			},
+			&ast.Ident{
+				Name: parentId,
+			},
+		},
+		Ellipsis: 0,
+	}
+}
+
+// TODO add proper comments to all these
+func createLogGoroutineStmt(msg string, id string, parentId string) ast.Stmt {
+	newNode := &ast.ExprStmt{
+		X: createLogGoroutineCallExpr(msg, id, parentId),
+	}
+	return newNode
+}
+
+func createDeferLogGoroutineStmt(msg string, id string, parentId string) ast.Stmt {
 	newNode := &ast.DeferStmt{
 		Defer: 27,
+		Call:  createLogGoroutineCallExpr(msg, id, parentId),
+	}
+	return newNode
+}
+
+func createGoroutineCallWrapper(callExpr *ast.CallExpr) ast.Stmt {
+	newNode := &ast.GoStmt{
+		Go: 53,
 		Call: &ast.CallExpr{
-			Fun: &ast.Ident{
-				Name: "logEvent",
-			},
-			Lparen: 41,
-			Args: []ast.Expr{
-				&ast.Ident{
-					Name: strconv.Quote(message),
+			Fun: &ast.FuncLit{
+				Type: &ast.FuncType{
+					Func:   56,
+					Params: &ast.FieldList{},
+				},
+				Body: &ast.BlockStmt{
+					List: []ast.Stmt{
+						createLogGoroutineStmt("create-goroutine", "getGoroutineId()", "getParentGoroutineId()"),
+						createDeferLogGoroutineStmt("end-goroutine", "getGoroutineId()", "getParentGoroutineId()"),
+						&ast.ExprStmt{
+							X: callExpr,
+						},
+					},
 				},
 			},
+			Lparen:   116,
 			Ellipsis: 0,
 		},
 	}
@@ -145,6 +221,7 @@ func createDeferStmt(message string) ast.Stmt {
 }
 
 // use above function to simplify
+/*
 func createWrapperDefer(callExpr *ast.CallExpr) ast.Stmt {
 	newNode :=
 		&ast.GoStmt{
@@ -184,3 +261,4 @@ func createWrapperDefer(callExpr *ast.CallExpr) ast.Stmt {
 		}
 	return newNode
 }
+*/
