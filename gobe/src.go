@@ -7,10 +7,6 @@ import (
 
 func foo() {
 	println("foo")
-
-	ch := make(chan int)
-	a := <-ch
-	fmt.Println(a)
 }
 
 func main() {

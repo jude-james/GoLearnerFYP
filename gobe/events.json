@@ -1,0 +1,38 @@
+[
+	{
+		"time": 0.00028325,
+		"event": "create-goroutine",
+		"id": "19",
+		"parentId": "1"
+	},
+	{
+		"time": 0.000331417,
+		"event": "create-goroutine",
+		"id": "20",
+		"parentId": "1"
+	},
+	{
+		"time": 0.000739167,
+		"event": "end-goroutine",
+		"id": "20",
+		"parentId": "1"
+	},
+	{
+		"time": 0.00077675,
+		"event": "end-goroutine",
+		"id": "19",
+		"parentId": "1"
+	},
+	{
+		"time": 0.000803542,
+		"event": "create-goroutine",
+		"id": "33",
+		"parentId": "19"
+	},
+	{
+		"time": 0.000846042,
+		"event": "end-goroutine",
+		"id": "33",
+		"parentId": "19"
+	}
+]

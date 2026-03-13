@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -11,6 +12,8 @@ import (
 
 	"golang.org/x/tools/go/ast/astutil"
 )
+
+var goroutine_encounter int
 
 func main() {
 	fn := "src.go" // Later pass this as command line argument when calling from js, so pass args to main
@@ -28,6 +31,11 @@ func main() {
 		n := c.Node()
 		switch x := n.(type) {
 
+		case *ast.FuncDecl:
+			if x.Name.Name == "main" {
+				// Insert defer
+				x.Body.List = append([]ast.Stmt{createDeferParseEventsStmt()}, x.Body.List...)
+			}
 		// If we hit anon func
 		// Then we can both put a create-goroutine and end-goroutine before and after
 		// need to know parent ID and current ID
@@ -64,19 +72,24 @@ func main() {
 
 		case *ast.GoStmt:
 			// In both cases, insert 'getParentGoroutineId()' before the Go stmt
-			c.InsertBefore(createStoreParentGoroutineIdStmt())
+
+			varName := fmt.Sprintf("parentId_%d", goroutine_encounter)
+			c.InsertBefore(createAssignStmt(varName, "getGoroutineId()"))
+
 			if funcLit, ok := x.Call.Fun.(*ast.FuncLit); ok {
 				// If anonymous function
 
 				// TODO inline these 2 functions since they are now small enough
-				logStmt := createLogGoroutineStmt("create-goroutine", "getGoroutineId()", "getParentGoroutineId()")
-				deferStmt := createDeferLogGoroutineStmt("end-goroutine", "getGoroutineId()", "getParentGoroutineId()")
+				logStmt := createLogGoroutineStmt("create-goroutine", "getGoroutineId()", varName)
+				deferStmt := createDeferLogGoroutineStmt("end-goroutine", "getGoroutineId()", varName)
 
 				funcLit.Body.List = append([]ast.Stmt{logStmt, deferStmt}, funcLit.Body.List...)
 			} else {
 				// If named function
 				c.Replace(createGoroutineCallWrapper(x.Call))
 			}
+
+			goroutine_encounter++
 
 		// Detecting channel creation
 		// TODO
@@ -123,6 +136,19 @@ func main() {
 
 // TODO add proper comments to all these
 
+func createDeferParseEventsStmt() *ast.DeferStmt {
+	return &ast.DeferStmt{
+		Defer: 27,
+		Call: &ast.CallExpr{
+			Fun: &ast.Ident{
+				Name: "parseEventsToJson",
+			},
+			Lparen:   50,
+			Ellipsis: 0,
+		},
+	}
+}
+
 func createLogChannelStmt(msg string, id string, parentId string) *ast.ExprStmt {
 	newNode := &ast.ExprStmt{
 		X: &ast.CallExpr{
@@ -167,6 +193,25 @@ func createLogChannelStmt(msg string, id string, parentId string) *ast.ExprStmt 
 	return newNode
 }
 
+func createAssignStmt(lhs string, rhs string) ast.Stmt {
+	newNode := &ast.AssignStmt{
+		Lhs: []ast.Expr{
+			&ast.Ident{
+				Name: lhs,
+			},
+		},
+		Tok: token.DEFINE,
+		Rhs: []ast.Expr{
+			&ast.Ident{
+				Name: rhs,
+			},
+		},
+	}
+
+	return newNode
+}
+
+/*
 func createStoreParentGoroutineIdStmt() *ast.ExprStmt {
 	newNode := &ast.ExprStmt{
 		X: &ast.CallExpr{
@@ -178,7 +223,7 @@ func createStoreParentGoroutineIdStmt() *ast.ExprStmt {
 		},
 	}
 	return newNode
-}
+}*/
 
 func createLogGoroutineCallExpr(msg string, id string, parentId string) *ast.CallExpr {
 	return &ast.CallExpr{
@@ -227,8 +272,8 @@ func createGoroutineCallWrapper(callExpr *ast.CallExpr) ast.Stmt {
 				},
 				Body: &ast.BlockStmt{
 					List: []ast.Stmt{
-						createLogGoroutineStmt("create-goroutine", "getGoroutineId()", "getParentGoroutineId()"),
-						createDeferLogGoroutineStmt("end-goroutine", "getGoroutineId()", "getParentGoroutineId()"),
+						createLogGoroutineStmt("create-goroutine", "getGoroutineId()", fmt.Sprintf("parentId_%d", goroutine_encounter)),
+						createDeferLogGoroutineStmt("end-goroutine", "getGoroutineId()", fmt.Sprintf("parentId_%d", goroutine_encounter)),
 						&ast.ExprStmt{
 							X: callExpr,
 						},
