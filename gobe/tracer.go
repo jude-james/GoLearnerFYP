@@ -13,6 +13,10 @@ func logGoroutine(event string, id int64, parentId int64) {
 	fmt.Println("Event:", event, "id:", id, "parentId:", parentId, "time:", time.Now())
 }
 
+func logChannel(event string, id string, parentId int64) {
+	fmt.Println("Event:", event, "id:", id, "parentId:", parentId, "time:", time.Now())
+}
+
 // TODO comment this
 
 func getGoroutineId() int64 {

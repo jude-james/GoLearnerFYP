@@ -7,6 +7,12 @@ import (
 
 func foo() {
 	println("foo")
+
+	ch := make(chan int)
+	logChannel("receive-channel", fmt.Sprintf("%p", ch), getGoroutineId())
+
+	a := <-ch
+	fmt.Println(a)
 }
 
 func main() {
