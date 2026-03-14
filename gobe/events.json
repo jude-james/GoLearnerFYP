@@ -1,252 +1,246 @@
 [
 	{
-		"time": 0.000168458,
+		"time": 0.000275459,
 		"event": "receive-channel",
 		"id": "0x14000020150",
 		"parentId": "1"
 	},
 	{
-		"time": 0.000242917,
+		"time": 0.000278584,
 		"event": "create-goroutine",
 		"id": "5",
 		"parentId": "1"
 	},
 	{
-		"time": 1.001675708,
+		"time": 1.001533959,
 		"event": "send-channel",
 		"id": "0x14000020150",
 		"parentId": "5"
 	},
 	{
-		"time": 1.0018295,
+		"time": 1.001604625,
 		"event": "end-goroutine",
 		"id": "5",
 		"parentId": "1"
 	},
 	{
-		"time": 1.001898042,
+		"time": 1.001664292,
+		"event": "receive-channel",
+		"id": "0x14000096000",
+		"parentId": "1"
+	},
+	{
+		"time": 1.00178,
+		"event": "create-goroutine",
+		"id": "19",
+		"parentId": "1"
+	},
+	{
+		"time": 2.0033505,
+		"event": "send-channel",
+		"id": "0x14000096000",
+		"parentId": "19"
+	},
+	{
+		"time": 2.003672459,
+		"event": "end-goroutine",
+		"id": "19",
+		"parentId": "1"
+	},
+	{
+		"time": 2.003748709,
 		"event": "receive-channel",
 		"id": "0x140000201c0",
 		"parentId": "1"
 	},
 	{
-		"time": 1.002038042,
-		"event": "create-goroutine",
-		"id": "6",
-		"parentId": "1"
-	},
-	{
-		"time": 2.002737417,
+		"time": 3.0097695,
 		"event": "send-channel",
 		"id": "0x140000201c0",
 		"parentId": "6"
 	},
 	{
-		"time": 2.002833292,
+		"time": 3.009849959,
 		"event": "end-goroutine",
 		"id": "6",
 		"parentId": "1"
 	},
 	{
-		"time": 2.002885292,
+		"time": 3.009899209,
 		"event": "receive-channel",
-		"id": "0x14000020230",
+		"id": "0x14000096070",
 		"parentId": "1"
 	},
 	{
-		"time": 2.003064833,
-		"event": "create-goroutine",
-		"id": "7",
-		"parentId": "1"
-	},
-	{
-		"time": 3.004252333,
-		"event": "send-channel",
-		"id": "0x14000020230",
-		"parentId": "7"
-	},
-	{
-		"time": 3.00437175,
-		"event": "end-goroutine",
-		"id": "7",
-		"parentId": "1"
-	},
-	{
-		"time": 3.004475417,
-		"event": "receive-channel",
-		"id": "0x140000202a0",
-		"parentId": "1"
-	},
-	{
-		"time": 3.004545083,
-		"event": "create-goroutine",
-		"id": "8",
-		"parentId": "1"
-	},
-	{
-		"time": 4.00577275,
-		"event": "send-channel",
-		"id": "0x140000202a0",
-		"parentId": "8"
-	},
-	{
-		"time": 4.005889917,
-		"event": "end-goroutine",
-		"id": "8",
-		"parentId": "1"
-	},
-	{
-		"time": 4.006021,
-		"event": "receive-channel",
-		"id": "0x140000a0000",
-		"parentId": "1"
-	},
-	{
-		"time": 4.006082333,
-		"event": "create-goroutine",
-		"id": "19",
-		"parentId": "1"
-	},
-	{
-		"time": 5.007238875,
-		"event": "send-channel",
-		"id": "0x140000a0000",
-		"parentId": "19"
-	},
-	{
-		"time": 5.007302875,
-		"event": "end-goroutine",
-		"id": "19",
-		"parentId": "1"
-	},
-	{
-		"time": 5.007407042,
-		"event": "receive-channel",
-		"id": "0x14000196000",
-		"parentId": "1"
-	},
-	{
-		"time": 5.007444958,
-		"event": "create-goroutine",
-		"id": "33",
-		"parentId": "1"
-	},
-	{
-		"time": 6.008682333,
-		"event": "send-channel",
-		"id": "0x14000196000",
-		"parentId": "33"
-	},
-	{
-		"time": 6.008758125,
-		"event": "end-goroutine",
-		"id": "33",
-		"parentId": "1"
-	},
-	{
-		"time": 6.008820917,
-		"event": "receive-channel",
-		"id": "0x140000a0070",
-		"parentId": "1"
-	},
-	{
-		"time": 6.008873458,
+		"time": 3.009934084,
 		"event": "create-goroutine",
 		"id": "20",
 		"parentId": "1"
 	},
 	{
-		"time": 7.010029417,
+		"time": 4.011106084,
 		"event": "send-channel",
-		"id": "0x140000a0070",
+		"id": "0x14000096070",
 		"parentId": "20"
 	},
 	{
-		"time": 7.010159,
+		"time": 4.011273292,
 		"event": "end-goroutine",
 		"id": "20",
 		"parentId": "1"
 	},
 	{
-		"time": 7.010357792,
+		"time": 4.011385084,
 		"event": "receive-channel",
-		"id": "0x140000a00e0",
+		"id": "0x140000960e0",
 		"parentId": "1"
 	},
 	{
-		"time": 7.010481375,
+		"time": 4.01144925,
 		"event": "create-goroutine",
 		"id": "21",
 		"parentId": "1"
 	},
 	{
-		"time": 8.011690417,
+		"time": 5.012685084,
 		"event": "send-channel",
-		"id": "0x140000a00e0",
+		"id": "0x140000960e0",
 		"parentId": "21"
 	},
 	{
-		"time": 8.011809875,
+		"time": 5.012826292,
 		"event": "end-goroutine",
 		"id": "21",
 		"parentId": "1"
 	},
 	{
-		"time": 8.011923,
+		"time": 5.01292875,
 		"event": "receive-channel",
-		"id": "0x140000a0150",
+		"id": "0x14000096150",
 		"parentId": "1"
 	},
 	{
-		"time": 8.011975042,
+		"time": 5.012998084,
 		"event": "create-goroutine",
 		"id": "22",
 		"parentId": "1"
 	},
 	{
-		"time": 9.013162333,
+		"time": 6.014220709,
 		"event": "send-channel",
-		"id": "0x140000a0150",
+		"id": "0x14000096150",
 		"parentId": "22"
 	},
 	{
-		"time": 9.013268,
+		"time": 6.014331167,
 		"event": "end-goroutine",
 		"id": "22",
 		"parentId": "1"
 	},
 	{
-		"time": 9.013402958,
+		"time": 6.014444334,
 		"event": "receive-channel",
-		"id": "0x14000196070",
+		"id": "0x1400019c000",
 		"parentId": "1"
 	},
 	{
-		"time": 9.013478417,
+		"time": 6.014509959,
+		"event": "create-goroutine",
+		"id": "33",
+		"parentId": "1"
+	},
+	{
+		"time": 7.015699667,
+		"event": "send-channel",
+		"id": "0x1400019c000",
+		"parentId": "33"
+	},
+	{
+		"time": 7.015871917,
+		"event": "end-goroutine",
+		"id": "33",
+		"parentId": "1"
+	},
+	{
+		"time": 7.016007084,
+		"event": "receive-channel",
+		"id": "0x140000961c0",
+		"parentId": "1"
+	},
+	{
+		"time": 7.016064375,
+		"event": "create-goroutine",
+		"id": "23",
+		"parentId": "1"
+	},
+	{
+		"time": 8.018800167,
+		"event": "send-channel",
+		"id": "0x140000961c0",
+		"parentId": "23"
+	},
+	{
+		"time": 8.019363125,
+		"event": "end-goroutine",
+		"id": "23",
+		"parentId": "1"
+	},
+	{
+		"time": 8.019931875,
+		"event": "receive-channel",
+		"id": "0x1400019c070",
+		"parentId": "1"
+	},
+	{
+		"time": 8.019945584,
 		"event": "create-goroutine",
 		"id": "34",
 		"parentId": "1"
 	},
 	{
-		"time": 10.014634625,
+		"time": 9.020655417,
 		"event": "send-channel",
-		"id": "0x14000196070",
+		"id": "0x1400019c070",
 		"parentId": "34"
 	},
 	{
-		"time": 10.014696667,
+		"time": 9.020905292,
 		"event": "end-goroutine",
 		"id": "34",
+		"parentId": "1"
+	},
+	{
+		"time": 9.021001167,
+		"event": "receive-channel",
+		"id": "0x1400019c0e0",
+		"parentId": "1"
+	},
+	{
+		"time": 9.021163875,
+		"event": "create-goroutine",
+		"id": "35",
+		"parentId": "1"
+	},
+	{
+		"time": 10.022335792,
+		"event": "send-channel",
+		"id": "0x1400019c0e0",
+		"parentId": "35"
+	},
+	{
+		"time": 10.022399125,
+		"event": "end-goroutine",
+		"id": "35",
 		"parentId": "1"
 	},
 	{
 		"time": 0,
-		"event": "start-goroutine",
+		"event": "create-goroutine",
 		"id": "1",
 		"parentId": ""
 	},
 	{
-		"time": 10.014708292,
+		"time": 10.022412959,
 		"event": "end-goroutine",
 		"id": "1",
 		"parentId": ""

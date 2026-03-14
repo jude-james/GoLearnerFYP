@@ -20,8 +20,12 @@ type Event struct {
 
 var events []Event
 
-// TODO figure out a better more accurate way to start time (start it at src.main?)
-var startTime = time.Now()
+var startTime time.Time
+
+// sets the start time to the current local time
+func setStartTime() {
+	startTime = time.Now()
+}
 
 // Appends a new goroutine event to the events slice, with the current time
 func logGoroutine(event string, id int64, parentId int64) {

@@ -21,6 +21,7 @@ func timer(d time.Duration) <-chan int {
 }
 
 func main() {
+	setStartTime()
 	defer encodeEventsToJson()
 
 	for i := 0; i < 10; i++ {

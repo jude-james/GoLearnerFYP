@@ -33,8 +33,9 @@ func main() {
 		case *ast.FuncDecl:
 			if x.Name.Name == "main" {
 				// If we hit the main function insert a defer statement that calls the encode
-				// events func from tracer.go, so that will run when the source program terminates
-				x.Body.List = append([]ast.Stmt{createDeferEncodeEventsStmt()}, x.Body.List...)
+				// events func from tracer.go, so that will run when the source program terminates,
+				// And insert a function to set the start time
+				x.Body.List = append([]ast.Stmt{createSetStartTimeStmt(), createDeferEncodeEventsStmt()}, x.Body.List...)
 			}
 		case *ast.GoStmt:
 			// If we hit a Go statement, in both cases, insert 'parentId_X := getGoroutineId()' before the Go stmt
@@ -56,6 +57,7 @@ func main() {
 
 		// TODO Detecting channel creation
 		// TODO eventually capture the names of the go funcs
+		// TODO change tracer function names to something harder for user to coincidently copy
 
 		// If we hit a send statement, insert log command before that node
 		case *ast.SendStmt:
@@ -102,6 +104,19 @@ func createDeferEncodeEventsStmt() *ast.DeferStmt {
 		Call: &ast.CallExpr{
 			Fun: &ast.Ident{
 				Name: "encodeEventsToJson",
+			},
+			Lparen:   50,
+			Ellipsis: 0,
+		},
+	}
+}
+
+// Create the AST node equivalent to Go source code 'setStartTime()'
+func createSetStartTimeStmt() *ast.ExprStmt {
+	return &ast.ExprStmt{
+		X: &ast.CallExpr{
+			Fun: &ast.Ident{
+				Name: "setStartTime",
 			},
 			Lparen:   50,
 			Ellipsis: 0,
