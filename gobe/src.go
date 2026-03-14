@@ -1,24 +1,19 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
+import "time"
 
-func foo() {
-	println("foo")
+func timer(d time.Duration) <-chan int {
+	c := make(chan int)
+	go func() {
+		time.Sleep(d)
+		c <- 1
+	}()
+	return c
 }
 
 func main() {
-	go func() {
-		fmt.Println("hey")
-
-		go func() {
-			fmt.Println("hey2")
-		}()
-	}()
-
-	go foo()
-
-	time.Sleep(time.Second * 1)
+	for i := 0; i < 10; i++ {
+		c := timer(1 * time.Second)
+		<-c
+	}
 }

@@ -1,38 +1,254 @@
 [
 	{
-		"time": 0.00028325,
+		"time": 0.000168458,
+		"event": "receive-channel",
+		"id": "0x14000020150",
+		"parentId": "1"
+	},
+	{
+		"time": 0.000242917,
+		"event": "create-goroutine",
+		"id": "5",
+		"parentId": "1"
+	},
+	{
+		"time": 1.001675708,
+		"event": "send-channel",
+		"id": "0x14000020150",
+		"parentId": "5"
+	},
+	{
+		"time": 1.0018295,
+		"event": "end-goroutine",
+		"id": "5",
+		"parentId": "1"
+	},
+	{
+		"time": 1.001898042,
+		"event": "receive-channel",
+		"id": "0x140000201c0",
+		"parentId": "1"
+	},
+	{
+		"time": 1.002038042,
+		"event": "create-goroutine",
+		"id": "6",
+		"parentId": "1"
+	},
+	{
+		"time": 2.002737417,
+		"event": "send-channel",
+		"id": "0x140000201c0",
+		"parentId": "6"
+	},
+	{
+		"time": 2.002833292,
+		"event": "end-goroutine",
+		"id": "6",
+		"parentId": "1"
+	},
+	{
+		"time": 2.002885292,
+		"event": "receive-channel",
+		"id": "0x14000020230",
+		"parentId": "1"
+	},
+	{
+		"time": 2.003064833,
+		"event": "create-goroutine",
+		"id": "7",
+		"parentId": "1"
+	},
+	{
+		"time": 3.004252333,
+		"event": "send-channel",
+		"id": "0x14000020230",
+		"parentId": "7"
+	},
+	{
+		"time": 3.00437175,
+		"event": "end-goroutine",
+		"id": "7",
+		"parentId": "1"
+	},
+	{
+		"time": 3.004475417,
+		"event": "receive-channel",
+		"id": "0x140000202a0",
+		"parentId": "1"
+	},
+	{
+		"time": 3.004545083,
+		"event": "create-goroutine",
+		"id": "8",
+		"parentId": "1"
+	},
+	{
+		"time": 4.00577275,
+		"event": "send-channel",
+		"id": "0x140000202a0",
+		"parentId": "8"
+	},
+	{
+		"time": 4.005889917,
+		"event": "end-goroutine",
+		"id": "8",
+		"parentId": "1"
+	},
+	{
+		"time": 4.006021,
+		"event": "receive-channel",
+		"id": "0x140000a0000",
+		"parentId": "1"
+	},
+	{
+		"time": 4.006082333,
 		"event": "create-goroutine",
 		"id": "19",
 		"parentId": "1"
 	},
 	{
-		"time": 0.000331417,
-		"event": "create-goroutine",
-		"id": "20",
-		"parentId": "1"
+		"time": 5.007238875,
+		"event": "send-channel",
+		"id": "0x140000a0000",
+		"parentId": "19"
 	},
 	{
-		"time": 0.000739167,
-		"event": "end-goroutine",
-		"id": "20",
-		"parentId": "1"
-	},
-	{
-		"time": 0.00077675,
+		"time": 5.007302875,
 		"event": "end-goroutine",
 		"id": "19",
 		"parentId": "1"
 	},
 	{
-		"time": 0.000803542,
-		"event": "create-goroutine",
-		"id": "33",
-		"parentId": "19"
+		"time": 5.007407042,
+		"event": "receive-channel",
+		"id": "0x14000196000",
+		"parentId": "1"
 	},
 	{
-		"time": 0.000846042,
+		"time": 5.007444958,
+		"event": "create-goroutine",
+		"id": "33",
+		"parentId": "1"
+	},
+	{
+		"time": 6.008682333,
+		"event": "send-channel",
+		"id": "0x14000196000",
+		"parentId": "33"
+	},
+	{
+		"time": 6.008758125,
 		"event": "end-goroutine",
 		"id": "33",
-		"parentId": "19"
+		"parentId": "1"
+	},
+	{
+		"time": 6.008820917,
+		"event": "receive-channel",
+		"id": "0x140000a0070",
+		"parentId": "1"
+	},
+	{
+		"time": 6.008873458,
+		"event": "create-goroutine",
+		"id": "20",
+		"parentId": "1"
+	},
+	{
+		"time": 7.010029417,
+		"event": "send-channel",
+		"id": "0x140000a0070",
+		"parentId": "20"
+	},
+	{
+		"time": 7.010159,
+		"event": "end-goroutine",
+		"id": "20",
+		"parentId": "1"
+	},
+	{
+		"time": 7.010357792,
+		"event": "receive-channel",
+		"id": "0x140000a00e0",
+		"parentId": "1"
+	},
+	{
+		"time": 7.010481375,
+		"event": "create-goroutine",
+		"id": "21",
+		"parentId": "1"
+	},
+	{
+		"time": 8.011690417,
+		"event": "send-channel",
+		"id": "0x140000a00e0",
+		"parentId": "21"
+	},
+	{
+		"time": 8.011809875,
+		"event": "end-goroutine",
+		"id": "21",
+		"parentId": "1"
+	},
+	{
+		"time": 8.011923,
+		"event": "receive-channel",
+		"id": "0x140000a0150",
+		"parentId": "1"
+	},
+	{
+		"time": 8.011975042,
+		"event": "create-goroutine",
+		"id": "22",
+		"parentId": "1"
+	},
+	{
+		"time": 9.013162333,
+		"event": "send-channel",
+		"id": "0x140000a0150",
+		"parentId": "22"
+	},
+	{
+		"time": 9.013268,
+		"event": "end-goroutine",
+		"id": "22",
+		"parentId": "1"
+	},
+	{
+		"time": 9.013402958,
+		"event": "receive-channel",
+		"id": "0x14000196070",
+		"parentId": "1"
+	},
+	{
+		"time": 9.013478417,
+		"event": "create-goroutine",
+		"id": "34",
+		"parentId": "1"
+	},
+	{
+		"time": 10.014634625,
+		"event": "send-channel",
+		"id": "0x14000196070",
+		"parentId": "34"
+	},
+	{
+		"time": 10.014696667,
+		"event": "end-goroutine",
+		"id": "34",
+		"parentId": "1"
+	},
+	{
+		"time": 0,
+		"event": "start-goroutine",
+		"id": "1",
+		"parentId": ""
+	},
+	{
+		"time": 10.014708292,
+		"event": "end-goroutine",
+		"id": "1",
+		"parentId": ""
 	}
 ]

@@ -5,35 +5,28 @@ import (
 	"time"
 )
 
-func foo() {
-	println("foo")
+func timer(d time.Duration) <-chan int {
+	c := make(chan int)
+	parentId_0 := getGoroutineId()
+	go func() {
+		logGoroutine("create-goroutine", getGoroutineId(), parentId_0)
+		defer logGoroutine("end-goroutine", getGoroutineId(), parentId_0)
+
+		time.Sleep(d)
+		logChannel("send-channel", fmt.Sprintf("%p", c), getGoroutineId())
+
+		c <- 1
+	}()
+	return c
 }
 
 func main() {
-	defer parseEventsToJson()
-	parentId_1 := getGoroutineId()
+	defer encodeEventsToJson()
 
-	go func() {
-		logGoroutine("create-goroutine", getGoroutineId(), parentId_1)
-		defer logGoroutine("end-goroutine", getGoroutineId(), parentId_1)
+	for i := 0; i < 10; i++ {
+		c := timer(1 * time.Second)
+		logChannel("receive-channel", fmt.Sprintf("%p", c), getGoroutineId())
 
-		fmt.Println("hey")
-		parentId_0 := getGoroutineId()
-
-		go func() {
-			logGoroutine("create-goroutine", getGoroutineId(), parentId_0)
-			defer logGoroutine("end-goroutine", getGoroutineId(), parentId_0)
-
-			fmt.Println("hey2")
-		}()
-	}()
-	parentId_2 := getGoroutineId()
-	go func() {
-		logGoroutine("create-goroutine", getGoroutineId(), parentId_2)
-		defer logGoroutine("end-goroutine", getGoroutineId(), parentId_2)
-
-		foo()
-	}()
-
-	time.Sleep(time.Second * 1)
+		<-c
+	}
 }
