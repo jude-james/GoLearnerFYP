@@ -35,16 +35,21 @@ if (saved !== null) {
 
 runButton.addEventListener("click", () => {
     runButton.disabled = true;
-    updateConsole("Loading remote server...", false);
-    sendRequest();
+
+    clearConsole();
+    updateConsole("Connecting to server...", false);
+
+    createWebSocket();
 });
 
 document.getElementById("reset-button").addEventListener("click", async () => {
     const code = await getCurrentTopicCode();
     if (code) {
         editor.setValue(code);
+        console.log("Reset");
     }
     else {
+        console.warn("Failed to reset");
         displayError("Failed to reset");
     }
 });
@@ -59,53 +64,50 @@ document.getElementById("copy-button").addEventListener("click", () => {
 });
 
 /**
- * Sends POST request to /ask endpoint with fileName and code as json object
+ * Opens a web socket connection between the client and the server 
+ * Sends the fileName and code as a json object, then waits for data to output to the console
  */
-async function sendRequest() {
-    console.log("Sending POST request.");
-    
-    const url = "/run";
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ fileName: fileName.textContent, code: editor.getValue() })
-        });
+function createWebSocket() {
+    const ws = new WebSocket("ws://localhost:8080");
 
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
+    ws.onopen = () => {
+        console.log("Successfully connected to WebSocket server.");
+        clearConsole();
+
+        console.log(`Sending ${fileName.textContent} to server.`);
+        const message = JSON.stringify({ fileName: fileName.textContent, code: editor.getValue() });
+        ws.send(message);
+    }
+
+    ws.onmessage = (event) => {
+        console.log("Received message from server:", event.data.toString());
+
+        // err type is separate from stdout and stderr, represents an error from the backend, not from the user submitted program
+        const { data, type } = JSON.parse(event.data.toString());
+        if (type === "stderr") {
+            updateConsole(data, true);
+        }
+        else if (type === "err") {
+            console.error(data);
+            displayError(data);
+        }
+        else {
+            updateConsole(data, false);
         }
 
-        const result = await response.json();
+        // TODO check for events data
+    };
 
-        console.log(result);
+    ws.onerror = (error) => {
+        console.error("WebSocket error:", error.message);
+        displayError("Couldn't connect to WebSocket server.")
+        clearConsole();
+    }
 
+    ws.onclose = () => {
+        console.log("Disconnected from WebSocket server.");
         runButton.disabled = false;
-        displayResult(result);
-    } 
-    catch (error) {
-        console.error(error.message);
-        displayError("Couldn't connect to remote server")
-    }
-}
-
-/**
- * Displays the result fetched, checking the type of JSON returned
- * @param {any} result - The JSON object returned from backend
- */
-function displayResult(result) {
-    if ("issue" in result) {
-        console.error(result.issue);
-        displayError(result.issue)
-    }
-    else if ("error" in result) {
-        updateConsole(result.error, true);
-    }
-    else {
-        updateConsole(result.output, false);
-    }
+    };
 }
 
 /**
@@ -114,7 +116,7 @@ function displayResult(result) {
  * @param {boolean} isError - If the output was an error message.
  */
 function updateConsole(output, isError) {
-    outputConsole.textContent = output;
+    outputConsole.textContent += output;
 
     if (isError) {
         outputConsole.classList.add("console-error");
@@ -122,4 +124,8 @@ function updateConsole(output, isError) {
     else {
         outputConsole.classList.remove("console-error");
     }
+}
+
+function clearConsole() {
+    outputConsole.textContent = "";
 }
