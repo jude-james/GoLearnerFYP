@@ -5,6 +5,11 @@ import { getCurrentTopicCode } from "./contentManager.js";
 const outputConsole = document.querySelector(".console");
 const fileName = document.querySelector(".file-name");
 const runButton = document.getElementById("run-button");
+const terminateButton = document.getElementById("terminate-button");
+const resetButton = document.getElementById("reset-button");
+const copyButton = document.getElementById("copy-button");
+
+let ws;
 
 const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
@@ -35,28 +40,40 @@ if (saved !== null) {
 
 runButton.addEventListener("click", () => {
     runButton.disabled = true;
+    terminateButton.disabled = false; // TODO move to when go code has actually started running
 
     clearConsole();
     updateConsole("Connecting to server...", false);
 
-    createWebSocket();
+    startWebSocket();
 });
 
-document.getElementById("reset-button").addEventListener("click", async () => {
+terminateButton.addEventListener("click", () => {
+    // TODO terminate button should be enabled as soon as server tells us go program has started running.
+
+    if (ws.readyState === WebSocket.OPEN) 
+    {
+        console.log("Terminating.");
+        const message = JSON.stringify({ type: "terminate" });
+        ws.send(message);
+    }
+});
+
+resetButton.addEventListener("click", async () => {
     const code = await getCurrentTopicCode();
     if (code) {
         editor.setValue(code);
-        console.log("Reset");
+        console.log("Reset.");
     }
     else {
-        console.warn("Failed to reset");
-        displayError("Failed to reset");
+        console.warn("Failed to reset.");
+        displayError("Failed to reset.");
     }
 });
 
-document.getElementById("copy-button").addEventListener("click", () => {
+copyButton.addEventListener("click", () => {
     navigator.clipboard.writeText(editor.getValue()).then(() => {
-        console.log("Copied to clipboard");
+        console.log("Copied to clipboard.");
     }).catch(error => {
         console.warn("Failed to copy:", error);
         displayError("Failed to copy:", error)
@@ -67,46 +84,55 @@ document.getElementById("copy-button").addEventListener("click", () => {
  * Opens a web socket connection between the client and the server 
  * Sends the fileName and code as a json object, then waits for data to output to the console
  */
-function createWebSocket() {
-    const ws = new WebSocket("ws://localhost:8080");
+function startWebSocket() {
+    ws = new WebSocket("ws://localhost:8080");
 
     ws.onopen = () => {
         console.log("Successfully connected to WebSocket server.");
-        clearConsole();
+        clearConsole(); // TODO move to when go code has actually started running
 
-        console.log(`Sending ${fileName.textContent} to server.`);
-        const message = JSON.stringify({ fileName: fileName.textContent, code: editor.getValue() });
+        const message = JSON.stringify({ fileName: fileName.textContent, code: editor.getValue(), type: "run" });
+        console.log("Sending message to server:", message);
         ws.send(message);
     }
 
     ws.onmessage = (event) => {
         console.log("Received message from server:", event.data.toString());
 
-        // err type is separate from stdout and stderr, represents an error from the backend, not from the user submitted program
-        const { data, type } = JSON.parse(event.data.toString());
-        if (type === "stderr") {
-            updateConsole(data, true);
-        }
-        else if (type === "err") {
-            console.error(data);
-            displayError(data);
-        }
-        else {
-            updateConsole(data, false);
+        // Message from server can be of type error, stdout or stderr. The latter 2 refer to the docker process
+        const message = JSON.parse(event.data.toString());
+        switch (message.type) {
+            case "stdout":
+                updateConsole(message.data, false);
+                break;
+            case "stderr":
+                updateConsole(message.data, true);
+                break;
+            case "error":
+                console.error(message.data);
+                displayError(message.data);
+                break;
+            default:
+                console.warn("Unknown message type:", message.type);
         }
 
-        // TODO check for events data
+        // TODO check for events data, which will have a new case type 'events'
     };
 
-    ws.onerror = (error) => {
-        console.error("WebSocket error:", error.message);
-        displayError("Couldn't connect to WebSocket server.")
+    ws.onerror = () => {
+        console.error("WebSocket encountered an error.");
         clearConsole();
     }
 
-    ws.onclose = () => {
-        console.log("Disconnected from WebSocket server.");
+    ws.onclose = (event) => {
+        console.log("Disconnected from WebSocket server with code:", event.code);
+
         runButton.disabled = false;
+        terminateButton.disabled = true;
+
+        if (!event.wasClean) {
+            displayError("Unexpected disconnection from server.")
+        }
     };
 }
 

@@ -66,6 +66,15 @@
     color: #bebebe;
 }
 
+#terminate-button {
+    border: 1.5px solid var(--red);
+}
+
+#terminate-button:disabled {
+    background-color: var(--black);
+    color: #bebebe;
+}
+
 .button-icon {
     width: 18px;
     height: 18px;

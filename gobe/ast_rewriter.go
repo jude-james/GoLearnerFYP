@@ -188,7 +188,7 @@ func createAssignStmt(lhs string, rhs string) ast.Stmt {
 	return newNode
 }
 
-// Create the AST node equivalent to Go source code 'lhs := rhs'
+// Create the AST node equivalent to Go source code 'logGoroutine("msg", id, parentId)'
 func createLogGoroutineCallExpr(msg string, id string, parentId string) *ast.CallExpr {
 	return &ast.CallExpr{
 		Fun: &ast.Ident{

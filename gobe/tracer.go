@@ -43,7 +43,7 @@ func logChannel(event string, id string, parentId int64) {
 
 // Returns the current goroutine Id of the calling goroutine.
 // Stack formats a stack trace of the calling goroutine,
-// so this captures the the Id from the stack trace and ignores the rest
+// so this captures the Id from the stack trace and ignores the rest
 func getGoroutineId() int64 {
 	var buf [64]byte
 	n := runtime.Stack(buf[:], false)
