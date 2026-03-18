@@ -6,7 +6,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 
 const path = require("path");
-const fs = require("fs");
+//const fs = require("fs");
 const { spawn } = require("child_process");
 
 const app = express();
@@ -14,6 +14,8 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 const port = 8080;
+
+const goDirectory = path.join(__dirname, "gobackend"); 
 
 let containerName;
 
@@ -35,7 +37,7 @@ app.use(express.static(path.join(__dirname, "public")));
  * Spawns a child process to kill any docker container with the current container name
  */
 function killDockerProcess() {
-    console.log("Spawning child process to kill docker container...");
+    console.log("Spawning child process to kill docker container.");
 
     const killer = spawn("docker", ["kill", containerName]);
     killer.on("error", (error) => console.error('Failed to kill container:', error));
@@ -53,24 +55,22 @@ wss.on("connection", (ws) => {
             case "terminate":
                 killDockerProcess();
                 break;
-            case "run":
-                const tmpDir = path.join(__dirname, "tmp"); 
-
-                // Write user submitted Go file to the tmp folder
-                try {
-                    fs.writeFileSync(`${tmpDir}/${msg.fileName}`, msg.code);
-                }
-                catch (error) {
-                    console.error(error);
-                    ws.send(JSON.stringify({ data: "Couldn't write file.", type: "error" }))
-                    ws.close();
-                }
-
+            case "run": 
+                // TODO run without calling ast_rewriter option, run-with-trace or trace-run something
+                // create another sh script for the regular run, in a different folder
                 console.log("Spawning child process to run docker image (go-runner)...");
 
                 // Spawn a process that runs the docker image with a unique container name
                 containerName = `runner-${Date.now()}`;
-                const docker = spawn("docker", ["run", "--rm", "--name", containerName, "-v", `${tmpDir}:/app`, "go-runner", `go run ${msg.fileName}`]);
+                
+                const docker = spawn("docker", [
+                    "run", "--rm",
+                    "--name", containerName,
+                    "-v", `${goDirectory}:/app`,
+                    "go-runner",
+                    "sh", "/app/entrypoint.sh",
+                    msg.code
+                ]);
 
                 // Handle process output streams and send data over socket
 
@@ -105,7 +105,7 @@ wss.on("connection", (ws) => {
 
     ws.on("close", (code) => {
         console.log("Disconnected from WebSocket client with code:", code);
-        
+
         if (code !== 1005) {
             console.error("Unexpected disconnection from client. Killing currently running docker container.")
             killDockerProcess();

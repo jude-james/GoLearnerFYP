@@ -16,12 +16,18 @@ import (
 var goroutine_encounter int
 
 func main() {
-	fn := "src.go" // Later pass this as command line argument when calling from js, so pass args to main
-	dir := ""      // "tmp/run-uuid/" // Not sure how it will know?
+	// Slice to first proper argument
+	args := os.Args[1:]
+	if args[0] == "--" {
+		args = args[1:]
+	}
+
+	// Get source code as argument
+	source := args[0]
 
 	// Parse the source code to create an AST file node
 	fset := token.NewFileSet()
-	node, err := parser.ParseFile(fset, dir+fn, nil, 0)
+	node, err := parser.ParseFile(fset, "instrumented.go", source, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,16 +87,14 @@ func main() {
 		return true
 	})
 
-	// Create a new empty go file, which will become the modified file
-	i := len(fn) - 3
-	newFn := fn[:i] + "_instrumented" + fn[i:]
-	modified, err := os.Create(dir + newFn)
+	// Create a new Go file called instrumented.go, which contains the modified source code
+	modified, err := os.Create("runs/instrumented.go")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer modified.Close()
 
-	// Format AST node back to Go source code and store in modified file
+	// Format AST node back to Go source code and store in instrumented file
 	err = format.Node(modified, fset, node)
 	if err != nil {
 		log.Fatal(err)

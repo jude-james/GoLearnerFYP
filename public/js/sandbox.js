@@ -40,7 +40,7 @@ if (saved !== null) {
 
 runButton.addEventListener("click", () => {
     runButton.disabled = true;
-    terminateButton.disabled = false; // TODO move to when go code has actually started running
+    terminateButton.disabled = false;
 
     clearConsole();
     updateConsole("Connecting to server...", false);
@@ -49,8 +49,6 @@ runButton.addEventListener("click", () => {
 });
 
 terminateButton.addEventListener("click", () => {
-    // TODO terminate button should be enabled as soon as server tells us go program has started running.
-
     if (ws.readyState === WebSocket.OPEN) 
     {
         console.log("Terminating.");
@@ -89,7 +87,7 @@ function startWebSocket() {
 
     ws.onopen = () => {
         console.log("Successfully connected to WebSocket server.");
-        clearConsole(); // TODO move to when go code has actually started running
+        clearConsole();
 
         const message = JSON.stringify({ fileName: fileName.textContent, code: editor.getValue(), type: "run" });
         console.log("Sending message to server:", message);

@@ -31,14 +31,12 @@ func setStartTime() {
 func logGoroutine(event string, id int64, parentId int64) {
 	currentTime := time.Since(startTime).Seconds()
 	events = append(events, Event{currentTime, event, fmt.Sprintf("%d", id), fmt.Sprintf("%d", parentId)})
-	fmt.Println("Event:", event, "id:", id, "parentId:", parentId, "time:", currentTime)
 }
 
 // Appends a new channel event to the events slice, with the current time
 func logChannel(event string, id string, parentId int64) {
 	currentTime := time.Since(startTime).Seconds()
 	events = append(events, Event{currentTime, event, id, fmt.Sprintf("%d", parentId)})
-	fmt.Println("Event:", event, "id:", id, "parentId:", parentId, "time:", currentTime)
 }
 
 // Returns the current goroutine Id of the calling goroutine.
@@ -63,13 +61,11 @@ func insertMainGoroutineEvents() {
 
 // Creates a new json object from the events struct and writes a new file called events.json
 func encodeEventsToJson() {
-	// Since this func is called when the source programs main func ends, we can now
-	// insert the end goroutine event with the current time, and since mains start is always
-	// at time 0 and doesn't have a parentId, we can manually insert that too
+	// Insert the main func goroutine before writing our events.json
 	insertMainGoroutineEvents()
 
 	// Create a new file called events.json
-	file, err := os.Create("events.json")
+	file, err := os.Create("runs/events.json")
 	if err != nil {
 		panic(err)
 	}
@@ -79,6 +75,4 @@ func encodeEventsToJson() {
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "	")
 	encoder.Encode(events)
-
-	// TODO Then return to js to confirm events.json has been written and exists, check it's guaranteed
 }

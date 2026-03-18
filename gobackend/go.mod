@@ -1,4 +1,4 @@
-module gobe
+module gobackend
 
 go 1.25.3
 

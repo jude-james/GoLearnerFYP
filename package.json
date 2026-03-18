@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "nodemon server.js"
   },
+  "nodemonConfig": {
+    "ignore": ["gobackend/runs/*.json"]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
