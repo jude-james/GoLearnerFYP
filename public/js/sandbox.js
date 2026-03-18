@@ -51,8 +51,8 @@ runButton.addEventListener("click", () => {
 terminateButton.addEventListener("click", () => {
     if (ws.readyState === WebSocket.OPEN) 
     {
-        console.log("Terminating.");
         const message = JSON.stringify({ type: "terminate" });
+        console.log("Sending message to server:", message);
         ws.send(message);
     }
 });

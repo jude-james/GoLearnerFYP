@@ -16,11 +16,7 @@ import (
 var goroutine_encounter int
 
 func main() {
-	// Slice to first proper argument
 	args := os.Args[1:]
-	if args[0] == "--" {
-		args = args[1:]
-	}
 
 	// Get source code as argument
 	source := args[0]

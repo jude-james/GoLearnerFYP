@@ -6,7 +6,6 @@ const cors = require("cors");
 const helmet = require("helmet");
 
 const path = require("path");
-//const fs = require("fs");
 const { spawn } = require("child_process");
 
 const app = express();
@@ -15,9 +14,7 @@ const wss = new WebSocket.Server({ server });
 
 const port = 8080;
 
-const goDirectory = path.join(__dirname, "gobackend"); 
-
-let containerName;
+const mountDir = path.join(__dirname, "gobackend"); 
 
 // Middleware settings
 app.use(helmet({
@@ -34,9 +31,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 /**
- * Spawns a child process to kill any docker container with the current container name
+ * Spawns a child process that kills the docker container with the given name
+ * @param {string} containerName - The name of the container.
  */
-function killDockerProcess() {
+function killDockerProcess(containerName) {
     console.log("Spawning child process to kill docker container.");
 
     const killer = spawn("docker", ["kill", containerName]);
@@ -45,6 +43,9 @@ function killDockerProcess() {
 
 wss.on("connection", (ws) => {
     console.log("Successfully connected to WebSocket client.");
+    
+    // Store the container name for each connection instance
+    let containerName;
 
     ws.on("message", (message) => {
         console.log("Received message from client:", message.toString());
@@ -53,7 +54,7 @@ wss.on("connection", (ws) => {
         const msg = JSON.parse(message.toString());
         switch (msg.type) {
             case "terminate":
-                killDockerProcess();
+                killDockerProcess(containerName);
                 break;
             case "run": 
                 // TODO run without calling ast_rewriter option, run-with-trace or trace-run something
@@ -66,7 +67,7 @@ wss.on("connection", (ws) => {
                 const docker = spawn("docker", [
                     "run", "--rm",
                     "--name", containerName,
-                    "-v", `${goDirectory}:/app`,
+                    "-v", `${mountDir}:/app`,
                     "go-runner",
                     "sh", "/app/entrypoint.sh",
                     msg.code
@@ -88,6 +89,8 @@ wss.on("connection", (ws) => {
 
                 docker.on("close", (code) => {
                     // TODO send events json before closing ws
+                    // Check if events.json exists first
+                    
                     // I think it would be better to send as data instead of file
                     // if no new file is made it might send previous file with incorrect data
                     console.log(`Child process exited with code ${code}`);
@@ -107,8 +110,8 @@ wss.on("connection", (ws) => {
         console.log("Disconnected from WebSocket client with code:", code);
 
         if (code !== 1005) {
-            console.error("Unexpected disconnection from client. Killing currently running docker container.")
-            killDockerProcess();
+            console.error("Unexpected disconnection from client. Killing currently running docker container.");
+            killDockerProcess(containerName);
         }
     });
 })
