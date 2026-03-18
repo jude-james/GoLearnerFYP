@@ -6,6 +6,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 
 const path = require("path");
+const fs = require("fs");
 const { spawn } = require("child_process");
 
 const app = express();
@@ -14,6 +15,10 @@ const wss = new WebSocket.Server({ server });
 
 const port = 8080;
 
+// Docker run options
+const cpuLimit = "2.0";
+const memoryLimit = "256m";
+const runtimeExecLimit = 60000; // 1 minute
 const mountDir = path.join(__dirname, "gobackend"); 
 
 // Middleware settings
@@ -35,10 +40,17 @@ app.use(express.static(path.join(__dirname, "public")));
  * @param {string} containerName - The name of the container.
  */
 function killDockerProcess(containerName) {
-    console.log("Spawning child process to kill docker container.");
+    console.log("Spawning child process to kill docker container...");
 
     const killer = spawn("docker", ["kill", containerName]);
-    killer.on("error", (error) => console.error('Failed to kill container:', error));
+    killer.on("close", (code) => {
+        if (code === 0) {
+            console.log("Successfully killed container, exit code:");
+        } 
+        else {
+            console.error("Failed to kill container, exit code:", code);
+        }
+    });
 }
 
 wss.on("connection", (ws) => {
@@ -67,11 +79,23 @@ wss.on("connection", (ws) => {
                 const docker = spawn("docker", [
                     "run", "--rm",
                     "--name", containerName,
+                    "--cpus", cpuLimit,
+                    "--memory", memoryLimit,
+                    "--network", "none",
+                    "--security-opt", "no-new-privileges=true",
                     "-v", `${mountDir}:/app`,
                     "go-runner",
                     "sh", "/app/entrypoint.sh",
-                    msg.code
+                    msg.fileName, msg.code
                 ]);
+
+                // Set a timeout to kill the docker process after the given milliseconds
+                const timeout = setTimeout(() => {
+                    console.log("Timeout reached.");
+                    killDockerProcess(containerName);
+                    const message = JSON.stringify({ data: "Execution time limit reached.", type: "stderr" })
+                    ws.send(message);
+                }, runtimeExecLimit) 
 
                 // Handle process output streams and send data over socket
 
@@ -87,13 +111,31 @@ wss.on("connection", (ws) => {
                     ws.send(message);
                 });
 
+                docker.on("error", (error) => {
+                    console.error("Child process error:", error.message);
+                    const message = JSON.stringify({ data: "Server ran into an error.", type: "error" })
+                    ws.send(message);
+                })
+
                 docker.on("close", (code) => {
-                    // TODO send events json before closing ws
-                    // Check if events.json exists first
-                    
-                    // I think it would be better to send as data instead of file
-                    // if no new file is made it might send previous file with incorrect data
                     console.log(`Child process exited with code ${code}`);
+
+                    clearTimeout(timeout);
+
+                    // TODO send events json before closing ws
+                    if (code === 0) {
+                        // Delete the temporary user file to clean up folder
+                        console.log("Deleting temporary user file.");
+                        fs.unlink(path.join(mountDir + "/runs", msg.fileName), (error) => {
+                            if (error) {
+                                console.error('Failed to delete file:', error);
+                            }
+                        });
+
+                        // if (events.json exists)
+                        // ws.send( {type: events data: events.json (as data?) } )
+                    }
+
                     ws.close();
                 });
                 break;

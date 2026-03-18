@@ -3,8 +3,8 @@
 # Stop executing upon a non zero error code
 set -e
 
-# Run ast_rewriter.go passing in the source code as an argument
-go run /app/ast_rewriter.go "$1"
+# Run ast_rewriter.go passing in the file name and source code as an argument
+go run /app/ast_rewriter.go -- "$@"
 
-# Run instrumented source file and tracer.go
-go run /app/runs/instrumented.go /app/runs/tracer.go
+# Then run instrumented source file and tracer.go
+go run /app/runs/$1 /app/runs/tracer.go

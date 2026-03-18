@@ -6,7 +6,7 @@
 		"parentId": ""
 	},
 	{
-		"time": 10.037805546,
+		"time": 5.026956668,
 		"event": "end-goroutine",
 		"id": "1",
 		"parentId": ""

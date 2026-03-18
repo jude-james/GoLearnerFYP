@@ -65,7 +65,7 @@ func encodeEventsToJson() {
 	insertMainGoroutineEvents()
 
 	// Create a new file called events.json
-	file, err := os.Create("runs/events.json")
+	file, err := os.Create("events.json")
 	if err != nil {
 		panic(err)
 	}

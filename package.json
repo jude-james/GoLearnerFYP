@@ -6,7 +6,7 @@
     "dev": "nodemon server.js"
   },
   "nodemonConfig": {
-    "ignore": ["gobackend/runs/*.json"]
+    "ignore": ["gobackend/*.json"]
   },
   "keywords": [],
   "author": "",
