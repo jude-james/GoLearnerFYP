@@ -18,7 +18,7 @@ const port = 8080;
 // Docker run options
 const cpuLimit = "2.0";
 const memoryLimit = "256m";
-const runtimeExecLimit = 60000; // 1 minute
+const timeoutLimit = 10; // Seconds
 const mountDir = path.join(__dirname, "gobackend"); 
 
 // Middleware settings
@@ -45,7 +45,7 @@ function killDockerProcess(containerName) {
     const killer = spawn("docker", ["kill", containerName]);
     killer.on("close", (code) => {
         if (code === 0) {
-            console.log("Successfully killed container, exit code:");
+            console.log("Successfully killed container, exit code:", code);
         } 
         else {
             console.error("Failed to kill container, exit code:", code);
@@ -73,9 +73,10 @@ wss.on("connection", (ws) => {
                 // create another sh script for the regular run, in a different folder
                 console.log("Spawning child process to run docker image (go-runner)...");
 
-                // Spawn a process that runs the docker image with a unique container name
+                // Set the name to the current time to be unique
                 containerName = `runner-${Date.now()}`;
                 
+                // Spawn a process that runs the docker image with the unique container name
                 const docker = spawn("docker", [
                     "run", "--rm",
                     "--name", containerName,
@@ -83,19 +84,12 @@ wss.on("connection", (ws) => {
                     "--memory", memoryLimit,
                     "--network", "none",
                     "--security-opt", "no-new-privileges=true",
+                    "-e", `TIMEOUT=${timeoutLimit}`,
                     "-v", `${mountDir}:/app`,
                     "go-runner",
                     "sh", "/app/entrypoint.sh",
                     msg.fileName, msg.code
                 ]);
-
-                // Set a timeout to kill the docker process after the given milliseconds
-                const timeout = setTimeout(() => {
-                    console.log("Timeout reached.");
-                    killDockerProcess(containerName);
-                    const message = JSON.stringify({ data: "Execution time limit reached.", type: "stderr" })
-                    ws.send(message);
-                }, runtimeExecLimit) 
 
                 // Handle process output streams and send data over socket
 
@@ -120,20 +114,24 @@ wss.on("connection", (ws) => {
                 docker.on("close", (code) => {
                     console.log(`Child process exited with code ${code}`);
 
-                    clearTimeout(timeout);
+                    // Delete the temporary user file to clean up folder
+                    console.log("Deleting temporary user file.");
+                    fs.unlink(path.join(mountDir + "/runs", msg.fileName), (error) => {
+                        if (error && error.code !== 'ENOENT') {
+                            console.error('Failed to delete file:', error);
+                        }
+                    });
 
-                    // TODO send events json before closing ws
                     if (code === 0) {
-                        // Delete the temporary user file to clean up folder
-                        console.log("Deleting temporary user file.");
-                        fs.unlink(path.join(mountDir + "/runs", msg.fileName), (error) => {
-                            if (error) {
-                                console.error('Failed to delete file:', error);
-                            }
-                        });
-
+                        const message = JSON.stringify({ data: `Program exited with code ${code}`, type: "stdout" });
+                        ws.send(message);
+                        // TODO send events json before closing ws
                         // if (events.json exists)
                         // ws.send( {type: events data: events.json (as data?) } )
+                    }
+                    else {
+                        const message = JSON.stringify({ data: `Program exited with code ${code}. You may have reached your execution time limit.`, type: "stderr" });
+                        ws.send(message);
                     }
 
                     ws.close();

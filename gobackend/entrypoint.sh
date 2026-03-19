@@ -7,4 +7,4 @@ set -e
 go run /app/ast_rewriter.go -- "$@"
 
 # Then run instrumented source file and tracer.go
-go run /app/runs/$1 /app/runs/tracer.go
+timeout -s SIGKILL $TIMEOUT go run /app/runs/$1 /app/runs/tracer.go
