@@ -29,7 +29,7 @@
     overflow-y: auto;
     overscroll-behavior-y: none;
 
-    border-bottom: 3px solid #555;
+    border-bottom: 3px solid var(--panel-border-grey);
 }
 
 .bottom-panel {

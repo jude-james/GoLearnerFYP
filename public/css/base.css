@@ -10,12 +10,24 @@
     --black: #141414;
     --grey: #1e1e1e;
 
+    --black-button-hover: #202020;
+    --black-button-active: #272727;
+
+    --disabled-button-white: #bebebe;
+
+    --panel-border-grey: #555;
+    --border-grey: #4d4d4d;
+
+    --markdown-code-inline: #bc5a5a;
+    --markdown-code-block: #e6e6e6;
+
     --font-size: 1.8rem;
     --font-weight: 400;
+
+    --small-font-size: 1.2rem;
     --small-font-weight: 350;
-    --code-font-size: 1.2rem;
-    --md-font-size: 1.2rem;
-    --md-code-font-size: 1.1rem;
+
+    --markdown-code-font-size: 1.1rem;
     
     --font-name: "Cascadia Code";
 }
@@ -48,40 +60,36 @@ button, input, select, textarea, a, pre {
 }
 
 /* Navbar settings */
-.topnav {    
+.navbar {    
     display: flex;
     overflow: hidden;
     background-color: black;
     border-bottom: 1px solid var(--white);
 }
 
-.topnav a {
-    color: var(--white);
+.navbar a {
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
-    font-size: var(--font-size);
 }
 
-.topnav a:first-child {
+.navbar a:first-child {
     margin-right: auto;
-
     transform: scale(0.85);
-    color: var(--white);
     border: 2px solid var(--white);
 }
 
-.topnav a:hover {
+.navbar a:hover {
     background-color: var(--white);
     color: var(--black);
 }
 
-.topnav a:active {
+.navbar a:active {
     background-color: white;
     color: var(--black);
 }
 
-.topnav a.active {
+.navbar a.active {
     background-color: var(--blue);
     color: white;
 }
@@ -101,7 +109,7 @@ button, input, select, textarea, a, pre {
 .CodeMirror-code {
     font-family: var(--font-name), sans-serif;
     font-optical-sizing: auto;
-    font-size: var(--code-font-size);
+    font-size: var(--small-font-size);
     font-weight: var(--small-font-weight);
     font-style: normal;
 }
@@ -113,7 +121,7 @@ button, input, select, textarea, a, pre {
 /* Error popup settings */
 .error-message {
     background: #ffc2c2;
-    border: 1px solid #363636;
+    border: 1px solid var(--grey);
     visibility: hidden;
 
     z-index: 9999;
@@ -124,7 +132,8 @@ button, input, select, textarea, a, pre {
     padding: 1rem;
 
     color: var(--black);
-    font-size: 1rem;
+    font-size: var(--small-font-size);
+    font-weight: var(--small-font-weight);
     text-align: center;
 }
 
@@ -134,12 +143,12 @@ button, input, select, textarea, a, pre {
 
 #dismiss-button {
     background: none;
+
     color: var(--black);
+    font-size: var(--small-font-size);
+    font-weight: var(--small-font-weight);
 
-    font-size: 1rem;
-
-    border: 1.5px solid #363636;
-    border-radius: 3px;
+    border: 1.5px solid var(--grey);
 
     overflow: hidden;
     text-overflow: ellipsis;

@@ -10,7 +10,7 @@
 
 .message {
     background-color: var(--black);
-    border: 1px solid #4d4d4d;
+    border: 1px solid var(--border-grey);
     border-radius: 7px;
     padding: 20px;
 }
@@ -44,9 +44,9 @@
 
 .button:disabled {
     background-color: var(--black);
-    border: 1px solid #bebebe;
-    box-shadow: 5px 10px #bebebe;
-    color: #bebebe;
+    border: 1px solid var(--disabled-button-white);
+    box-shadow: 5px 10px var(--disabled-button-white);
+    color: var(--disabled-button-white);
     cursor: default;
 }
 

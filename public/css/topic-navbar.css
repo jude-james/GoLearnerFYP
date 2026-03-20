@@ -28,16 +28,16 @@
 }
 
 .topic-nav button:hover {
-    background-color: #202020;
+    background-color: var(--black-button-hover);
 }
 
 .topic-nav button:active {
-    background-color: #272727;
+    background-color: var(--black-button-active);
 }
 
 .topic-nav button:disabled {
     background-color: var(--black);
-    color: #bebebe;
+    color: var(--disabled-button-white);
     cursor: default;
 }
 

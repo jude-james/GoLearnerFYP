@@ -1,5 +1,5 @@
 .file-header, .console-header {
-    border-bottom: 3px solid #555;
+    border-bottom: 3px solid var(--panel-border-grey);
 }
 
 .file-header {
@@ -25,7 +25,6 @@
 
 .button {
     background-color: var(--black);
-    color: var(--white);
 
     font-size: 1.5rem;
 
@@ -41,11 +40,11 @@
 }
 
 .button:hover {
-    background-color: #202020;
+    background-color: var(--black-button-hover);
 }
 
 .button:active {
-    background-color: #272727;
+    background-color: var(--black-button-active);
 }
 
 #run-button {
@@ -63,7 +62,8 @@
 
 #run-button:disabled {
     background-color: var(--black);
-    color: #bebebe;
+    border: 1.5px solid var(--disabled-button-white);
+    color: var(--disabled-button-white);
 }
 
 #terminate-button {
@@ -72,7 +72,7 @@
 
 #terminate-button:disabled {
     background-color: var(--black);
-    color: #bebebe;
+    color: var(--disabled-button-white);
 }
 
 .button-icon {
@@ -83,8 +83,8 @@
 .console {
     background-color: var(--black);
 
+    font-size: var(--small-font-size);
     font-weight: var(--small-font-weight);
-    font-size: var(--code-font-size);
 
     margin: 0;
     flex: 1;

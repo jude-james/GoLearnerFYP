@@ -1,5 +1,5 @@
 .markdown {
-    font-size: var(--md-font-size);
+    font-size: var(--small-font-size);
     font-weight: var(--small-font-weight);
     
     word-break: break-word;
@@ -8,18 +8,18 @@
 }
 
 .markdown code {
-    font-size: var(--md-code-font-size);
+    font-size: var(--markdown-code-font-size);
 
-    color: #bc5a5a;
+    color: var(--markdown-code-inline);
     background: var(--grey);
 
-    border: 1px solid #4d4d4d;
+    border: 1px solid var(--border-grey);
     padding: 2px;
     border-radius: 7px;
 }
 
 .markdown pre code {
-    color: #e6e6e6;
+    color: var(--markdown-code-block);
 
     padding: 12px;
 

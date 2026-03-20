@@ -17,12 +17,11 @@
 
 .hero h1 {
     background-color: var(--black);
-    color: var(--white);
 
     border: 1px solid var(--white);
     box-shadow: 0 0 20px 2px #fdfdfd;
 
-    padding: 15px;
+    padding: 16px;
 
     display: flex;
     align-items: center;
@@ -57,7 +56,9 @@
 .button {
     background: var(--black);
     
-    font-size: 1.2rem;
+    font-size: var(--small-font-size);
+    font-weight: var(--small-font-weight);
+
     text-align: left;
 
     border: 1px solid var(--white);
@@ -111,14 +112,15 @@
 }
 
 .info-box {
-    border: 1px solid var(--blue);
     background-color: black;
-    color: var(--white);
+
+    font-size: var(--small-font-size);
+    font-weight: var(--small-font-weight);
+
+    border: 1px solid var(--blue);
     width: 60%;
     min-width: 300px;
     padding: 40px;
-
-    font-size: 1.3rem;
 }
 
 .end {

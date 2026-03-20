@@ -8,8 +8,9 @@
 }
 
 .header {
-    background-color: #061a44;
-    color: var(--white);
+    /*background-color: #061a44;*/
+    /*color: var(--white);*/
+    font-size: var(--small-font-size);
 
     padding: 18px;
     width: 65%;
@@ -25,8 +26,6 @@
     padding: 0;
     color: #2c81dc;
     
-    font-size: 1.4rem;
-
     cursor: pointer;
 }
 
@@ -34,17 +33,10 @@
     text-decoration: underline;
 }
 
-.header h1 {
-    font-size: 1.8rem;
-}
-
-.header p {
-    font-size: 1.3rem;
-}
-
 .collapsible {
     background-color: var(--black);
-    color: var(--white);
+
+    font-size: var(--small-font-size);
 
     padding: 18px;
     width: 65%;
@@ -59,14 +51,6 @@
     cursor: pointer;
 }
 
-.collapsible h1 {
-    font-size: 1.8rem;
-}
-
-.collapsible p {
-    font-size: 1.3rem;
-}
-
 .collapsible:hover {
     background-color: var(--blue);
 }
@@ -78,7 +62,7 @@
 .section {
     background-color: var(--black);
 
-    font-size: 1.3rem;
+    font-size: var(--small-font-size);
 
     padding: 0 30px 0 30px;
     width: 65%;
