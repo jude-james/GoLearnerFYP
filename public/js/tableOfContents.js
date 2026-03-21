@@ -25,7 +25,7 @@ for (let j = 0; j < courses.length; j++) {
         button.className = "chapter";
 
         button.innerHTML = `
-            <h1>Chapter ${i+1}: ${chapter.title}</h1>
+            <h2>Chapter ${i+1}: ${chapter.title}</h2>
             <p>${chapter.description}</p>
         `;
 
