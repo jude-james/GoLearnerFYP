@@ -1,43 +1,61 @@
-import { content } from "./contentManager.js";
+import { courses } from "./contentManager.js";
 
 const tableOfContents = document.querySelector(".table-of-contents");
 
-// Creates the HTML elements and populates them with the content managers content
-for (let i = 0; i < content.length; i++) {
-    let chapter = content[i];
-    const button = document.createElement("button");
-    button.className = "collapsible";
+// Creates the HTML elements and populates them with the tutorial content
+for (let j = 0; j < courses.length; j++) {
+    const course = courses[j];
 
-    button.innerHTML = `
-        <h1>Chapter ${i+1}: ${chapter.title}</h1>
-        <p>${chapter.description}</p>
-    `;
+    // TODO accent colour
 
     const div = document.createElement("div");
-    div.className = "section";
+    div.className = "course";
+    div.innerHTML = `
+        <img src="assets/images/course-icon.png" class="course-icon"/>
+        <h1>${course.title}</h1>
+        <p>${course.description}</p>
+        <button id="colland-button">Expand All</button>
+    `; // TODO fix button
+    
+    tableOfContents.append(div);
 
-    const ol = document.createElement("ol");
+    for (let i = 0; i < course.chapters.length; i++) {
+        let chapter = course.chapters[i];
+        const button = document.createElement("button");
+        button.className = "chapter";
 
-    // For each topic, it is added to the ordered list and the link is set
-    chapter.topics.forEach(topic => {
-        const li = document.createElement("li");
+        button.innerHTML = `
+            <h1>Chapter ${i+1}: ${chapter.title}</h1>
+            <p>${chapter.description}</p>
+        `;
 
-        const link = document.createElement("a");
-        link.href = `${topic.layout}?topic=${topic.slug}`;
-        link.textContent = topic.title;
+        const div = document.createElement("div");
+        div.className = "topics";
 
-        li.appendChild(link);
-        ol.appendChild(li);
-    });
+        const ol = document.createElement("ol");
 
-    div.appendChild(ol);
+        // For each topic, it is added to the ordered list and the link is set
+        chapter.topics.forEach(topic => {
+            const li = document.createElement("li");
 
-    tableOfContents.appendChild(button);
-    tableOfContents.appendChild(div);
+            const link = document.createElement("a");
+            link.href = `${topic.layout}?topic=${topic.slug}`;
+            link.textContent = topic.title;
+
+            li.appendChild(link);
+            ol.appendChild(li);
+        });
+
+        div.appendChild(ol);
+
+        tableOfContents.appendChild(button);
+        tableOfContents.appendChild(div);
+    }
 }
 
+
 var expandCollapseBtn = document.getElementById("expand-collapse-button");
-var collapsable = document.getElementsByClassName("collapsible");
+var collapsable = document.getElementsByClassName("chapter");
 
 var expanded = false;
 
@@ -54,6 +72,8 @@ for (let i = 0; i < collapsable.length; i++) {
         }
     });
 }
+
+// TODO fix for all buttons
 
 // Expand or collapse all chapter sections
 expandCollapseBtn.addEventListener("click", () => {

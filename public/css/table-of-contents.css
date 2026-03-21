@@ -3,13 +3,13 @@
     flex-direction: column;
     align-items: center;
 
-    margin-top: 5rem;
     margin-bottom: 5rem;
 }
 
-.header {
-    /*background-color: #061a44;*/
-    /*color: var(--white);*/
+.course {
+    margin-top: 5rem;
+
+    background-color: black;
     font-size: var(--small-font-size);
 
     padding: 18px;
@@ -18,9 +18,11 @@
     border: 1px solid var(--white);
     text-align: left;
     outline: none;
+
+    position: relative;
 }
 
-.header button {
+.course button {
     background: none;
     border: none;
     padding: 0;
@@ -29,11 +31,17 @@
     cursor: pointer;
 }
 
-.header button:hover {
+.course button:hover {
     text-decoration: underline;
 }
 
-.collapsible {
+.course-icon {
+    position: absolute;
+    top: -2.5px;
+    right: 15px;
+}
+
+.chapter {
     background-color: var(--black);
 
     font-size: var(--small-font-size);
@@ -51,7 +59,7 @@
     cursor: pointer;
 }
 
-.collapsible:hover {
+.chapter:hover {
     background-color: var(--blue);
 }
 
@@ -59,7 +67,7 @@
     background-color: var(--blue);
 }
 
-.section {
+.topics {
     background-color: var(--black);
 
     font-size: var(--small-font-size);
@@ -77,10 +85,10 @@
     transition: max-height 0.2s ease-out;
 }
 
-.section a {
+.topics a {
     text-decoration: none;
 }
 
-.section a:hover {
+.topics a:hover {
     text-decoration: underline;
 }

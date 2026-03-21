@@ -1,11 +1,5 @@
-/* 
-Content array, holding all the content as a list of objects, which are divided into chapters
-Each chapter is divided into topics, each topic is unique and has a unique identifier
-Then each topic is divided into 3 formats: tutorial, quiz or exercise. 
-*/
-// eventually split this into courses? since it will have to be split into fundamentals and concurrency
-// so order becomes content (everything) -> courses (fundamentals/concurrency) -> chapters -> topics -> (tutorial/quiz/exercise)
-export const content = [
+// List of chapters for fundamentals course
+const fundamentalsChapters = [
     {
         title: "Basics",
         description: "Learn all about the basics",
@@ -13,21 +7,21 @@ export const content = [
             {
                 title: "Introduction",
                 slug: "introduction",
-                layout: "tutorial.html",
+                layout: "lesson.html",
                 markdown: "test.md",
                 goFile: "welcome.go",
             },
             {
                 title: "Variables",
                 slug: "variables",
-                layout: "tutorial.html",
+                layout: "lesson.html",
                 markdown: "test.md",
                 goFile: "vars.go",
             },
             {
                 title: "Functions",
                 slug: "functions",
-                layout: "tutorial.html",
+                layout: "lesson.html",
                 markdown: "test.md",
                 goFile: "funcs.go",
             },
@@ -54,14 +48,14 @@ export const content = [
             {
                 title: "For loops",
                 slug: "forloops",
-                layout: "tutorial.html",
+                layout: "lesson.html",
                 markdown: "test.md",
                 goFile: "forloop.go",
             },
             {
                 title: "While Loops",
                 slug: "whileloops",
-                layout: "tutorial.html",
+                layout: "lesson.html",
                 markdown: "test.md",
                 goFile: "whileloop.go",
             },
@@ -87,6 +81,41 @@ export const content = [
     }
 ]
 
+// List of chapters for concurrency course
+const concurrencyChapters = [
+    {
+        title: "Concurrency Pt. 1",
+        description: "Intro to concurrency",
+        topics: [
+            {
+                title: "Concurrency 1",
+                slug: "concurrency1",
+                layout: "lesson.html",
+            }
+        ]
+    }
+]
+
+/**
+Content array, holding all the content as a list of objects.
+Each course contains multiple chapters, each chapter is divided into topics, each topic is unique and has a unique identifier
+Then each topic is divided into 3 formats: lesson, quiz or exercise. 
+*/
+export const courses = [
+    {
+        title: "Concurrency",
+        description: "Understand Go's concurrency with interactive examples and visualisations",
+        colour: "red",
+        chapters: concurrencyChapters,
+    },
+    {
+        title: "Fundamentals",
+        description: "Progress through Go's fundamentals with structured lessons, exercises, and quizzes",
+        colour: "yellow",
+        chapters: fundamentalsChapters,
+    }
+]
+
 /**
  * Reads the current page slug then searches the content array to find the topic details
  */
@@ -94,20 +123,24 @@ function getCurrentTopicData() {
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("topic");
 
-    for (let i = 0; i < content.length; i++) {
-        const chapter = content[i];
-        const topicIndex = chapter.topics.findIndex(t => t.slug === slug);
-
-        if (topicIndex !== -1) {
-            return {
-                topic: chapter.topics[topicIndex],
-                topicIndex: topicIndex,
-                chapter,
-                chapterIndex: i,
-                chapterLength: chapter.topics.length
-            };
+    for (const course of courses) {
+        for (let i = 0; i < course.chapters.length; i++) {
+            const chapter = course.chapters[i];
+            const topicIndex = chapter.topics.findIndex(t => t.slug === slug);
+            
+            if (topicIndex !== -1) {
+                return {
+                    topic: chapter.topics[topicIndex],
+                    topicIndex: topicIndex,
+                    chapter,
+                    chapterIndex: i,
+                    chapterLength: chapter.topics.length,
+                    course: course
+                };
+            }
         }
     }
+    
     return null;
 }
 
@@ -156,7 +189,7 @@ export function getNextChapter() {
         return null;
     }
 
-    const nextChapter = content[result.chapterIndex + 1];
+    const nextChapter = result.course.chapters[result.chapterIndex + 1];
     if (!nextChapter) {
         return null;
     }
@@ -196,6 +229,11 @@ export function getCurrentChapterLength() {
 export function getCurrentTopicIndex() {
     const result = getCurrentTopicData();
     return result.topicIndex + 1;
+}
+
+export function getCurrentCourse() {
+    const result = getCurrentTopicData();
+    return result.course;
 }
 
 /**

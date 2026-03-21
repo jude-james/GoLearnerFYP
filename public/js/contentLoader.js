@@ -10,6 +10,7 @@ import {
     getCurrentTopicIndex,
     getCurrentTopicFile,
     getCurrentTopicCode,
+    getCurrentCourse
 } from "./contentManager.js";
 
 import { displayError } from "./errorPopup.js";
@@ -42,6 +43,10 @@ async function init() {
     // Set current topic title text and progress indicator
     current.textContent = topic.title + ` (${getCurrentTopicIndex()}/${getCurrentChapterLength()})`;
 
+    // Set course accent colour
+    const course = getCurrentCourse();
+    document.documentElement.style.setProperty('--course-colour', `var(--${course.colour})`);
+    
     if (topic.markdown) {
         const markdown = await getCurrentTopicFile(topic.markdown);
 
