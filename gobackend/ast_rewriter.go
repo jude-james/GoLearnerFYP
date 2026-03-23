@@ -28,6 +28,9 @@ func main() {
 	// Get source code from 2nd argument
 	source := args[1]
 
+	// Get runID from 3rd argument
+	runId := args[2]
+
 	// Parse the source code to create an AST file node
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, fn, source, 0)
@@ -39,15 +42,17 @@ func main() {
 	astutil.Apply(node, nil, func(c *astutil.Cursor) bool {
 		n := c.Node()
 		switch x := n.(type) {
+		// TODO manually add import "fmt" if it isn't found...
+
 		case *ast.FuncDecl:
 			if x.Name.Name == "main" {
 				// If we hit the main function insert a defer statement that calls the encode
 				// events func from tracer.go, so that will run when the source program terminates,
-				// And insert a function to set the start time
+				// And insert a function to record the start time
 				x.Body.List = append([]ast.Stmt{createSetStartTimeStmt(), createDeferEncodeEventsStmt()}, x.Body.List...)
 			}
 		case *ast.GoStmt:
-			// If we hit a Go statement, in both cases, insert 'parentId_X := getGoroutineId()' before the Go stmt
+			// If we hit a Go statement, in both cases, insert 'parentId_X := getGoroutineId()' before the Go stmt in the parent body
 			varName := fmt.Sprintf("parentId_%d", goroutine_encounter)
 			c.InsertBefore(createAssignStmt(varName, "getGoroutineId()"))
 
@@ -61,43 +66,101 @@ func main() {
 				// Replace the node with an anonymous goroutine to capture it's start and end
 				c.Replace(createGoroutineCallWrapper(x.Call))
 			}
-
 			goroutine_encounter++
-
-		// TODO Detecting channel creation
-		// TODO eventually capture the names of the go funcs
-		// TODO change tracer function names to something harder for user to coincidently copy
-
-		// If we hit a send statement, insert log command before that node
 		case *ast.SendStmt:
-			c.InsertBefore(createLogChannelStmt("send-channel", x.Chan.(*ast.Ident).Name, "getGoroutineId()"))
-		// Receive 1st case, by itself '<- c', this is an expression statement
-		case *ast.ExprStmt:
-			if unary, ok := x.X.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+			// If we hit a send statement, c <- insert log command before that node
+			// Check if it exists within a block statement, then we can insert before
+			if _, parentType := c.Parent().(*ast.BlockStmt); parentType {
+				c.InsertBefore(createLogChannelStmt("send-channel", x.Chan.(*ast.Ident).Name, "getGoroutineId()"))
+			}
+		case *ast.ExprStmt: // Detecting Receive
+			// By itself '<- c', this is an expression statement
+			if _, parentType := c.Parent().(*ast.BlockStmt); parentType {
+				if unary, ok := x.X.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+					c.InsertBefore(createLogChannelStmt("receive-channel", unary.X.(*ast.Ident).Name, "getGoroutineId()"))
+				}
+			}
+
+			// Inside a function argument, foo(<- c), if the func call is by itself it exists in an expr stmt
+			if call, ok := x.X.(*ast.CallExpr); ok {
+				if _, parentType := c.Parent().(*ast.BlockStmt); parentType {
+					// Range over the list of arguments
+					for _, arg := range call.Args {
+						if unary, ok := arg.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+							c.InsertBefore(createLogChannelStmt("receive-channel", unary.X.(*ast.Ident).Name, "getGoroutineId()"))
+						}
+					}
+				}
+			}
+		case *ast.AssignStmt: // within an assignment statement 'a := <-c'
+			if _, parentType := c.Parent().(*ast.BlockStmt); parentType {
+				for _, rhs := range x.Rhs {
+					if unary, ok := rhs.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+						c.InsertBefore(createLogChannelStmt("receive-channel", unary.X.(*ast.Ident).Name, "getGoroutineId()"))
+					}
+				}
+			}
+		case *ast.CommClause: // Detecting within select statements
+			switch comm := x.Comm.(type) {
+			case *ast.SendStmt:
+				logStmt := createLogChannelStmt("send-channel", comm.Chan.(*ast.Ident).Name, "getGoroutineId()")
+				x.Body = append([]ast.Stmt{logStmt}, x.Body...)
+			case *ast.AssignStmt:
+				if unary, ok := comm.Rhs[0].(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+					logStmt := createLogChannelStmt("receive-channel", unary.X.(*ast.Ident).Name, "getGoroutineId()")
+					x.Body = append([]ast.Stmt{logStmt}, x.Body...)
+				}
+			case *ast.ExprStmt:
+				if unary, ok := comm.X.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+					logStmt := createLogChannelStmt("receive-channel", unary.X.(*ast.Ident).Name, "getGoroutineId()")
+					x.Body = append([]ast.Stmt{logStmt}, x.Body...)
+				}
+			}
+		case *ast.IfStmt: // Detecting within if statements
+			// TODO add proper comments
+			if assign, ok := x.Init.(*ast.AssignStmt); ok {
+				for _, rhs := range assign.Rhs {
+					if unary, ok := rhs.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+						c.InsertBefore(createLogChannelStmt("receive-channel", unary.X.(*ast.Ident).Name, "getGoroutineId()"))
+					}
+				}
+			}
+			if unary, ok := x.Cond.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 				c.InsertBefore(createLogChannelStmt("receive-channel", unary.X.(*ast.Ident).Name, "getGoroutineId()"))
 			}
-		// Receive 2nd case, within in assignment statement 'a := <-c'
-		case *ast.AssignStmt:
-			for _, rhs := range x.Rhs {
-				if unary, ok := rhs.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+		case *ast.ReturnStmt: // Detecting within a return statement 'return <- c'
+			for _, result := range x.Results {
+				if unary, ok := result.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 					c.InsertBefore(createLogChannelStmt("receive-channel", unary.X.(*ast.Ident).Name, "getGoroutineId()"))
+				}
+			}
+		case *ast.DeclStmt: // var x = <- c
+			if genDecl, ok := x.Decl.(*ast.GenDecl); ok {
+				for _, spec := range genDecl.Specs {
+					if valueSpec, ok := spec.(*ast.ValueSpec); ok {
+						for _, value := range valueSpec.Values {
+							if unary, ok := value.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+								c.InsertBefore(createLogChannelStmt("receive-channel", unary.X.(*ast.Ident).Name, "getGoroutineId()"))
+							}
+						}
+					}
 				}
 			}
 		}
 
-		// TODO other harder cases
+		// TODO other cases + fix error when accessing channel name if it's not direct
 
 		return true
 	})
 
-	// Create a new Go file called instrumented.go, which contains the modified source code
-	modified, err := os.Create("runs/" + fn)
+	// Create a new Go file, which will contain the modified source code
+	modified, err := os.Create(runId + "/" + fn)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer modified.Close()
 
-	// Format AST node back to Go source code and store in instrumented file
+	// Format rewritten AST node back to Go source code and store in instrumented file
 	err = format.Node(modified, fset, node)
 	if err != nil {
 		log.Fatal(err)

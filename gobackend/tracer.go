@@ -52,6 +52,7 @@ func getGoroutineId() int64 {
 
 // Inserts the start and end goroutine events for the main func
 func insertMainGoroutineEvents() {
+	// TODO see why this isn't captured sometimes
 	// TODO this is currently not sorted, change later if an issue
 	currentTime := time.Since(startTime).Seconds()
 	startMain := Event{0, "create-goroutine", "1", ""}
@@ -64,8 +65,11 @@ func encodeEventsToJson() {
 	// Insert the main func goroutine before writing our events.json
 	insertMainGoroutineEvents()
 
+	args := os.Args[1:]
+	runId := args[0]
+
 	// Create a new file called events.json
-	file, err := os.Create("events.json")
+	file, err := os.Create(runId + "/events.json")
 	if err != nil {
 		panic(err)
 	}
