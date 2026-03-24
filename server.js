@@ -138,7 +138,7 @@ wss.on("connection", async (ws) => {
                             const fileContent = await fs.promises.readFile(`gobackend/${runId}/events.json`, "utf8");
 
                             const message = JSON.stringify({ data: JSON.parse(fileContent), type: "events" });
-                            console.log("Sending message to server:", message);
+                            console.log("Sending message to client:", message);
                         
                             ws.send(message);
                         }
