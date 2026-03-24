@@ -1,7 +1,14 @@
 import * as THREE from "three";
 import { OrbitControls } from "jsm/controls/OrbitControls.js";
 
-const container = document.querySelector(".right-panel");
+const output = document.querySelector(".output");
+
+export function init(events) {
+    console.log(events);
+    console.log(events.toString());
+}
+
+const container = document.querySelector(".threejs");
 
 const width = container.clientWidth;
 const height = container.clientHeight;
@@ -73,10 +80,11 @@ let startTime = null;
 let playing = false;
 let currentTime = 0;
 
-const playBtn = document.getElementById("play");
+const playBtn = document.getElementById("play-button");
 
 playBtn.addEventListener("click", () => {
     console.log("Play");
+
   startTime = performance.now() - currentTime * 1000;
   playing = true;
 });

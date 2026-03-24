@@ -44,3 +44,40 @@
     flex: 1;
     overflow-y: auto;
 }
+
+.blur-overlay {
+    position: absolute;
+    align-content: center;
+    
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+
+    backdrop-filter: blur(5px);
+    transition: opacity 0.3s ease;
+
+    cursor: pointer;
+}
+
+.blur-overlay:hover {
+    backdrop-filter: blur(4px);
+}
+
+.blur-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.blur-overlay p {
+    text-align: center;
+    pointer-events: none;
+
+    color: var(--white);
+    font-family: var(--font-name), sans-serif;
+    font-size: var(--small-font-size);
+    font-weight: var(--font-weight);
+    font-style: normal;
+    font-optical-sizing: auto;
+}

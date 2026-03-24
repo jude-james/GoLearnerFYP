@@ -14,3 +14,12 @@ codeWindow.setSize("100%", "100%");
 export function getCodeWindow() {
     return codeWindow;
 }
+
+const codeMirrorWrapper = codeWindow.getWrapperElement();
+const blur = document.querySelector('.blur-overlay');
+codeMirrorWrapper.appendChild(blur);
+
+// Remove blur to reveal code solution
+blur.addEventListener("click", function() {
+    this.classList.add("hidden");
+});

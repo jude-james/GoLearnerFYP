@@ -44,11 +44,11 @@ function killDockerProcess(containerName) {
 
     const killer = spawn("docker", ["kill", containerName]);
     killer.on("close", (code) => {
-        if (code === 0) { // TODO add container name to msg
-            console.log("Successfully killed container, exit code:", code);
+        if (code === 0) {
+            console.log(`Successfully killed container (${containerName}) exit code: ${code}`);
         } 
         else {
-            console.error("Failed to kill container, exit code:", code);
+            console.error(`Failed to kill container (${containerName}) exit code: ${code}`);
         }
     });
 }
@@ -69,26 +69,24 @@ wss.on("connection", async (ws) => {
                 killDockerProcess(containerName);
                 break;
             case "run": 
-                // Create a unique run Id for each connection instance
-                const runId = `run-${Date.now()}`;
-                // TODO add a random number too, and keep to like 6 digits?
+                // Create a unique run Id for each run
+                const runId = `run-${crypto.randomUUID()}`;
 
                 containerName = runId;
 
+                // Create a temporary folder for the current run and copy tracer.go into it
                 try {
                     console.log("Creating temporary folder:", runId);
-                    // Create temporary folder for current run
                     await fs.promises.mkdir(`gobackend/${runId}`, { recursive: true });
-                    // Copy tracer.go into temporary folder
                     await fs.promises.copyFile("gobackend/tracer.go", `gobackend/${runId}/tracer.go`);
                 }
                 catch (error) {
-                    // TODO test error works and websocket closes and execution stops
                     console.error("Error preparing run folder:", error);
 
                     const message = JSON.stringify({ data: "Server ran into an error.", type: "error" });
                     ws.send(message);
 
+                    ws.close();
                     return;
                 }
 
@@ -135,6 +133,7 @@ wss.on("connection", async (ws) => {
                     console.log(`Child process exited with code ${code}`);
 
                     if (code === 0) {
+                        // Send events.json to client if program terminated with no errors
                         try {
                             const fileContent = await fs.promises.readFile(`gobackend/${runId}/events.json`, "utf8");
 
@@ -144,14 +143,16 @@ wss.on("connection", async (ws) => {
                             ws.send(message);
                         }
                         catch (error) {
-                            console.error("Error reading file:", error);
+                            console.error("Error reading json file:", error);
                         }
                     }
 
                     // Delete temporary run folder on closure
                     console.log("Deleting temporary folder:", runId);
                     fs.rm(`gobackend/${runId}`, { recursive: true, force: true }, (error) => {
-                        if (error) console.error("Failed to remove run folder:", error);
+                        if (error) {
+                            console.error("Failed to remove folder:", error);
+                        }
                     });
 
                     ws.close();

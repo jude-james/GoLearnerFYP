@@ -1,0 +1,41 @@
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.top-panel {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.bottom-panel {
+    border-top: 5px solid grey;
+
+    display: flex;
+}
+
+.left-panel {
+    flex: 1;
+
+    border-right: 3px solid var(--panel-border-grey);
+}
+
+.right-panel {
+    flex: 3;
+}
+
+.output {
+    font-size: var(--small-font-size);
+}
+
+.threejs-wrapper {
+    /*display: flex;*/
+    /*margin: 3rem;*/
+}
+
+.threejs {
+    flex: 1;
+    min-width: 0;
+}
+

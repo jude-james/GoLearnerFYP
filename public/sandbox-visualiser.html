@@ -3,13 +3,11 @@
     <head>
         <meta charset="UTF-8"/>
         
-        <title>Exercise</title>
+        <title>GoLearner - Sandbox Visualiser</title>
 
-        <link rel="stylesheet" href="css/base.css">
-        <link rel="stylesheet" href="css/topic-navbar.css"> 
+        <link rel="stylesheet" href="css/base.css">    
         <link rel="stylesheet" href="css/sandbox.css">
-        <link rel="stylesheet" href="css/markdown.css"> 
-        <link rel="stylesheet" href="css/exercise.css">    
+        <link rel="stylesheet" href="css/sandbox-visualiser.css">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,10 +23,6 @@
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"></link>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/xq-light.min.css"></link>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/material-darker.min.css"></link>
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/yonce.min.css"></link>
-
-        <!--Marked-->
-        <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
 
         <!-- Favicon -->
         <link rel="icon" type="image/png" href="/assets/favicon/favicon-96x96.png" sizes="96x96"/>
@@ -36,30 +30,41 @@
         <link rel="shortcut icon" href="/assets/favicon/favicon.ico"/>
         <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png"/>
         <link rel="manifest" href="/assets/favicon/site.webmanifest"/>
+
+        <!-- ThreeJS Import map -->
+        <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+                "jsm/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+            }
+        }
+        </script>
     </head>
 
     <body style="visibility: hidden;">
         <div class="navbar">
             <a href="index.html">GoLearner</a>
-            <a href="sandbox.html">Sandbox</a>
-            <a class="active" href="table-of-contents.html">Tutorial</a>
+            <a class="active" href="sandbox.html">Sandbox</a>
+            <a href="table-of-contents.html">Tutorial</a>
             <a href="extra.html">Extra</a>
         </div>
 
-        <div class="topic-nav"> 
-            <button id="prev-button">< Previous</button>
-            <div id="current">Current</div>
-            <button id="next-button">Next ></button>
-        </div>
-
         <div class="container"> 
-            <div class="left-panel"> 
+            <div class="top-panel">
                 <div class="file-header">
                     <img src="assets/images/go-file-icon.png" alt="" class="go-file-icon">
-                    <span class="file-name"></span>
+                    <span class="file-name">concurrency.go</span>
                 </div>
                 <div class="editor">
-                    <textarea id="code" spellcheck="false"></textarea>
+                    <textarea id="code" spellcheck="false">
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("GO GO GO")
+}</textarea>
                 </div>
                 
                 <div class="button-wrapper">
@@ -73,11 +78,11 @@
                     </button>
                     <button class="button" id="reset-button">
                         <img src="assets/images/reset-icon.png" alt="" class="button-icon">
-                        Reset
+                        Reset code
                     </button>
                     <button class="button" id="copy-button">
                         <img src="assets/images/copy-icon.png" alt="" class="button-icon">
-                        Copy
+                        Copy to clipboard
                     </button>
                 </div>
 
@@ -88,16 +93,17 @@
                 </pre>
             </div>
 
-            <div class="right-panel">
-                <div class="top-panel">
-                    <div class="markdown"></div>
+            <div class="bottom-panel">
+                <div class="left-panel">
+                    <div class="output">
+                        There is currently no event data, try running your program.
+                    </div>
                 </div>
-                <div class="bottom-panel">
-                    <div class="code-window">
-                        <div class="blur-overlay">
-                            <p>When you're ready, click to reveal solution</p>
+                <div class="right-panel">
+                    <button class="button" id="play-button">Play</button>
+                    <div class="threejs-wrapper">
+                        <div class="threejs">
                         </div>
-                        <textarea id="code-solution" spellcheck="false"></textarea>
                     </div>
                 </div>
             </div>
@@ -108,9 +114,8 @@
             <button id="dismiss-button">Dismiss</button>
         </div>
 
-        <script type="module" src="js/contentLoader.js"></script>
         <script type="module" src="js/sandbox.js"></script>
-        <script type="module" src="js/exercise.js"></script>
+        <script type="module" src="js/visualiser.js"></script>
         <script type="module" src="js/pageLoader.js"></script>
         <noscript><style>body { visibility: visible; }</style></noscript>
     </body>

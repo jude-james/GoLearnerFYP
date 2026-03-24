@@ -87,17 +87,17 @@ function startWebSocket() {
 
     ws.onopen = () => {
         console.log("Successfully connected to WebSocket server.");
-        clearConsole();
+        clearConsole(); // TODO start loading css on threejs panel?
 
         const message = JSON.stringify({ fileName: fileName.textContent, code: editor.getValue(), type: "run" });
         console.log("Sending message to server:", message);
         ws.send(message);
     }
 
-    ws.onmessage = (event) => {
+    ws.onmessage = async (event) => {
         console.log("Received message from server:", event.data.toString());
 
-        // Message from server can be of type error, stdout or stderr. The latter 2 refer to the docker process
+        // Message from server can be of type error, events, stdout or stderr. The latter 2 refer to the docker process
         const message = JSON.parse(event.data.toString());
         switch (message.type) {
             case "stdout":
@@ -110,11 +110,18 @@ function startWebSocket() {
                 console.error(message.data);
                 displayError(message.data);
                 break;
+            case "events":
+                try { // TODO move this to top?
+                    const { init } = await import('./visualiser.js');
+                    init(message.data);
+                }
+                catch (error) {
+                    console.warn("Could not init visualiser:", error);
+                }
+                break;
             default:
                 console.warn("Unknown message type:", message.type);
         }
-
-        // TODO check for events data, which will have a new case type 'events'
     };
 
     ws.onerror = () => {

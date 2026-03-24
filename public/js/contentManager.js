@@ -91,6 +91,16 @@ const concurrencyChapters = [
                 title: "Concurrency 1",
                 slug: "concurrency1",
                 layout: "lesson.html",
+            },
+            {
+                title: "Goroutines quiz",
+                slug: "goroutines_quiz",
+                layout: "quiz.html",
+                question: "This is a question...?",
+                answer: 1,
+                options: [
+                    "A", "B", "C"
+                ]
             }
         ]
     }

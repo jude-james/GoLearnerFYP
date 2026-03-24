@@ -94,6 +94,38 @@ async function init() {
         }
     }
 
+    if (topic.question) {
+        document.querySelector(".question").textContent = topic.question;
+
+        // Set each option to each radio button span
+        const options = topic.options;
+        const spans = document.querySelectorAll('input[name="radio"] + span');
+
+        for (let i = 0; i < options.length; i++) {
+            spans[i].textContent = options[i];
+        }
+
+        const answerIndex = topic.answer;
+
+        document.getElementById("mcq").addEventListener("submit", function(e) {
+            // TODO reset messages to both invisible
+
+            e.preventDefault();
+
+            const radios = Array.from(this.elements["radio"]);
+            const checkedIndex = radios.findIndex(radio => radio.checked) + 1;
+
+            if (checkedIndex === answerIndex) {
+                console.log("Correct Answer!");
+                // TODO display correct answer
+                // set correct answer message to visible
+            }
+            else {
+                // set incorrect answer message to visible
+            }
+        });
+    }
+
     if (topic.message) {
         document.querySelector(".message").textContent = topic.message;
 
