@@ -35,7 +35,16 @@
 }
 
 .threejs {
+    position: relative;
+
     flex: 1;
     min-width: 0;
+}
+
+.label {
+    color: var(--black);
+    /*pointer-events: none;*/
+    /*padding: 2px;*/
+    /*background: rgba( 0, 0, 0, .6 );*/
 }
 

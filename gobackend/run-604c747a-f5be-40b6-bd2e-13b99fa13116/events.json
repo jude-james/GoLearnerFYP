@@ -1,0 +1,254 @@
+[
+	{
+		"time": 0.000010625,
+		"event": "receive-channel",
+		"id": "0x40000180e0",
+		"parentId": "1"
+	},
+	{
+		"time": 0.000015167,
+		"event": "create-goroutine",
+		"id": "7",
+		"parentId": "1"
+	},
+	{
+		"time": 0.000035334,
+		"event": "create-goroutine",
+		"id": "10",
+		"parentId": "7"
+	},
+	{
+		"time": 0.000040625,
+		"event": "create-goroutine",
+		"id": "8",
+		"parentId": "7"
+	},
+	{
+		"time": 0.000044667,
+		"event": "create-goroutine",
+		"id": "9",
+		"parentId": "7"
+	},
+	{
+		"time": 0.054518375,
+		"event": "end-goroutine",
+		"id": "9",
+		"parentId": "7"
+	},
+	{
+		"time": 0.054543792,
+		"event": "end-goroutine",
+		"id": "8",
+		"parentId": "7"
+	},
+	{
+		"time": 0.054543584,
+		"event": "end-goroutine",
+		"id": "10",
+		"parentId": "7"
+	},
+	{
+		"time": 0.104745125,
+		"event": "send-channel",
+		"id": "0x40000180e0",
+		"parentId": "7"
+	},
+	{
+		"time": 0.104755625,
+		"event": "end-goroutine",
+		"id": "7",
+		"parentId": "1"
+	},
+	{
+		"time": 0.104767834,
+		"event": "receive-channel",
+		"id": "0x4000018150",
+		"parentId": "1"
+	},
+	{
+		"time": 0.104783667,
+		"event": "create-goroutine",
+		"id": "11",
+		"parentId": "1"
+	},
+	{
+		"time": 0.104824792,
+		"event": "create-goroutine",
+		"id": "14",
+		"parentId": "11"
+	},
+	{
+		"time": 0.104832875,
+		"event": "create-goroutine",
+		"id": "13",
+		"parentId": "11"
+	},
+	{
+		"time": 0.104832584,
+		"event": "create-goroutine",
+		"id": "12",
+		"parentId": "11"
+	},
+	{
+		"time": 0.156877959,
+		"event": "end-goroutine",
+		"id": "12",
+		"parentId": "11"
+	},
+	{
+		"time": 0.156915625,
+		"event": "end-goroutine",
+		"id": "13",
+		"parentId": "11"
+	},
+	{
+		"time": 0.156918167,
+		"event": "end-goroutine",
+		"id": "14",
+		"parentId": "11"
+	},
+	{
+		"time": 0.2098,
+		"event": "send-channel",
+		"id": "0x4000018150",
+		"parentId": "11"
+	},
+	{
+		"time": 0.209817792,
+		"event": "end-goroutine",
+		"id": "11",
+		"parentId": "1"
+	},
+	{
+		"time": 0.209838167,
+		"event": "receive-channel",
+		"id": "0x400008e000",
+		"parentId": "1"
+	},
+	{
+		"time": 0.209852542,
+		"event": "create-goroutine",
+		"id": "17",
+		"parentId": "1"
+	},
+	{
+		"time": 0.209877459,
+		"event": "create-goroutine",
+		"id": "20",
+		"parentId": "17"
+	},
+	{
+		"time": 0.209887875,
+		"event": "create-goroutine",
+		"id": "18",
+		"parentId": "17"
+	},
+	{
+		"time": 0.209900042,
+		"event": "create-goroutine",
+		"id": "19",
+		"parentId": "17"
+	},
+	{
+		"time": 0.262029792,
+		"event": "end-goroutine",
+		"id": "19",
+		"parentId": "17"
+	},
+	{
+		"time": 0.262039292,
+		"event": "end-goroutine",
+		"id": "20",
+		"parentId": "17"
+	},
+	{
+		"time": 0.262040542,
+		"event": "end-goroutine",
+		"id": "18",
+		"parentId": "17"
+	},
+	{
+		"time": 0.312613084,
+		"event": "send-channel",
+		"id": "0x400008e000",
+		"parentId": "17"
+	},
+	{
+		"time": 0.312615709,
+		"event": "end-goroutine",
+		"id": "17",
+		"parentId": "1"
+	},
+	{
+		"time": 0.312719625,
+		"event": "receive-channel",
+		"id": "0x400008e070",
+		"parentId": "1"
+	},
+	{
+		"time": 0.312753375,
+		"event": "create-goroutine",
+		"id": "21",
+		"parentId": "1"
+	},
+	{
+		"time": 0.312838875,
+		"event": "create-goroutine",
+		"id": "22",
+		"parentId": "21"
+	},
+	{
+		"time": 0.312857542,
+		"event": "create-goroutine",
+		"id": "23",
+		"parentId": "21"
+	},
+	{
+		"time": 0.312886042,
+		"event": "create-goroutine",
+		"id": "24",
+		"parentId": "21"
+	},
+	{
+		"time": 0.364193584,
+		"event": "end-goroutine",
+		"id": "24",
+		"parentId": "21"
+	},
+	{
+		"time": 0.364217459,
+		"event": "end-goroutine",
+		"id": "23",
+		"parentId": "21"
+	},
+	{
+		"time": 0.3642275,
+		"event": "end-goroutine",
+		"id": "22",
+		"parentId": "21"
+	},
+	{
+		"time": 0.416065584,
+		"event": "send-channel",
+		"id": "0x400008e070",
+		"parentId": "21"
+	},
+	{
+		"time": 0.416069209,
+		"event": "end-goroutine",
+		"id": "21",
+		"parentId": "1"
+	},
+	{
+		"time": 0,
+		"event": "create-goroutine",
+		"id": "1",
+		"parentId": ""
+	},
+	{
+		"time": 0.416072375,
+		"event": "end-goroutine",
+		"id": "1",
+		"parentId": ""
+	}
+]

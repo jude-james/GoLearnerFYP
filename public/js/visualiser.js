@@ -3,48 +3,61 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 const container = document.querySelector(".threejs");
 const output = document.querySelector(".output");
 const playButton = document.getElementById("play-button");
 
-// Create renderer and add to DOM
+// Create renderer and append to DOM
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 container.appendChild(renderer.domElement);
 
+// Create label renderer and append to DOM
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.domElement.style.position = "absolute";
+labelRenderer.domElement.style.top = "0px";
+container.appendChild(labelRenderer.domElement);
+
 // Camera settings
 const fov = 75;
-const aspect = container.clientWidth / container.clientHeight;
+const aspect = container.clientWidth / window.innerHeight;
 const near = 0.01;
 const far = 100;
 
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+camera.layers.enableAll();
 camera.position.set(0, 2, 2);
 
 // Control settings
-const controls = new OrbitControls(camera, renderer.domElement);
+const controls = new OrbitControls(camera, labelRenderer.domElement);
 // controls.enableDamping = true;
 // controls.dampingFactor = 0.03;
 
+// Colours
+const backgroundColour = 0xf5f5f5;
+const goroutineColour = 0x3347ff;
+
 // Create scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xbebebe);
+scene.background = new THREE.Color(backgroundColour);
 
 // Add grid to scene
 const grid = new THREE.GridHelper(100, 100);
 scene.add(grid);
 
-// Goroutine line material
-const material = new LineMaterial({
-    color: 0x1c3471, // blue
-    linewidth: 6,
+// Line materials
+
+const goroutineMat = new LineMaterial({
+    color: goroutineColour,
+    linewidth: 3,
     dashed: false,
     alphaToCoverage: true
 });
 
-const materialConnector = new LineMaterial({
-    color: 0x1c3471, // blue
-    linewidth: 1,
+const connectorMat = new LineMaterial({
+    color: goroutineColour, // TODO add slightly different colour
+    linewidth: 0.5,
     dashed: false,
     alphaToCoverage: true
 });
@@ -57,238 +70,218 @@ function resize() {
     const height = window.innerHeight;
 
     renderer.setSize(width, height);
+    labelRenderer.setSize(width, height);
+
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
-    // Fix material glitch TODO do this for every new material for different line thicknesses
-    material.resolution.set(width, height);
-    materialConnector.resolution.set(width, height);
+    goroutineMat.resolution.set(width, height);
+    connectorMat.resolution.set(width, height);
 }
 
 window.addEventListener("resize", resize);
 resize();
 
-let map = {};
+/**
+ * Resets event data and removes all objects from the scene apart from the grid
+ */
+function resetScene() {
+    goroutineMap = {};
+    scene.remove.apply(scene, scene.children);
+    scene.add(grid);
+}
 
-//let offset = 0; // later become depth
+let goroutineMap = {}; // TODO add channels
 
 let duration;
 
-// TODO this is distance scale, add time scale separately which actually scales t 
-let timeScale = 2;
+const direction = -1;
+// TODO add controls for these
+let yOffset;
+let distScale = 10 * direction;
+let timeScale = 1/10;
 
 /**
  * entry point for visualiser, takes in events data and sets up scene
  * @param {any} events - The events json data object
  */
 export function init(events) {
-    console.log("Init");
-
+    resetScene();
     output.textContent = "Click play to replay what happened in the program";
-
-    // Reset everything, TODO move to separate func and do properly
-    map = {}; // Currently only for goroutines, add separate threads one?
-    //offset = 0;
-    scene.remove.apply(scene, scene.children);
-    scene.add(grid);
 
     for (let i = 0; i < events.length; i++) {
         const e = events[i];
 
         // Pair goroutine events together, combining start and end times
         if (e.event === "create-goroutine" || e.event === "end-goroutine") {
-            if (!map[e.id]) {
-                map[e.id] = { id: e.id, parentId: e.parentId, start: null, end: null, line: null, startConn: null, endConn: null, children: [] };
+            if (!goroutineMap[e.id]) {     
+                // Create a new entry for each new Id           
+                goroutineMap[e.id] = { 
+                    id: e.id, // TODO need this? why is it breaking?
+                    parentId: e.parentId, 
+                    start: null, 
+                    end: null, 
+                    line: null, 
+                    startConn: null, 
+                    endConn: null, 
+                    children: [] };
             }
 
             if (e.event === "create-goroutine") {
-                map[e.id].start = e.time;
+                goroutineMap[e.id].start = e.time;
             }
 
             if (e.event === "end-goroutine") {
-                map[e.id].end   = e.time;
+                goroutineMap[e.id].end = e.time;
             }
         }
     }    
 
     // Add all children to each event
-    Object.values(map).forEach(e => {
-        if (e.parentId && map[e.parentId]) {            
-            map[e.parentId].children.push(e.id);
+    Object.values(goroutineMap).forEach(e => {
+        if (e.parentId && goroutineMap[e.parentId]) {            
+            goroutineMap[e.parentId].children.push(e.id);
         }
     });
     
-    let mainGoroutine = map[1]; // 1 is always main goroutine
+    let mainGoroutine = goroutineMap[1]; // id of 1 is always main goroutine
     duration = mainGoroutine.end;
-    // TODO set main text here
-
-    drawRecursive(mainGoroutine, 0, 0, 0);    
+    yOffset = duration * direction;
+    drawGoroutine(mainGoroutine, 0, 0, 0);
 }
 
-// TODO comment + rename + don't actually draw to start with, just store and let update draw
-function drawRecursive(event, childNo, noChildren, depth) { // pass in some depth or something?
-    //console.log("Drawing line:", event);
-    //console.log("depth:", depth);
-    
-    let startPos;
-    let endPos;
+/**
+ * Spawns a goroutine line and it's parent connector lines, and stores the lines in the event object
+ * @param {any} event - The goroutine event object
+ * @param {integer} childNo - The child number of this event
+ * @param {integer} noChildren - The number of children the parent has
+ * @param {integer} depth - The depth from the main goroutine
+ */
+function drawGoroutine(event, childNo, noChildren, depth) { 
+    // TODO Eventually set end y to 0 so it starts invisible, just store and let update draw
+
+    let startPos = new THREE.Vector3(0, (yOffset + event.start) * distScale, 0);
+    let endPos = new THREE.Vector3(0, (yOffset + event.end) * distScale, 0);
 
     if (event.parentId !== "") {
-        const parent = map[event.parentId];
-
+        // Set spawn point radially around parent
+        const parent = goroutineMap[event.parentId];
+        // Assume parent already has line set, since this function would have been called before
+        const parentLinePos = parent.line.geometry.attributes.instanceStart.array;
         const angle = (360 / noChildren) * childNo;
-        //console.log(angle);
-            if (event.parentId === "1") console.log(angle);
+        const rad = angle * (Math.PI / 180);
 
-        startPos = new THREE.Vector3(parent.line.geometry.attributes.instanceStart.array[0] + Math.cos(angle) * (1 / (depth*depth)), event.start * timeScale, parent.line.geometry.attributes.instanceStart.array[2] + Math.sin(angle) * (1 / (depth*depth)));
-        endPos = new THREE.Vector3(parent.line.geometry.attributes.instanceStart.array[3] + Math.cos(angle) * (1 / (depth*depth)), event.end * timeScale, parent.line.geometry.attributes.instanceStart.array[5] + Math.sin(angle) * (1 / (depth*depth)));
-    }
-    else {
-        startPos = new THREE.Vector3(0, event.start * timeScale, 0);
-        endPos = new THREE.Vector3(0, event.end * timeScale, 0);
-    }
-    
+        startPos = new THREE.Vector3(parentLinePos[0] + Math.cos(rad) * (1 / (depth*depth)), (yOffset + event.start) * distScale, parentLinePos[2] + Math.sin(rad) * (1 / (depth*depth)));
+        endPos = new THREE.Vector3(parentLinePos[3] + Math.cos(rad) * (1 / (depth*depth)), (yOffset + event.end) * distScale, parentLinePos[5] + Math.sin(rad) * (1 / (depth*depth)));
 
-    // 1. Draw line
-    const geometry = new LineGeometry();
-    geometry.setPositions([
-        /*
-        0, event.start * timeScale, offset,
-        0, event.end * timeScale, offset*/
-        startPos.x, startPos.y, startPos.z,
-        endPos.x, endPos.y, endPos.z
-    ]);
-
-    const line = new Line2(geometry, material);
-    line.computeLineDistances;
-    
-    event.line = line;
-    scene.add(line);
-    
-    // draw connectors and store start and end connectors in map
-    if (event.parentId !== "") {
-        // It has a parent
-        const parent = map[event.parentId];
-
-        // Start connector
-        const geometry = new LineGeometry();
-        geometry.setPositions([
-            /*
-            0, event.start * timeScale, offset,
-            // get parent line, not the best but rn it's guaranteed that the parent line is already set
-            0, event.start * timeScale, parent.line.geometry.attributes.instanceStart.array[2]*/
+        // Draw connector lines and store in goroutine map
+        const startConnGeo = new LineGeometry();
+        startConnGeo.setPositions([
             startPos.x, startPos.y, startPos.z,
-            // pass parent line into function?
-            parent.line.geometry.attributes.instanceStart.array[0], startPos.y, parent.line.geometry.attributes.instanceStart.array[2]
+            parentLinePos[0], startPos.y, parentLinePos[2]
         ]);
-
-        const startConn = new Line2(geometry, materialConnector);
+        const startConn = new Line2(startConnGeo, connectorMat);
         startConn.computeLineDistances;
 
         event.startConn = startConn;
         scene.add(startConn);
 
-        // End connectors
-        // check if parent has ended already, then don't show end connector
+        // Check parent hasn't already ended before creating end connector
         if (parent.end >= event.end) {
-            const geometry2 = new LineGeometry();
-            geometry2.setPositions([
-                /*
-                0, event.end * timeScale, offset,
-                0, event.end * timeScale, parent.line.geometry.attributes.instanceStart.array[2]
-                */
+            const endConnGeo = new LineGeometry();
+            endConnGeo.setPositions([
                 endPos.x, endPos.y, endPos.z,
-                // pass parent line into function?
-                parent.line.geometry.attributes.instanceStart.array[0], endPos.y, parent.line.geometry.attributes.instanceStart.array[2]
+                parentLinePos[3], endPos.y, parentLinePos[5]
             ]);
-
-            const endConn = new Line2(geometry2, materialConnector);
+            const endConn = new Line2(endConnGeo, connectorMat);
             endConn.computeLineDistances;
 
             event.endConn = endConn;
             scene.add(endConn);
         }
-        
     }
 
-    //offset++;
+    // Draw goroutine line and store in goroutine map
+    const goroutineGeo = new LineGeometry();
+    goroutineGeo.setPositions([
+        startPos.x, startPos.y, startPos.z,
+        endPos.x, endPos.y, endPos.z
+    ]);
+    const line = new Line2(goroutineGeo, goroutineMat);
+    line.computeLineDistances;
+    
+    event.line = line;
+    scene.add(line);
+    
+    // Create label with goroutine Id above line
+    const idDiv = document.createElement("div");
+    idDiv.className = "label";
+    
+    idDiv.textContent = `id:${event.id}`;
+    if (event.id === "1") idDiv.textContent = "main";
+    
+    /*idDiv.style.backgroundColor = "transparent";*/
+    const idLabel = new CSS2DObject(idDiv);
+    idLabel.position.set(startPos.x, startPos.y, startPos.z);
+    idLabel.center.set(0, 1); // ?
+    idLabel.layers.set(0); // ?
+    event.line.add(idLabel);
 
-    // 2. loop through children
-    const children = event.children;
-    //console.log("This even has children:", children);
-
+    // Recursively call for each child, increasing the depth
     depth++;
+    const children = event.children;
+
     for (let i = 0; i < children.length; i++) {
-        drawRecursive(map[children[i]], i+1, children.length, depth);
+        const child = goroutineMap[children[i]];
+        drawGoroutine(child, i + 1, children.length, depth);
     }
 }
 
 let playing = false;
-let startTime;
 let currentTime = 0;
+let startTime;
 
 playButton.addEventListener("click", () => {
     // TODO disable button until they are allowed to play
 
-    startTime = performance.now();
-    currentTime = 0;
+    // Start the time from 0
     playing = true;
-
-    //updateScene(1.5); // testing hard coded time for now
+    currentTime = 0;
+    startTime = performance.now();
 });
 
-function updateScene(t) {
-    //console.log("setting to:", t);
-    
-    // For each t that passes, loop through event map and update the line completion depending on the time
-    Object.values(map).forEach(e => {
-        const g = e.line.geometry;
-        const positions = g.attributes.instanceStart.array;
+function updateScene(t) {    
+    // Update goroutine line positions depending on t
+    Object.values(goroutineMap).forEach(event => {
+        const geo = event.line.geometry;
+        const positions = geo.attributes.instanceStart.array;
 
-        if (t < e.start) {
-            // hide whole line
-            //e.line.visible = false; // Use this?
-            positions[4] = e.start * timeScale;
+        // 4 = end point y;
 
-            // if its not null ie not main
-            if (e.startConn) {
-                e.startConn.visible = false;            
-            }
-            if (e.endConn) {
-                e.endConn.visible = false;
-            }
+        if (t < event.start) {
+            // Hide line
+            positions[4] = (yOffset + event.start) * distScale; // TODO disable fully to avoid dot
+
+            if (event.startConn) event.startConn.visible = false;
+            if (event.endConn) event.endConn.visible = false;
         }
-        if (t > e.end) {
-            // show whole line
-            positions[4] = e.end * timeScale;
+        if (t >= event.end) {
+            // show line
+            positions[4] = (yOffset + event.end) * distScale;
 
-            if (e.startConn) {
-                e.startConn.visible = true;
-            }
-            if (e.endConn) {
-                e.endConn.visible = true;
-            }
+            if (event.startConn) event.startConn.visible = true;
+            if (event.endConn) event.endConn.visible = true;
+        }
+        if (t >= event.start && t < event.end) {
+            positions[4] = (yOffset + t) * distScale; 
+
+            if (event.startConn) event.startConn.visible = true;
+            if (event.endConn) event.endConn.visible = false;
         }
 
-        if (t >= e.start && t < e.end) {
-            positions[4] = t * timeScale; // 3 = end point x;
-
-            /*
-            g.setPositions([
-                e.start, 0, offset,
-                t, 0,
-            ]);*/
-            if (e.startConn) {
-                e.startConn.visible = true;
-            }
-            if (e.endConn) {
-                e.endConn.visible = false;
-            }
-        }
-
-        g.attributes.instanceStart.needsUpdate = true;
-        g.attributes.instanceEnd.needsUpdate = true;
-        e.line.computeLineDistances();
+        geo.attributes.instanceStart.needsUpdate = true;
+        geo.attributes.instanceEnd.needsUpdate = true;
+        event.line.computeLineDistances();
     });
 }
 
@@ -296,8 +289,8 @@ function animate(t = 0) {
     requestAnimationFrame(animate);
     
     if (playing) {
-        currentTime = (performance.now() - startTime) / 1000;
-
+        currentTime = timeScale * ((performance.now() - startTime) / 1000);
+                
         if (currentTime >= duration) {
             currentTime = duration;
             playing = false;
@@ -309,7 +302,7 @@ function animate(t = 0) {
 
     //controls.update();
     renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
 }
 
-//updateScene(0);
 animate();
