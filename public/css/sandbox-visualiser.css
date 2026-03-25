@@ -42,9 +42,20 @@
 }
 
 .label {
+    pointer-events: none;
+
     color: var(--black);
-    /*pointer-events: none;*/
-    /*padding: 2px;*/
-    /*background: rgba( 0, 0, 0, .6 );*/
+    
+    /* TODO font family not working, try fix */
+    font-family: var(--font-name), sans-serif !important;
+    font-size: 1rem;
+    font-weight: var(--small-font-weight);
+    font-style: normal;
+    font-optical-sizing: auto;
 }
 
+.lil-gui {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
