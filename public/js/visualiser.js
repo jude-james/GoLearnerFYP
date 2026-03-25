@@ -15,7 +15,7 @@ container.appendChild(renderer.domElement);
 // Camera settings
 const fov = 75;
 const aspect = container.clientWidth / container.clientHeight;
-const near = 0.1;
+const near = 0.01;
 const far = 100;
 
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -70,9 +70,12 @@ resize();
 
 let map = {};
 
-let offset = 0; // later become depth
+//let offset = 0; // later become depth
 
 let duration;
+
+// TODO this is distance scale, add time scale separately which actually scales t 
+let timeScale = 2;
 
 /**
  * entry point for visualiser, takes in events data and sets up scene
@@ -85,7 +88,7 @@ export function init(events) {
 
     // Reset everything, TODO move to separate func and do properly
     map = {}; // Currently only for goroutines, add separate threads one?
-    offset = 0;
+    //offset = 0;
     scene.remove.apply(scene, scene.children);
     scene.add(grid);
 
@@ -119,33 +122,50 @@ export function init(events) {
     duration = mainGoroutine.end;
     // TODO set main text here
 
-    drawRecursive(mainGoroutine);    
+    drawRecursive(mainGoroutine, 0, 0, 0);    
 }
 
-// TODO comment
-function drawRecursive(event) { // pass in some depth or something?
-    console.log("Drawing line:", event);
+// TODO comment + rename + don't actually draw to start with, just store and let update draw
+function drawRecursive(event, childNo, noChildren, depth) { // pass in some depth or something?
+    //console.log("Drawing line:", event);
+    //console.log("depth:", depth);
     
-    // 1. Draw line
-    const startPoint = new THREE.Vector3(event.start, 0, offset); 
-    // TODO dont even need these vector 3s
-    const endPoint = new THREE.Vector3(event.end, 0, offset);
+    let startPos;
+    let endPos;
 
+    if (event.parentId !== "") {
+        const parent = map[event.parentId];
+
+        const angle = (360 / noChildren) * childNo;
+        //console.log(angle);
+            if (event.parentId === "1") console.log(angle);
+
+        startPos = new THREE.Vector3(parent.line.geometry.attributes.instanceStart.array[0] + Math.cos(angle) * (1 / (depth*depth)), event.start * timeScale, parent.line.geometry.attributes.instanceStart.array[2] + Math.sin(angle) * (1 / (depth*depth)));
+        endPos = new THREE.Vector3(parent.line.geometry.attributes.instanceStart.array[3] + Math.cos(angle) * (1 / (depth*depth)), event.end * timeScale, parent.line.geometry.attributes.instanceStart.array[5] + Math.sin(angle) * (1 / (depth*depth)));
+    }
+    else {
+        startPos = new THREE.Vector3(0, event.start * timeScale, 0);
+        endPos = new THREE.Vector3(0, event.end * timeScale, 0);
+    }
+    
+
+    // 1. Draw line
     const geometry = new LineGeometry();
     geometry.setPositions([
-        startPoint.x, startPoint.y, startPoint.z,
-        endPoint.x, endPoint.y, endPoint.z
+        /*
+        0, event.start * timeScale, offset,
+        0, event.end * timeScale, offset*/
+        startPos.x, startPos.y, startPos.z,
+        endPos.x, endPos.y, endPos.z
     ]);
 
     const line = new Line2(geometry, material);
     line.computeLineDistances;
-
+    
     event.line = line;
     scene.add(line);
     
-    // Create and draw connector lines here?
-    // draw connectors
-    // store pair of connectors in map
+    // draw connectors and store start and end connectors in map
     if (event.parentId !== "") {
         // It has a parent
         const parent = map[event.parentId];
@@ -153,41 +173,53 @@ function drawRecursive(event) { // pass in some depth or something?
         // Start connector
         const geometry = new LineGeometry();
         geometry.setPositions([
-            event.start, 0, offset,
+            /*
+            0, event.start * timeScale, offset,
             // get parent line, not the best but rn it's guaranteed that the parent line is already set
-            event.start, 0, parent.line.geometry.attributes.instanceStart.array[2]
+            0, event.start * timeScale, parent.line.geometry.attributes.instanceStart.array[2]*/
+            startPos.x, startPos.y, startPos.z,
+            // pass parent line into function?
+            parent.line.geometry.attributes.instanceStart.array[0], startPos.y, parent.line.geometry.attributes.instanceStart.array[2]
         ]);
 
-        const connectorLine = new Line2(geometry, materialConnector);
-        connectorLine.computeLineDistances;
+        const startConn = new Line2(geometry, materialConnector);
+        startConn.computeLineDistances;
 
-        event.startConn = connectorLine;
-        scene.add(connectorLine);
+        event.startConn = startConn;
+        scene.add(startConn);
 
-        
         // End connectors
-        const geometry2 = new LineGeometry();
-        geometry2.setPositions([
-            event.end, 0, offset,
-            event.end, 0, parent.line.geometry.attributes.instanceStart.array[2]
-        ]);
+        // check if parent has ended already, then don't show end connector
+        if (parent.end >= event.end) {
+            const geometry2 = new LineGeometry();
+            geometry2.setPositions([
+                /*
+                0, event.end * timeScale, offset,
+                0, event.end * timeScale, parent.line.geometry.attributes.instanceStart.array[2]
+                */
+                endPos.x, endPos.y, endPos.z,
+                // pass parent line into function?
+                parent.line.geometry.attributes.instanceStart.array[0], endPos.y, parent.line.geometry.attributes.instanceStart.array[2]
+            ]);
 
-        const connectorLine2 = new Line2(geometry2, materialConnector);
-        connectorLine2.computeLineDistances;
+            const endConn = new Line2(geometry2, materialConnector);
+            endConn.computeLineDistances;
 
-        event.endConn = connectorLine2;
-        scene.add(connectorLine2);
+            event.endConn = endConn;
+            scene.add(endConn);
+        }
+        
     }
 
-    offset++;
+    //offset++;
 
     // 2. loop through children
     const children = event.children;
-    console.log("This even has children:", children);
+    //console.log("This even has children:", children);
 
+    depth++;
     for (let i = 0; i < children.length; i++) {
-        //event = map[children[i]];
-        drawRecursive(map[children[i]]);
+        drawRecursive(map[children[i]], i+1, children.length, depth);
     }
 }
 
@@ -208,37 +240,38 @@ playButton.addEventListener("click", () => {
 function updateScene(t) {
     //console.log("setting to:", t);
     
+    // For each t that passes, loop through event map and update the line completion depending on the time
     Object.values(map).forEach(e => {
         const g = e.line.geometry;
         const positions = g.attributes.instanceStart.array;
 
-        //const startConnG = e.startConn.geometry;
-        //const startConnPositions = startConnG.attributes.instanceStart.array;
-        //const endConnG = e.endConn.geometry;
-
         if (t < e.start) {
             // hide whole line
             //e.line.visible = false; // Use this?
-            positions[3] = e.start;
+            positions[4] = e.start * timeScale;
 
             // if its not null ie not main
             if (e.startConn) {
                 e.startConn.visible = false;            
+            }
+            if (e.endConn) {
                 e.endConn.visible = false;
             }
         }
         if (t > e.end) {
             // show whole line
-            positions[3] = e.end;
+            positions[4] = e.end * timeScale;
 
             if (e.startConn) {
-                e.endConn.visible = true;
                 e.startConn.visible = true;
+            }
+            if (e.endConn) {
+                e.endConn.visible = true;
             }
         }
 
         if (t >= e.start && t < e.end) {
-            positions[3] = t; // 3 = end point x;
+            positions[4] = t * timeScale; // 3 = end point x;
 
             /*
             g.setPositions([
@@ -247,6 +280,8 @@ function updateScene(t) {
             ]);*/
             if (e.startConn) {
                 e.startConn.visible = true;
+            }
+            if (e.endConn) {
                 e.endConn.visible = false;
             }
         }
