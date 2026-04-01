@@ -106,24 +106,41 @@ async function init() {
         }
 
         const answerIndex = topic.answer;
+            
+        const correctMessage = document.querySelector(".correct-message");
+        const incorrectMessage = document.querySelector(".incorrect-message");
 
         document.getElementById("mcq").addEventListener("submit", function(e) {
-            // TODO reset messages to both invisible
-
             e.preventDefault();
 
             const radios = Array.from(this.elements["radio"]);
             const checkedIndex = radios.findIndex(radio => radio.checked) + 1;
 
             if (checkedIndex === answerIndex) {
-                console.log("Correct Answer!");
-                // TODO display correct answer
-                // set correct answer message to visible
+                correctMessage.style.setProperty("visibility", "visible");
+                incorrectMessage.style.setProperty("visibility", "hidden");
             }
             else {
-                // set incorrect answer message to visible
+                incorrectMessage.style.setProperty("visibility", "visible");
+                correctMessage.style.setProperty("visibility", "hidden");
             }
         });
+    }
+
+    if (topic.layout === "summary.html") {
+        for (let i = 0; i < 4; i++) {
+            const markdown = await getCurrentTopicFile(`tab_${i}.md`);
+
+            if (markdown) {
+                const label = document.querySelector(`label[for="tab_${i}"]`);
+                
+                const html = marked.parse(markdown);
+                label.querySelector('.content').innerHTML = html;
+            }
+            else {                
+                displayError(`Cannot find markdown file: ${topic.markdown}`);
+            }
+        }
     }
 
     if (topic.message) {

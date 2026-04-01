@@ -1,3 +1,8 @@
+body {
+    background-image: radial-gradient(circle at 1px 1px, #2c52ad 2px, transparent 0);
+    background-size: 30px 30px;
+}
+
 .table-of-contents {
     display: flex;
     flex-direction: column;

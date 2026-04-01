@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang=en> 
+    <head>
+        <meta charset="UTF-8"/>
+        
+        <title>Lesson Visualiser</title>
+
+        <link rel="stylesheet" href="css/base.css"> 
+        <link rel="stylesheet" href="css/topic-navbar.css"> 
+        <link rel="stylesheet" href="css/sandbox.css"> 
+        <link rel="stylesheet" href="css/markdown.css"> 
+        <link rel="stylesheet" href="css/visualiser.css"> 
+        <link rel="stylesheet" href="css/lesson-visualiser.css">
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,200..700;1,200..700&family=Handjet:wght@100..900&family=Sometype+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+
+        <!-- CodeMirror -->
+        <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
+        <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/go/go.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/selection/active-line.min.js"></script>
+
+        <!-- CodeMirror themes -->
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"></link>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/xq-light.min.css"></link>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/material-darker.min.css"></link>
+
+        <!--Marked-->
+        <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="/assets/favicon/favicon-96x96.png" sizes="96x96"/>
+        <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg"/>
+        <link rel="shortcut icon" href="/assets/favicon/favicon.ico"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png"/>
+        <link rel="manifest" href="/assets/favicon/site.webmanifest"/>
+
+        <!-- ThreeJS Import map -->
+        <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+            }
+        }
+        </script>
+    </head>
+
+    <body style="visibility: hidden;">
+        <div class="navbar">
+            <a href="index.html">GoLearner</a>
+            <a href="sandbox.html">Sandbox</a>
+            <a class="active" href="table-of-contents.html">Tutorial</a>
+            <a href="extra.html">Extra</a>
+        </div>
+
+        <div class="topic-nav"> 
+            <button id="prev-button">< <s>Previous</s></button>
+            <div id="current">Current</div>
+            <button id="next-button"><s>Next</s> ></button>
+        </div>
+
+        <div class="container"> 
+            <div class="top-panel">
+                <div class="left-panel">
+                    <div class="markdown"></div>
+                </div>
+
+                <div class="right-panel"> 
+                    <div class="file-header">
+                        <img src="assets/images/go-file-icon.png" alt="" class="go-file-icon">
+                        <span class="file-name"></span>
+                    </div>
+                    <div class="editor">
+                        <textarea id="code" spellcheck="false"></textarea>
+                    </div>
+                    
+                    <div class="button-wrapper">
+                        <button class="button" id="run-button">
+                            <img src="assets/images/run-icon.png" alt="" class="button-icon">
+                            Run
+                        </button>
+                        <button class="button" id="terminate-button" disabled="true">
+                            <img src="assets/images/terminate-icon.png" alt="" class="button-icon">
+                            Terminate
+                        </button>
+                        <button class="button" id="reset-button">
+                            <img src="assets/images/reset-icon.png" alt="" class="button-icon">
+                            Reset
+                        </button>
+                        <button class="button" id="copy-button">
+                            <img src="assets/images/copy-icon.png" alt="" class="button-icon">
+                            Copy
+                        </button>
+                    </div>
+
+                    <div class="console-header">
+                        Output
+                    </div>
+                    <pre class="console">
+                    </pre>
+                </div>
+            </div>
+
+            <div class="bottom-panel"> 
+                <div class="header">
+                    Visualiser
+                </div>
+                <div class="threejs-wrapper">
+                    <div class="threejs">
+                    </div>
+                </div>
+                <div class="button-wrapper">
+                    <button class="button" id="play-button">
+                        <img src="assets/images/run-icon.png" alt="" class="button-icon">
+                        Play animation
+                    </button>
+                    <button class="button" id="restart-button">
+                        <img src="assets/images/reset-icon.png" alt="" class="button-icon">
+                        Restart animation
+                    </button>
+                </div>
+                <div class="header">
+                    Trace output
+                </div>
+                <pre class="output">
+There is currently no event data, try running your program.
+                </pre>
+            </div>
+        </div>
+
+        <div class="error-message">
+            <p></p>
+            <button id="dismiss-button">Dismiss</button>
+        </div>
+
+        <script type="module" src="js/contentLoader.js"></script>
+        <script type="module" src="js/sandbox.js"></script>
+        <script type="module" src="js/visualiser.js"></script>
+        <script type="module" src="js/pageLoader.js"></script>
+        <noscript><style>body { visibility: visible; }</style></noscript>
+    </body>
+</html>

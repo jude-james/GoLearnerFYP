@@ -2,80 +2,207 @@
 const fundamentalsChapters = [
     {
         title: "Basics",
-        description: "Learn all about the basics",
+        description: "Get your first Go program running and learn how packages, imports, and formatted output work.",
         topics: [
             {
                 title: "Introduction",
                 slug: "introduction",
                 layout: "lesson.html",
-                markdown: "test.md",
+                markdown: "markdown.md",
                 goFile: "welcome.go",
             },
             {
-                title: "Variables",
-                slug: "variables",
+                title: "Packages & Main",
+                slug: "packages_main",
                 layout: "lesson.html",
-                markdown: "test.md",
-                goFile: "vars.go",
+                markdown: "markdown.md",
+                goFile: "hello.go",
             },
             {
-                title: "Functions",
-                slug: "functions",
+                title: "Standard Library",
+                slug: "standard_library",
                 layout: "lesson.html",
-                markdown: "test.md",
-                goFile: "funcs.go",
+                markdown: "markdown.md",
+                goFile: "libraries.go",
             },
             {
-                title: "Functions Exercise",
-                slug: "functions_exercise",
-                layout: "exercise.html",
-                markdown: "test.md",
-                goFile: "funcs.go",
-                goSolution: "funcs_solution.go"
+                title: "Formatted Output",
+                slug: "formatted_output",
+                layout: "lesson.html",
+                markdown: "markdown.md",
+                goFile: "students.go",
+            },
+            {
+                title: "Packages Quiz",
+                slug: "packages_quiz",
+                layout: "quiz.html",
+                question: "What happens if you import a package in Go but never use it?",
+                answer: 2,
+                options: [
+                    "The program compiles but prints a warning",
+                    "The program does not compile",
+                    "The unused import is silently ignored"
+                ]
+            },
+            {
+                title: "Formatting Quiz",
+                slug: "format_quiz",
+                layout: "quiz.html",
+                question: "Which of the following correctly formats the integer?",
+                answer: 1,
+                options: [
+                    'fmt.Printf("Weight: %dkg", 76)',
+                    'fmt.Printf("Weight: %tkg", 76)',
+                    'fmt.Printf("Weight: %pkg", 76)'
+                ]
+            },
+            {
+                title: "Chapter 1 Summary",
+                slug: "chapter1_summary",
+                layout: "summary.html",
             },
             {
                 title: "Chapter 1 Complete",
                 slug: "chapter1",
                 layout: "chapter-complete.html",
-                message: "Congratulations! You have completed Chapter 1: Basics. You now understand..."
+                message: "Congratulations! You've completed your first chapter. You've written your first Go programs and learned how packages, imports, and formatted output work. You're ready to start filling them with data."
             }
         ]
     },
     {
-        title: "Loops",
-        description: "Learn all about loops",
+        title: "Variables & Types",
+        description: "Explore how Go stores and organises data, from basic types and variables to slices, maps, and pointers",
         topics: [
             {
-                title: "For loops",
-                slug: "forloops",
+                title: "Variables & Declaration",
+                slug: "variables_declaration",
                 layout: "lesson.html",
-                markdown: "test.md",
-                goFile: "forloop.go",
+                markdown: "markdown.md",
+                goFile: "cities.go",
             },
             {
-                title: "While Loops",
-                slug: "whileloops",
+                title: "Basic Types",
+                slug: "basic_types",
                 layout: "lesson.html",
-                markdown: "test.md",
-                goFile: "whileloop.go",
+                markdown: "markdown.md",
+                goFile: "types.go",
+            },
+            {
+                title: "Slices",
+                slug: "slices",
+                layout: "lesson.html",
+                markdown: "markdown.md",
+                goFile: "primes.go",
+            },
+            {
+                title: "Maps",
+                slug: "maps",
+                layout: "lesson.html",
+                markdown: "markdown.md",
+                goFile: "capitals.go",
+            },
+            {
+                title: "Pointers",
+                slug: "pointers",
+                layout: "lesson.html",
+                markdown: "markdown.md",
+                goFile: "pointers.go",
+            },
+            {
+                title: "Types Quiz",
+                slug: "types_quiz",
+                layout: "quiz.html",
+                question: "What is the zero value of a string in Go?",
+                answer: 3,
+                options: [
+                    "nil",
+                    "0",
+                    "An empty string"
+                ]
+            },
+            {
+                title: "Word Frequency Exercise",
+                slug: "word_frequency",
+                layout: "exercise.html",
+                markdown: "markdown.md",
+                goFile: "word_freq.go",
+                goSolution: "solution.go"
+            },
+            {
+                title: "Chapter 2 Summary",
+                slug: "chapter2_summary",
+                layout: "summary.html",
             },
             {
                 title: "Chapter 2 Complete",
                 slug: "chapter2",
                 layout: "chapter-complete.html",
-                message: "Congratulations! You have completed chapter 2. You now understand..."
+                message: "Great work! You now know how Go stores and organises data, from basic types and variables through to slices, maps, and pointers. These are the building blocks everything else is built on."
             }
         ]
     },
     {
-        title: "Methods & Interfaces",
-        description: "Learn all about methods and interfaces",
+        title: "Control Flow",
+        description: "Learn how to direct your program's logic using conditionals, loops, switch statements, and defer.",
         topics: [
+            {
+                title: "If Else",
+                slug: "if_else",
+                layout: "lesson.html",
+                markdown: "markdown.md",
+                goFile: "grade_checker.go",
+            },
+            {
+                title: "For Loops",
+                slug: "for_loops",
+                layout: "lesson.html",
+                markdown: "markdown.md",
+                goFile: "looping.go",
+            },
+            {
+                title: "Switch",
+                slug: "switch",
+                layout: "lesson.html",
+                markdown: "markdown.md",
+                goFile: "switch.go",
+            },
+            {
+                title: "Defer",
+                slug: "defer",
+                layout: "lesson.html",
+                markdown: "markdown.md",
+                goFile: "defer.go",
+            },
+            {
+                title: "Switches Quiz",
+                slug: "switches_quiz",
+                layout: "quiz.html",
+                question: "In Go, do switch cases fall through to the next case by default?",
+                answer: 2,
+                options: [
+                    "Yes, just like in C and Java",
+                    "No, each case breaks automatically",
+                    "Only if the case body is empty"
+                ]
+            },
+            {
+                title: "FizzBuzz Exercise",
+                slug: "fizzbuzz",
+                layout: "exercise.html",
+                markdown: "markdown.md",
+                goFile: "fizzbuzz.go",
+                goSolution: "solution.go"
+            },
+            {
+                title: "Chapter 3 Summary",
+                slug: "chapter3_summary",
+                layout: "summary.html",
+            },
             {
                 title: "Chapter 3 Complete",
                 slug: "chapter3",
                 layout: "chapter-complete.html",
-                message: "Congratulations! You have completed Methods & Interfaces. You now understand..."
+                message: "Nice one! You can now direct your program's logic with conditionals, loops, switch statements, and defer."
             }
         ]
     }
@@ -91,6 +218,13 @@ const concurrencyChapters = [
                 title: "Concurrency 1",
                 slug: "concurrency1",
                 layout: "lesson.html",
+            },
+            {
+                title: "Concurrency 2",
+                slug: "goroutines",
+                layout: "lesson-visualiser.html",
+                goFile: "code.go",
+                markdown: "markdown.md"
             },
             {
                 title: "Goroutines quiz",
@@ -109,12 +243,12 @@ const concurrencyChapters = [
 /**
 Content array, holding all the content as a list of objects.
 Each course contains multiple chapters, each chapter is divided into topics, each topic is unique and has a unique identifier
-Then each topic is divided into 3 formats: lesson, quiz or exercise. 
+Then each topic is divided into 3 formats: lesson, quiz or exercise. With additional non-intractable formats like summary pages and chapter completion pages
 */
 export const courses = [
     {
         title: "Concurrency",
-        description: "Understand Go's concurrency with interactive examples and visualisations",
+        description: "Understand Go's concurrency with interactive examples",
         colour: "red",
         chapters: concurrencyChapters,
     },

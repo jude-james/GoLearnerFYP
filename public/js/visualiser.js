@@ -9,6 +9,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 const container = document.querySelector(".threejs");
 const output = document.querySelector(".output");
 const playButton = document.getElementById("play-button");
+const restartButton = document.getElementById("restart-button");
 
 // Create renderer and append to DOM
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -22,12 +23,13 @@ container.appendChild(labelRenderer.domElement);
 
 // Camera settings
 const fov = 75;
-const aspect = container.clientWidth / window.innerHeight;
+const aspect = container.clientWidth / container.clientHeight;
 const near = 0.01;
 const far = 100;
 
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 camera.layers.enableAll();
+camera.layers.disable(2);
 camera.position.set(0, 2, 2);
 
 // Control settings
@@ -38,6 +40,7 @@ const controls = new OrbitControls(camera, labelRenderer.domElement);
 // Colours
 const backgroundColour = 0xf5f5f5;
 const goroutineColour = 0x3347ff;
+const channelColour = 0xD91C1C;
 
 // Create scene
 const scene = new THREE.Scene();
@@ -45,6 +48,7 @@ scene.background = new THREE.Color(backgroundColour);
 
 // Add grid to scene
 const grid = new THREE.GridHelper(100, 100);
+grid.layers.set(2);
 scene.add(grid);
 
 // Line materials
@@ -63,12 +67,19 @@ const connectorMat = new LineMaterial({
     alphaToCoverage: true
 });
 
+const channelMat = new LineMaterial({
+    color: channelColour,
+    linewidth: 2,
+    dashed: false,
+    alphaToCoverage: true
+});
+
 /**
  * Resizes renderer to fix current window size
  */
 function resize() {
     const width = container.clientWidth;
-    const height = window.innerHeight;
+    const height = container.clientHeight;
 
     renderer.setSize(width, height);
     labelRenderer.setSize(width, height);
@@ -78,6 +89,7 @@ function resize() {
 
     goroutineMat.resolution.set(width, height);
     connectorMat.resolution.set(width, height);
+    channelMat.resolution.set(width, height);
 }
 
 window.addEventListener("resize", resize);
@@ -100,22 +112,25 @@ const quickSettings = {
     "Show/Hide Labels": function () {
         camera.layers.toggle(1);
     },
+    "Show/Hide Grid": function () {
+        camera.layers.toggle(2);
+    },
     "Reset Camera": function () {
         controls.reset();
     },
     timeScale: 1,
-    distScale: 1
 };
 
 const gui = new GUI({ container: container });
 gui.title("Settings");
 gui.add(quickSettings, "Show/Hide Labels");
+gui.add(quickSettings, "Show/Hide Grid");
 gui.add(quickSettings, "Reset Camera");
 gui.add(quickSettings, "timeScale", 0.1, 10).name("Time Scale");
-gui.add(quickSettings, "distScale", 0.1, 10).name("Distance Scale");
 gui.open();
 
-let goroutineMap = {}; // TODO add channels
+let goroutineMap = {};
+let channelMap = {};
 
 const direction = -1;
 let duration;
@@ -123,13 +138,17 @@ let yOffset;
 let distScale = 1 * direction;
 let timeScale = 1;
 
+let paused = true;
+let playing = false;
+let currentTime = 0;
+let startTime;
+
 /**
  * entry point for visualiser, takes in events data and sets up scene
  * @param {any} events - The events json data object
  */
 export function init(events) {
     resetScene();
-    output.textContent = "Click play to replay what happened in the program";
 
     for (let i = 0; i < events.length; i++) {
         const e = events[i];
@@ -149,7 +168,7 @@ export function init(events) {
                     children: [] };
             }
 
-            if (e.event === "create-goroutine") {
+            if (e.event === "create-goroutine") {                
                 goroutineMap[e.id].start = e.time;
             }
 
@@ -157,39 +176,81 @@ export function init(events) {
                 goroutineMap[e.id].end = e.time;
             }
         }
+
+        if (e.event === "send-channel" || e.event === "receive-channel") {
+            if (!channelMap[e.id]) {
+                channelMap[e.id] = {
+                    id: e.id,
+                    time: e.time,
+                    to: null,
+                    from: null,
+                    line: null, 
+                };
+            }
+
+            if (e.event === "send-channel") {                
+                channelMap[e.id].from = e.parentId;
+            }
+
+            if (e.event === "receive-channel") {
+                channelMap[e.id].to = e.parentId;
+            }
+        }
     }    
 
-    // Add all children to each event
-    Object.values(goroutineMap).forEach(e => { 
-        console.log("start:",e.start,"end:",e.end);
-        
+    // Sort goroutine map by time, then add all children to each event
+    Object.values(goroutineMap)
+        .sort((a, b) => a.start - b.start)
+        .forEach(e => {         
         if (e.parentId && goroutineMap[e.parentId]) {            
             goroutineMap[e.parentId].children.push(e.id);
         }
     });
-    
+
     let mainGoroutine = goroutineMap[1]; // id of 1 is always main goroutine
     duration = mainGoroutine.end;
     yOffset = duration * direction;
+    displayStats();
     drawGoroutine(mainGoroutine, 0, 0, 0);
+    drawChannels();
+}
+
+/**
+ * Prints useful messages to the output window 
+ */
+function displayStats()
+{
+    output.textContent = "Click 'play animation' to replay the concurrent program.\n";
+
+    output.textContent += `\nPROGRAM STATS:\n`;
+
+    output.textContent += `Your program lasted ${duration} seconds.\n`;
+
+    const numGoroutines = Object.values(goroutineMap).length;
+    output.textContent += `You created ${numGoroutines - 1} goroutine(s).\n`;
+
+    // TODO other stats
 }
 
 /**
  * Spawns a goroutine line and it's parent connector lines, and stores the lines in the event object
  * @param {any} event - The goroutine event object
+ * @param {integer} childNo - The child number of this event
+ * @param {integer} noChildren - The number of children the parent has
  * @param {integer} depth - The depth from the main goroutine
  */
-function drawGoroutine(event, depth) { 
+function drawGoroutine(event, childNo, noChildren, depth) { 
     // TODO Eventually set end y to 0 so it starts invisible, just store and let update draw
 
     if (event.start === null) {
         // No data on start time...?
         // Not sure what to do, just set start to end to stop visual bug of it being at 0
-        event.start === event.end;
+        event.start = event.end;
     }
     if (event.end === null) {
-        // No data on end time, assume it ran longer than main for now
-        event.end = duration;
+        // No data on end time, 
+        // Sometimes due to it running longer than main, but not always
+        event.end = event.start;
     }
 
     let startPos = new THREE.Vector3(0, (yOffset + event.start) * distScale, 0);
@@ -200,7 +261,7 @@ function drawGoroutine(event, depth) {
         const parent = goroutineMap[event.parentId];
         // Assume parent already has line set, since this function would have been called before
         const parentLinePos = parent.line.geometry.attributes.instanceStart.array;
-        const angle = (360 / duration) * event.start;
+        const angle = (360 / noChildren) * childNo;
         const rad = angle * (Math.PI / 180);
 
         startPos = new THREE.Vector3(parentLinePos[0] + Math.cos(rad) * (1 / (depth*depth)), (yOffset + event.start) * distScale, parentLinePos[2] + Math.sin(rad) * (1 / (depth*depth)));
@@ -265,21 +326,70 @@ function drawGoroutine(event, depth) {
 
     for (let i = 0; i < children.length; i++) {
         const child = goroutineMap[children[i]];
-        drawGoroutine(child, depth);
+        drawGoroutine(child, i + 1, children.length, depth);
     }
 }
 
-let playing = false;
-let currentTime = 0;
-let startTime;
+function drawChannels() {
+    /*
+    Object.values(channelMap)
+        .forEach(event => {
+            console.log(event);
+            const from = goroutineMap[event.from];
+            const to = goroutineMap[event.to];
+            const fromLine = from.line.geometry.attributes.instanceStart.array;
+            const toLine = to.line.geometry.attributes.instanceStart.array;
+
+            // TODO check from and to aren't null
+            const startPos = new THREE.Vector3(fromLine[0], (yOffset + event.time) * distScale, fromLine[2]);
+            const endPos = new THREE.Vector3(toLine[0], (yOffset + event.time) * distScale, toLine[2]);
+
+            const channelGeo = new LineGeometry();
+            channelGeo.setPositions([
+                startPos.x, startPos.y, startPos.z,
+                endPos.x, endPos.y, endPos.z
+            ]);
+
+            const line = new Line2(channelGeo, channelMat);
+            line.computeLineDistances;
+        
+            event.line = line;
+            scene.add(line);
+    });*/
+}
 
 playButton.addEventListener("click", () => {
     // TODO disable button until they are allowed to play
 
+    //console.log("Paused:", paused);
+    
+    //console.log("Playing:", playing);
+    
+    if (!playing) {
+        startTime = performance.now() - (currentTime * 1000);
+        playing = true;
+        //paused = true;
+        //currentTime = 0;
+        //startTime = currentTime;
+    }
+    else {
+        // startTime = performance.now();
+        //startTime = currentTime;
+        playing = false;
+    }
+        
+    //paused = !paused;
+});
+
+restartButton.addEventListener("click", () => {
+    // TODO disable button until they are allowed to play
+
     // Start the time from 0
-    playing = true;
-    currentTime = 0;
-    startTime = performance.now();
+    playing = false;
+    startTime = 0;
+    //playing = false;
+    updateScene(0);
+    //startTime = performance.now();
 });
 
 function updateScene(t) {    
@@ -326,6 +436,10 @@ function updateScene(t) {
 function animate(t = 0) {
     requestAnimationFrame(animate);
     
+    //console.log("current:",currentTime);
+    //console.log("start", startTime);
+    
+
     timeScale = quickSettings.timeScale;
     //TODO allow for redrawing all lines for distScale control
     //distScale = quickSettings.distScale * direction;
@@ -334,8 +448,9 @@ function animate(t = 0) {
         currentTime = timeScale * ((performance.now() - startTime) / 1000);
                 
         if (currentTime >= duration) {
-            currentTime = duration;
+            //currentTime = duration;
             playing = false;
+            startTime = 0;
         }
 
         //slider.value = currentTime;

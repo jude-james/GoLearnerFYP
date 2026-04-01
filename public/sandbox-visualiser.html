@@ -7,6 +7,7 @@
 
         <link rel="stylesheet" href="css/base.css">    
         <link rel="stylesheet" href="css/sandbox.css">
+        <link rel="stylesheet" href="css/visualiser.css">
         <link rel="stylesheet" href="css/sandbox-visualiser.css">
 
         <!-- Fonts -->
@@ -63,7 +64,7 @@ package main
 import "fmt"
 
 func main() {
-    fmt.Println("GO GO GO")
+    fmt.Println("Hello World")
 }</textarea>
                 </div>
                 
@@ -93,23 +94,30 @@ func main() {
                 </pre>
             </div>
 
-            <div class="bottom-panel">
-                <div class="left-panel">
-                    <div class="output">
-                        There is currently no event data, try running your program.
-                        Click and drag to move around.
+            <div class="bottom-panel"> 
+                <div class="header">
+                    Visualiser
+                </div>
+                <div class="threejs-wrapper">
+                    <div class="threejs">
                     </div>
                 </div>
-                <div class="right-panel">
-                    <button class="button" id="play-button">Play</button>
-                    <div class="timeline-slider">
-                        <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-                    </div>
-                    <div class="threejs-wrapper">
-                        <div class="threejs">
-                        </div>
-                    </div>
+                <div class="button-wrapper">
+                    <button class="button" id="play-button">
+                        <img src="assets/images/run-icon.png" alt="" class="button-icon">
+                        Play animation
+                    </button>
+                    <button class="button" id="restart-button">
+                        <img src="assets/images/reset-icon.png" alt="" class="button-icon">
+                        Restart animation
+                    </button>
                 </div>
+                <div class="header">
+                    Trace output
+                </div>
+                <pre class="output">
+There is currently no event data, try running your program.
+                </pre>
             </div>
         </div>
 

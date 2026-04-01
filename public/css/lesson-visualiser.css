@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.top-panel {
+    display: flex;
+    height: 70vh;
+}
+
+.bottom-panel {
+    border-top: 5px solid grey;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.left-panel {
+    flex: 1;
+    min-width: 0;
+
+    background-color: var(--black);
+    border-right: 5px solid grey;
+
+    overflow-y: auto;
+    overscroll-behavior-y: none;
+}
+
+.right-panel {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}

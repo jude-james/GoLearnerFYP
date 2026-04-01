@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang=en> 
+    <head>
+        <meta charset="UTF-8"/>
+        
+        <title>Summary</title>
+
+        <link rel="stylesheet" href="css/base.css">
+        <link rel="stylesheet" href="css/topic-navbar.css"> 
+        <link rel="stylesheet" href="css/summary.css">    
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,200..700;1,200..700&family=Handjet:wght@100..900&family=Sometype+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+
+        <!--Marked-->
+        <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="/assets/favicon/favicon-96x96.png" sizes="96x96"/>
+        <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg"/>
+        <link rel="shortcut icon" href="/assets/favicon/favicon.ico"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png"/>
+        <link rel="manifest" href="/assets/favicon/site.webmanifest"/>
+    </head>
+
+    <body style="visibility: hidden;">
+        <div class="navbar">
+            <a href="index.html">GoLearner</a>
+            <a href="sandbox.html">Sandbox</a>
+            <a class="active" href="table-of-contents.html">Tutorial</a>
+            <a href="extra.html">Extra</a>
+        </div>
+
+        <div class="topic-nav"> 
+            <button id="prev-button">< <s>Previous</s></button>
+            <div id="current">Current</div>
+            <button id="next-button"><s>Next</s> ></button>
+        </div>
+
+        <div class="container">
+            <input type="radio" name="tabs" id="tab_3"/>
+            <label for="tab_3">
+                <div class="content"></div>
+            </label>
+            <input type="radio" name="tabs" id="tab_2"/>
+            <label for="tab_2">
+                <div class="content"></div>
+            </label>
+            <input type="radio" name="tabs" id="tab_1"/>
+            <label for="tab_1">
+                <div class="content"></div>
+            </label>
+            <input type="radio" name="tabs" id="tab_0"/>
+            <label for="tab_0">
+                <div class="content"></div>
+            </label>
+        </div>
+
+        <div class="error-message">
+            <p>Error: Something went wrong</p>
+            <button id="dismiss-button">Dismiss</button>
+        </div>
+
+        <script type="module" src="js/contentLoader.js"></script>
+        <script type="module" src="js/pageLoader.js"></script>
+        <noscript><style>body { visibility: visible; }</style></noscript>
+    </body>
+</html>

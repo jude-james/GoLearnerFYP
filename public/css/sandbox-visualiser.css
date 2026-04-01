@@ -5,7 +5,7 @@
 
 .top-panel {
     display: flex;
-    height: 100vh;
+    height: 70vh;
     flex-direction: column;
 }
 
@@ -13,49 +13,5 @@
     border-top: 5px solid grey;
 
     display: flex;
-}
-
-.left-panel {
-    flex: 1;
-
-    border-right: 3px solid var(--panel-border-grey);
-}
-
-.right-panel {
-    flex: 3;
-}
-
-.output {
-    font-size: var(--small-font-size);
-}
-
-.threejs-wrapper {
-    /*display: flex;*/
-    /*margin: 3rem;*/
-}
-
-.threejs {
-    position: relative;
-
-    flex: 1;
-    min-width: 0;
-}
-
-.label {
-    pointer-events: none;
-
-    color: var(--black);
-    
-    /* TODO font family not working, try fix */
-    font-family: var(--font-name), sans-serif !important;
-    font-size: 1rem;
-    font-weight: var(--small-font-weight);
-    font-style: normal;
-    font-optical-sizing: auto;
-}
-
-.lil-gui {
-    position: absolute;
-    top: 0;
-    right: 0;
+    flex-direction: column;
 }
