@@ -29,7 +29,7 @@ const far = 100;
 
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 camera.layers.enableAll();
-camera.layers.disable(2);
+camera.layers.disable(2); // Disable the grid
 camera.position.set(0, 2, 2);
 
 // Control settings
@@ -40,6 +40,7 @@ const controls = new OrbitControls(camera, labelRenderer.domElement);
 // Colours
 const backgroundColour = 0xf5f5f5;
 const goroutineColour = 0x3347ff;
+const connectorColour = 0x1527cf;
 const channelColour = 0xD91C1C;
 
 // Create scene
@@ -61,7 +62,7 @@ const goroutineMat = new LineMaterial({
 });
 
 const connectorMat = new LineMaterial({
-    color: goroutineColour, // TODO add slightly different colour
+    color: connectorColour,
     linewidth: 0.5,
     dashed: false,
     alphaToCoverage: true
@@ -75,7 +76,7 @@ const channelMat = new LineMaterial({
 });
 
 /**
- * Resizes renderer to fix current window size
+ * Resizes renderer to fit current window size
  */
 function resize() {
     const width = container.clientWidth;
@@ -138,7 +139,6 @@ let yOffset;
 let distScale = 1 * direction;
 let timeScale = 1;
 
-let paused = true;
 let playing = false;
 let currentTime = 0;
 let startTime;
@@ -308,7 +308,6 @@ function drawGoroutine(event, childNo, noChildren, depth) {
     scene.add(line);
     
     // Create label with goroutine Id above line
-    // TODO move to function that returns new label
     const idDiv = document.createElement("div");
     idDiv.className = "label";
     idDiv.textContent = `id:${event.id}`;
@@ -359,41 +358,21 @@ function drawChannels() {
     });*/
 }
 
-playButton.addEventListener("click", () => {
-    // TODO disable button until they are allowed to play
-
-    //console.log("Paused:", paused);
-    
-    //console.log("Playing:", playing);
-    
-    if (!playing) {
-        startTime = performance.now() - (currentTime * 1000);
-        playing = true;
-        //paused = true;
-        //currentTime = 0;
-        //startTime = currentTime;
-    }
-    else {
-        // startTime = performance.now();
-        //startTime = currentTime;
-        playing = false;
-    }
-        
-    //paused = !paused;
+playButton.addEventListener("click", () => {   
+    playing = true;
+    startTime = performance.now();
 });
 
 restartButton.addEventListener("click", () => {
-    // TODO disable button until they are allowed to play
-
-    // Start the time from 0
     playing = false;
-    startTime = 0;
-    //playing = false;
     updateScene(0);
-    //startTime = performance.now();
 });
 
-function updateScene(t) {    
+/**
+ * Redraws all event lines depend on the time 
+ * @param {integer} time - The time in seconds since user program started
+ */
+function updateScene(time) {    
     // Update goroutine line positions depending on t
     Object.values(goroutineMap).forEach(event => {
         const geo = event.line.geometry;
@@ -401,7 +380,7 @@ function updateScene(t) {
 
         // 4 = end point y;
 
-        if (t < event.start) {
+        if (time < event.start) {
             // Hide line
             positions[4] = (yOffset + event.start) * distScale; // TODO disable fully to avoid dot
 
@@ -410,7 +389,7 @@ function updateScene(t) {
             if (event.startConn) event.startConn.visible = false;
             if (event.endConn) event.endConn.visible = false;
         }
-        if (t >= event.end) {
+        if (time >= event.end) {
             // show line
             positions[4] = (yOffset + event.end) * distScale;
 
@@ -419,8 +398,8 @@ function updateScene(t) {
             if (event.startConn) event.startConn.visible = true;
             if (event.endConn) event.endConn.visible = true;
         }
-        if (t >= event.start && t < event.end) {
-            positions[4] = (yOffset + t) * distScale; 
+        if (time >= event.start && time < event.end) {
+            positions[4] = (yOffset + time) * distScale; 
 
             event.line.getObjectByName("id").visible = true;
 
@@ -432,29 +411,23 @@ function updateScene(t) {
         geo.attributes.instanceEnd.needsUpdate = true;
         event.line.computeLineDistances();
     });
+
+    // TODO channels
 }
 
-function animate(t = 0) {
+function animate() {
     requestAnimationFrame(animate);
     
-    //console.log("current:",currentTime);
-    //console.log("start", startTime);
-    
-
     timeScale = quickSettings.timeScale;
-    //TODO allow for redrawing all lines for distScale control
-    //distScale = quickSettings.distScale * direction;
 
     if (playing) {
+        // Set current time in seconds based on when play button is clicked
         currentTime = timeScale * ((performance.now() - startTime) / 1000);
-                
+
         if (currentTime >= duration) {
-            //currentTime = duration;
             playing = false;
-            startTime = 0;
         }
 
-        //slider.value = currentTime;
         updateScene(currentTime);
     }
 
