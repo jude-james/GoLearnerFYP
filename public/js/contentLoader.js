@@ -63,7 +63,7 @@ async function init() {
     if (topic.goFile) {
         document.querySelector(".file-name").textContent = topic.goFile;
         
-        const { getEditor } = await import("./sandbox.js");
+        const { getEditor } = await import("./codeExecutor.js");
         const editor = getEditor();
 
         // Check there is no existing session state before updating the editor code

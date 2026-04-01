@@ -221,6 +221,7 @@ export function init(events) {
 function displayStats()
 {
     output.textContent = "Click 'play animation' to replay the concurrent program.\n";
+    output.textContent += "Use your mouse to move around the scene.\n";
 
     output.textContent += `\nPROGRAM STATS:\n`;
 
