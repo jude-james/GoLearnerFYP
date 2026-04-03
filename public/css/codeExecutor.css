@@ -82,6 +82,7 @@
 
 .console {
     background-color: var(--black);
+    scrollbar-color: #555 #1a1a1a;
 
     font-size: var(--small-font-size);
     font-weight: var(--small-font-weight);

@@ -33,7 +33,7 @@ func readFile(filename string) error {
 }
 ```
 
-Without `defer`  you'd have to remember to call `f.Close()` before every `return` statement, and if you forget one, you have a resource leak.
+Without `defer` you'd have to remember to call `f.Close()` before every `return` statement, and if you forget one, you have a resource leak.
 
 ## Multiple Defers
 

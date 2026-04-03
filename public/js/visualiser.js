@@ -68,13 +68,6 @@ const connectorMat = new LineMaterial({
     alphaToCoverage: true
 });
 
-const channelMat = new LineMaterial({
-    color: channelColour,
-    linewidth: 2,
-    dashed: false,
-    alphaToCoverage: true
-});
-
 /**
  * Resizes renderer to fit current window size
  */
@@ -90,7 +83,6 @@ function resize() {
 
     goroutineMat.resolution.set(width, height);
     connectorMat.resolution.set(width, height);
-    channelMat.resolution.set(width, height);
 }
 
 window.addEventListener("resize", resize);
@@ -100,8 +92,8 @@ resize();
  * Resets event data and removes all objects from the scene apart from the grid
  */
 function resetScene() {
-    // TODO make more efficient
     goroutineMap = {};
+    channelMap = {};
 
     scene.remove.apply(scene, scene.children);
     scene.add(grid);
@@ -159,6 +151,7 @@ export function init(events) {
                 // Create a new entry for each new Id           
                 goroutineMap[e.id] = { 
                     id: e.id,
+                    name: e.name,
                     parentId: e.parentId, 
                     start: null, 
                     end: null, 
@@ -181,7 +174,9 @@ export function init(events) {
             if (!channelMap[e.id]) {
                 channelMap[e.id] = {
                     id: e.id,
-                    time: e.time,
+                    value: null,
+                    receiveTime: null,
+                    sendTime: null,
                     to: null,
                     from: null,
                     line: null, 
@@ -190,10 +185,13 @@ export function init(events) {
 
             if (e.event === "send-channel") {                
                 channelMap[e.id].from = e.parentId;
+                channelMap[e.id].sendTime = e.time;
+                channelMap[e.id].value = e.value;
             }
 
             if (e.event === "receive-channel") {
                 channelMap[e.id].to = e.parentId;
+                channelMap[e.id].receiveTime = e.time;
             }
         }
     }    
@@ -213,6 +211,7 @@ export function init(events) {
     displayStats();
     drawGoroutine(mainGoroutine, 0, 0, 0);
     drawChannels();
+    updateScene(0);
 }
 
 /**
@@ -244,12 +243,9 @@ function drawGoroutine(event, childNo, noChildren, depth) {
     // TODO Eventually set end y to 0 so it starts invisible, just store and let update draw
 
     if (event.start === null) {
-        // No data on start time...?
-        // Not sure what to do, just set start to end to stop visual bug of it being at 0
         event.start = event.end;
     }
     if (event.end === null) {
-        // No data on end time, 
         // Sometimes due to it running longer than main, but not always
         event.end = event.start;
     }
@@ -311,7 +307,8 @@ function drawGoroutine(event, childNo, noChildren, depth) {
     const idDiv = document.createElement("div");
     idDiv.className = "label";
     idDiv.textContent = `id:${event.id}`;
-    if (event.id === "1") idDiv.textContent = "main";
+    if (event.name !== "") 
+        idDiv.textContent = event.name;
     
     const idLabel = new CSS2DObject(idDiv);
     idLabel.position.set(startPos.x, startPos.y, startPos.z);
@@ -330,32 +327,52 @@ function drawGoroutine(event, childNo, noChildren, depth) {
     }
 }
 
+
+/**
+ * Draws all channel lines
+ */
 function drawChannels() {
-    /*
     Object.values(channelMap)
         .forEach(event => {
+            /*
             console.log(event);
+            console.log(event.from);
+            console.log(event.to);*/
+            // TODO check from and to aren't null
+
             const from = goroutineMap[event.from];
             const to = goroutineMap[event.to];
             const fromLine = from.line.geometry.attributes.instanceStart.array;
             const toLine = to.line.geometry.attributes.instanceStart.array;
 
-            // TODO check from and to aren't null
-            const startPos = new THREE.Vector3(fromLine[0], (yOffset + event.time) * distScale, fromLine[2]);
-            const endPos = new THREE.Vector3(toLine[0], (yOffset + event.time) * distScale, toLine[2]);
+            const startPos = new THREE.Vector3(fromLine[0], (yOffset + event.sendTime) * distScale, fromLine[2]);
+            const endPos = new THREE.Vector3(toLine[0], (yOffset + event.receiveTime) * distScale, toLine[2]);
 
-            const channelGeo = new LineGeometry();
-            channelGeo.setPositions([
-                startPos.x, startPos.y, startPos.z,
-                endPos.x, endPos.y, endPos.z
-            ]);
+            // Draw channel line with arrow and store in channel map
+            const direction = new THREE.Vector3().subVectors(endPos, startPos).normalize();
+            const length = startPos.distanceTo(endPos);
+            const arrowedLine = new THREE.ArrowHelper(direction, startPos, length, channelColour);
 
-            const line = new Line2(channelGeo, channelMat);
-            line.computeLineDistances;
-        
-            event.line = line;
-            scene.add(line);
-    });*/
+            event.line = arrowedLine;
+            scene.add(arrowedLine);
+
+            // Create label with channel value between line
+            if (event.value !== "") {
+                const midpoint = new THREE.Vector3();
+                midpoint.addVectors(startPos, endPos).divideScalar(2);
+
+                const idDiv = document.createElement("div");
+                idDiv.className = "label";
+                idDiv.textContent = event.value;
+                
+                const idLabel = new CSS2DObject(idDiv);
+                idLabel.position.set(0, length / 2, 0);
+                idLabel.center.set(0, 1);
+                idLabel.layers.set(1);
+                idLabel.name = "value";
+                event.line.add(idLabel);
+            }
+    });
 }
 
 playButton.addEventListener("click", () => {   
@@ -369,7 +386,7 @@ restartButton.addEventListener("click", () => {
 });
 
 /**
- * Redraws all event lines depend on the time 
+ * Redraws all lines depending on the time 
  * @param {integer} time - The time in seconds since user program started
  */
 function updateScene(time) {    
@@ -378,12 +395,9 @@ function updateScene(time) {
         const geo = event.line.geometry;
         const positions = geo.attributes.instanceStart.array;
 
-        // 4 = end point y;
-
         if (time < event.start) {
             // Hide line
-            positions[4] = (yOffset + event.start) * distScale; // TODO disable fully to avoid dot
-
+            event.line.visible = false;
             event.line.getObjectByName("id").visible = false;
 
             if (event.startConn) event.startConn.visible = false;
@@ -391,16 +405,17 @@ function updateScene(time) {
         }
         if (time >= event.end) {
             // show line
-            positions[4] = (yOffset + event.end) * distScale;
-
+            event.line.visible = true;
             event.line.getObjectByName("id").visible = true;
 
             if (event.startConn) event.startConn.visible = true;
             if (event.endConn) event.endConn.visible = true;
         }
         if (time >= event.start && time < event.end) {
+            // Set end point y to time
             positions[4] = (yOffset + time) * distScale; 
 
+            event.line.visible = true;
             event.line.getObjectByName("id").visible = true;
 
             if (event.startConn) event.startConn.visible = true;
@@ -412,7 +427,22 @@ function updateScene(time) {
         event.line.computeLineDistances();
     });
 
-    // TODO channels
+    // Update channel visibility if t has passed send time
+    Object.values(channelMap).forEach(event => {
+        if (time < event.sendTime) {
+            // Hide line
+            event.line.getObjectByName("value").visible = false;
+
+            event.line.visible = false;
+            event.line.visible = false;
+        }
+        if (time >= event.sendTime) {
+            event.line.getObjectByName("value").visible = true;
+
+            event.line.visible = true;
+            event.line.visible = true;
+        }
+    });
 }
 
 function animate() {

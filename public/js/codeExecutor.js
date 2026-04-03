@@ -87,7 +87,6 @@ function startWebSocket() {
 
     ws.onopen = () => {
         console.log("Successfully connected to WebSocket server.");
-        clearConsole(); // TODO start loading css on threejs panel?
 
         const message = JSON.stringify({ fileName: fileName.textContent, code: editor.getValue(), type: "run" });
         console.log("Sending message to server:", message);
@@ -100,6 +99,9 @@ function startWebSocket() {
         // Message from server can be of type error, events, stdout or stderr. The latter 2 refer to the docker process
         const message = JSON.parse(event.data.toString());
         switch (message.type) {
+            case "start":                
+                clearConsole();
+                break;
             case "stdout":
                 updateConsole(message.data, false);
                 break;
@@ -148,6 +150,11 @@ function startWebSocket() {
  */
 function updateConsole(output, isError) {
     outputConsole.textContent += output;
+
+    const isAtBottom = outputConsole.scrollHeight - outputConsole.scrollTop - outputConsole.clientHeight < 40;
+    if (isAtBottom) {
+        outputConsole.scrollTop = outputConsole.scrollHeight;
+    }
 
     if (isError) {
         outputConsole.classList.add("console-error");
