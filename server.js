@@ -112,16 +112,9 @@ wss.on("connection", async (ws) => {
                 // Handle process output streams and send data over socket
 
                 docker.stdout.on("data", (data) => {
-                    console.log(`stdout: ${data}`);    
-                    
-                    let message = JSON.stringify({ type: "start" });
-                    if (data.toString().trim() === "__PROGRAM__START__") {
-                        ws.send(message);
-                    }
-                    else {
-                        message = JSON.stringify({ data: data.toString(), type: "stdout" });
-                        ws.send(message);
-                    }
+                    console.log(`stdout: ${data}`);
+                    const message = JSON.stringify({ data: data.toString(), type: "stdout" });
+                    ws.send(message);
                 });
 
                 docker.stderr.on("data", (data) => {
