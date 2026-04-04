@@ -45,7 +45,7 @@
 .label {
     pointer-events: none;
 
-    color: var(--black);
+    color: var(--white);
     
     font-size: 1rem;
     font-weight: var(--small-font-weight);

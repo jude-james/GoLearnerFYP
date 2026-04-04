@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -24,16 +25,16 @@ var events []Event
 
 var startTime time.Time
 
-var sendCounter int
-var recCounter int
+var sendCounters = make(map[string]uint64)
+var recCounters = make(map[string]uint64)
+var countersMu sync.Mutex
 
-// Sets the start time and signals to the server the program is now running
+// Called when the source program has started running, sets the start time
 func onMainStart() {
-	fmt.Println("__PROGRAM__START__")
 	startTime = time.Now()
 }
 
-// Called when main function ends
+// Called when the main function ends
 func onMainEnd() {
 	insertMainGoroutineEvents()
 	encodeEventsToJson()
@@ -48,8 +49,11 @@ func logGoroutine(event string, id uint64, parentId uint64, name string) {
 // Creates a new send-channel event and appends to the events slice
 // Creates an Id using the channel pointer address and a sendCounter to pair each send/receive uniquely
 func logSendChannel[T any](c any, parentId uint64, value T) {
-	id := fmt.Sprintf("%p_%d", c, sendCounter)
-	sendCounter++
+	countersMu.Lock()
+	defer countersMu.Unlock()
+	address := fmt.Sprintf("%p", c)
+	id := fmt.Sprintf("%s_%d", address, sendCounters[address])
+	sendCounters[address]++
 
 	currentTime := time.Since(startTime).Seconds()
 	events = append(events, Event{currentTime, "send-channel", id, fmt.Sprintf("%d", parentId), "", fmt.Sprintf("%v", value)})
@@ -58,8 +62,11 @@ func logSendChannel[T any](c any, parentId uint64, value T) {
 // Creates a new receive-channel event to the events slice
 // Creates an Id using the channel pointer address and a recCounter to pair each send/receive uniquely
 func logReceiveChannel(c any, parentId uint64) {
-	id := fmt.Sprintf("%p_%d", c, recCounter)
-	recCounter++
+	countersMu.Lock()
+	defer countersMu.Unlock()
+	address := fmt.Sprintf("%p", c)
+	id := fmt.Sprintf("%s_%d", address, recCounters[address])
+	recCounters[address]++
 
 	currentTime := time.Since(startTime).Seconds()
 	events = append(events, Event{currentTime, "receive-channel", id, fmt.Sprintf("%d", parentId), "", ""})
@@ -68,7 +75,6 @@ func logReceiveChannel(c any, parentId uint64) {
 // Returns the current goroutine Id of the calling goroutine.
 // Stack formats a stack trace of the calling goroutine,
 // so this captures the Id from the stack trace and ignores the rest
-// TODO comment that this is borrowed, or ask supervisor what to do
 func getGoroutineId() uint64 {
 	b := make([]byte, 64)
 	b = b[:runtime.Stack(b, false)]

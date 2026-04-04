@@ -21,6 +21,17 @@ labelRenderer.domElement.style.position = "absolute";
 labelRenderer.domElement.style.top = "0px";
 container.appendChild(labelRenderer.domElement);
 
+// Layers
+const gridLayer = 1;
+const goroutineIdLayer = 2;
+const channelValueLayer = 3;
+
+// Colours
+const backgroundColour = 0x3c3c3d;
+const goroutineColour = 0xbf4640;
+const connectorColour = 0xd9d0d0;
+const channelColour = 0xf4d950;
+
 // Camera settings
 const fov = 75;
 const aspect = container.clientWidth / container.clientHeight;
@@ -29,19 +40,11 @@ const far = 100;
 
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 camera.layers.enableAll();
-camera.layers.disable(2); // Disable the grid
+camera.layers.disable(gridLayer);
 camera.position.set(0, 2, 2);
 
 // Control settings
 const controls = new OrbitControls(camera, labelRenderer.domElement);
-// controls.enableDamping = true;
-// controls.dampingFactor = 0.03;
-
-// Colours
-const backgroundColour = 0xf5f5f5;
-const goroutineColour = 0x3347ff;
-const connectorColour = 0x1527cf;
-const channelColour = 0xD91C1C;
 
 // Create scene
 const scene = new THREE.Scene();
@@ -49,7 +52,7 @@ scene.background = new THREE.Color(backgroundColour);
 
 // Add grid to scene
 const grid = new THREE.GridHelper(100, 100);
-grid.layers.set(2);
+grid.layers.set(gridLayer);
 scene.add(grid);
 
 // Line materials
@@ -102,11 +105,14 @@ function resetScene() {
 }
 
 const quickSettings = {
-    "Show/Hide Labels": function () {
-        camera.layers.toggle(1);
+    "Toggle Goroutine IDs": function () {
+        camera.layers.toggle(goroutineIdLayer);
     },
-    "Show/Hide Grid": function () {
-        camera.layers.toggle(2);
+    "Toggle Channel Values": function () {
+        camera.layers.toggle(channelValueLayer);
+    },
+    "Toggle Grid": function () {
+        camera.layers.toggle(gridLayer);
     },
     "Reset Camera": function () {
         controls.reset();
@@ -116,8 +122,9 @@ const quickSettings = {
 
 const gui = new GUI({ container: container });
 gui.title("Settings");
-gui.add(quickSettings, "Show/Hide Labels");
-gui.add(quickSettings, "Show/Hide Grid");
+gui.add(quickSettings, "Toggle Goroutine IDs");
+gui.add(quickSettings, "Toggle Channel Values");
+gui.add(quickSettings, "Toggle Grid");
 gui.add(quickSettings, "Reset Camera");
 gui.add(quickSettings, "timeScale", 0.1, 10).name("Time Scale");
 gui.open();
@@ -240,13 +247,11 @@ function displayStats()
  * @param {integer} depth - The depth from the main goroutine
  */
 function drawGoroutine(event, childNo, noChildren, depth) { 
-    // TODO Eventually set end y to 0 so it starts invisible, just store and let update draw
-
     if (event.start === null) {
         event.start = event.end;
     }
     if (event.end === null) {
-        // Sometimes due to it running longer than main, but not always
+        // Sometimes due to it running longer than main, but not always so can't just set it main end
         event.end = event.start;
     }
 
@@ -258,6 +263,8 @@ function drawGoroutine(event, childNo, noChildren, depth) {
         const parent = goroutineMap[event.parentId];
         // Assume parent already has line set, since this function would have been called before
         const parentLinePos = parent.line.geometry.attributes.instanceStart.array;
+        
+        if (noChildren == 2) noChildren = 3 // So they don't sit opposite
         const angle = (360 / noChildren) * childNo;
         const rad = angle * (Math.PI / 180);
 
@@ -313,7 +320,7 @@ function drawGoroutine(event, childNo, noChildren, depth) {
     const idLabel = new CSS2DObject(idDiv);
     idLabel.position.set(startPos.x, startPos.y, startPos.z);
     idLabel.center.set(0, 1);
-    idLabel.layers.set(1);
+    idLabel.layers.set(goroutineIdLayer);
     idLabel.name = "id";
     event.line.add(idLabel);
 
@@ -334,14 +341,19 @@ function drawGoroutine(event, childNo, noChildren, depth) {
 function drawChannels() {
     Object.values(channelMap)
         .forEach(event => {
-            /*
-            console.log(event);
-            console.log(event.from);
-            console.log(event.to);*/
-            // TODO check from and to aren't null
+            // Skip if there were never a pair
+            if (event.from === null || event.to === null) {
+                return;
+            }
 
             const from = goroutineMap[event.from];
             const to = goroutineMap[event.to];
+
+            // For now, don't deal with it if parent doesn't have line for whatever reason
+            if (from.line === null || to.line === null) {
+                return;
+            }
+
             const fromLine = from.line.geometry.attributes.instanceStart.array;
             const toLine = to.line.geometry.attributes.instanceStart.array;
 
@@ -351,7 +363,7 @@ function drawChannels() {
             // Draw channel line with arrow and store in channel map
             const direction = new THREE.Vector3().subVectors(endPos, startPos).normalize();
             const length = startPos.distanceTo(endPos);
-            const arrowedLine = new THREE.ArrowHelper(direction, startPos, length, channelColour);
+            const arrowedLine = new THREE.ArrowHelper(direction, startPos, length, channelColour, 0.1, 0.05);
 
             event.line = arrowedLine;
             scene.add(arrowedLine);
@@ -361,16 +373,16 @@ function drawChannels() {
                 const midpoint = new THREE.Vector3();
                 midpoint.addVectors(startPos, endPos).divideScalar(2);
 
-                const idDiv = document.createElement("div");
-                idDiv.className = "label";
-                idDiv.textContent = event.value;
+                const valueDiv = document.createElement("div");
+                valueDiv.className = "label";
+                valueDiv.textContent = event.value;
                 
-                const idLabel = new CSS2DObject(idDiv);
-                idLabel.position.set(0, length / 2, 0);
-                idLabel.center.set(0, 1);
-                idLabel.layers.set(1);
-                idLabel.name = "value";
-                event.line.add(idLabel);
+                const valueLabel = new CSS2DObject(valueDiv);
+                valueLabel.position.set(0, length / 2, 0);
+                valueLabel.center.set(0, 1);
+                valueLabel.layers.set(channelValueLayer);
+                valueLabel.name = "value";
+                event.line.add(valueLabel);
             }
     });
 }
@@ -397,6 +409,8 @@ function updateScene(time) {
 
         if (time < event.start) {
             // Hide line
+            positions[4] = (yOffset + event.start) * distScale; 
+
             event.line.visible = false;
             event.line.getObjectByName("id").visible = false;
 
@@ -404,7 +418,9 @@ function updateScene(time) {
             if (event.endConn) event.endConn.visible = false;
         }
         if (time >= event.end) {
-            // show line
+            // Show line
+            positions[4] = (yOffset + event.end) * distScale; 
+
             event.line.visible = true;
             event.line.getObjectByName("id").visible = true;
 
@@ -431,16 +447,19 @@ function updateScene(time) {
     Object.values(channelMap).forEach(event => {
         if (time < event.sendTime) {
             // Hide line
-            event.line.getObjectByName("value").visible = false;
-
-            event.line.visible = false;
-            event.line.visible = false;
+            if (event.line) {
+                event.line.visible = false;
+                if (event.value)
+                    event.line.getObjectByName("value").visible = false;
+            }
         }
         if (time >= event.sendTime) {
-            event.line.getObjectByName("value").visible = true;
-
-            event.line.visible = true;
-            event.line.visible = true;
+            // Show line
+            if (event.line) {
+                event.line.visible = true;
+                if (event.value)
+                    event.line.getObjectByName("value").visible = true;
+            }
         }
     });
 }
@@ -461,7 +480,6 @@ function animate() {
         updateScene(currentTime);
     }
 
-    //controls.update();
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
 }
