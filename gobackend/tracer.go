@@ -22,6 +22,7 @@ type Event struct {
 }
 
 var events []Event
+var eventsMu sync.Mutex
 
 var startTime time.Time
 
@@ -43,6 +44,9 @@ func onMainEnd() {
 // Creates a new goroutine event and appends to the events slice
 func logGoroutine(event string, id uint64, parentId uint64, name string) {
 	currentTime := time.Since(startTime).Seconds()
+
+	eventsMu.Lock()
+	defer eventsMu.Unlock()
 	events = append(events, Event{currentTime, event, fmt.Sprintf("%d", id), fmt.Sprintf("%d", parentId), name, ""})
 }
 
@@ -56,6 +60,9 @@ func logSendChannel[T any](c any, parentId uint64, value T) {
 	sendCounters[address]++
 
 	currentTime := time.Since(startTime).Seconds()
+
+	eventsMu.Lock()
+	defer eventsMu.Unlock()
 	events = append(events, Event{currentTime, "send-channel", id, fmt.Sprintf("%d", parentId), "", fmt.Sprintf("%v", value)})
 }
 
@@ -69,6 +76,9 @@ func logReceiveChannel(c any, parentId uint64) {
 	recCounters[address]++
 
 	currentTime := time.Since(startTime).Seconds()
+
+	eventsMu.Lock()
+	defer eventsMu.Unlock()
 	events = append(events, Event{currentTime, "receive-channel", id, fmt.Sprintf("%d", parentId), "", ""})
 }
 
@@ -89,6 +99,9 @@ func insertMainGoroutineEvents() {
 	currentTime := time.Since(startTime).Seconds()
 	startMain := Event{0, "create-goroutine", "1", "", "main", ""}
 	endMain := Event{currentTime, "end-goroutine", "1", "", "main", ""}
+
+	eventsMu.Lock()
+	defer eventsMu.Unlock()
 	events = append(events, startMain, endMain)
 }
 
