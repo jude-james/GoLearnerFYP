@@ -1,12 +1,8 @@
 # GoLearner
 
-## Overview
-
-An interactive concurrency tutorial in Go.
-
 ## How To Run
 
-These are the run instructions for markers who have downloaded the whole code-base. Please contact me or supervisor if you run into problems.
+Please contact me or my supervisor if you run into problems.
 
 ### Prerequisites
 
@@ -20,6 +16,7 @@ These are the run instructions for markers who have downloaded the whole code-ba
 cd GoLearner
 
 # 2. Build docker image
+cd gobackend
 docker build -t go-runner .
 
 # 3. Start server
