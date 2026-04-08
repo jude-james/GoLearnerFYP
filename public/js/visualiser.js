@@ -340,7 +340,6 @@ function drawGoroutine(event, childNo, noChildren, depth) {
     }
 }
 
-
 /**
  * Draws all channel lines
  */

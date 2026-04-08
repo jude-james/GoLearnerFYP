@@ -211,8 +211,36 @@ const fundamentalsChapters = [
 // List of chapters for concurrency course
 const concurrencyChapters = [
     {
-        title: "Concurrency Pt. 1",
-        description: "Intro to concurrency",
+        title: "Goroutines",
+        description: "Learn how multithreading works in Go, with it's signature goroutines",
+        topics: [
+            {
+                title: "Concurrency 1",
+                slug: "concurrency1",
+                layout: "lesson.html",
+            },
+            {
+                title: "Concurrency 2",
+                slug: "goroutines",
+                layout: "lesson-visualiser.html",
+                goFile: "code.go",
+                markdown: "markdown.md"
+            },
+            {
+                title: "Goroutines quiz",
+                slug: "goroutines_quiz",
+                layout: "quiz.html",
+                question: "This is a question...?",
+                answer: 1,
+                options: [
+                    "A", "B", "C"
+                ]
+            }
+        ]
+    },
+    {
+        title: "Channels",
+        description: "Channels?",
         topics: [
             {
                 title: "Concurrency 1",

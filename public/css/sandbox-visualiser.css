@@ -5,7 +5,7 @@
 
 .top-panel {
     display: flex;
-    height: 70vh;
+    height: 75vh;
     flex-direction: column;
 }
 

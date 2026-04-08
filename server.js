@@ -68,7 +68,7 @@ wss.on("connection", async (ws) => {
             case "terminate":
                 killDockerProcess(containerName);
                 break;
-            case "run": 
+            case "run":
                 // Create a unique run Id for each run
                 const runId = `run-${crypto.randomUUID()}`;
 
@@ -90,8 +90,6 @@ wss.on("connection", async (ws) => {
                     return;
                 }
 
-                // TODO run without calling ast_rewriter option, run-with-trace or trace-run something
-                // create another sh script for the regular run, in a different folder
                 console.log("Spawning child process to run docker image (go-runner)...");
 
                 // Spawn a process that runs the docker image with the unique container name

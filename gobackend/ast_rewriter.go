@@ -70,8 +70,8 @@ func rewrite(file *ast.File) *ast.File {
 
 			// Anonymous function
 			if funcLit, ok := x.Call.Fun.(*ast.FuncLit); ok {
-				logStmt := createLogGoStmt("create-goroutine", "getGoroutineId()", varName, "")
-				deferStmt := createDeferLogGoStmt("end-goroutine", "getGoroutineId()", varName, "")
+				logStmt := createLogGoStmt("create-goroutine", varName, "")
+				deferStmt := createDeferLogGoStmt("end-goroutine", varName, "")
 
 				funcLit.Body.List = append([]ast.Stmt{logStmt, deferStmt}, funcLit.Body.List...)
 			} else { // Named function
@@ -80,59 +80,48 @@ func rewrite(file *ast.File) *ast.File {
 
 			goroutineCount++
 		case *ast.SendStmt:
-			// If the parent node is a CommClause then this send statement is within a select
-			// and InsertBefore won't work, skip and handle in select case
+			// If the parent node is a CommClause InsertBefore won't work, skip and handle in select case
 			if _, ok := c.Parent().(*ast.CommClause); ok {
 				return true
 			}
 
-			// Only get value if it's a basic lit or ident, ignore other cases
-			var value string
-			switch v := x.Value.(type) {
-			case *ast.BasicLit:
-				value = v.Value
-			case *ast.Ident:
-				value = v.Name
-			default:
-				value = strconv.Quote("")
-			}
-
-			// If the chan is a simple identifier then log the event with the chan itself, otherwise ignore
+			// If the chan is a simple identifier then log the event with the chan itself, otherwise ignore, same for other cases
 			if ident, ok := x.Chan.(*ast.Ident); ok {
-				c.InsertBefore(createLogSendChanStmt(ident.Name, "getGoroutineId()", value))
+				c.InsertBefore(createLogSendChanStmt(ident.Name, getSendStmtValue(x.Value)))
 			}
 		case *ast.ExprStmt:
-			// Receive by itself '<- c', this is an expression statement
+			// Check this node exists within a block before inserting new node beside, and same for others
+			if _, ok := c.Parent().(*ast.BlockStmt); !ok {
+				return true
+			}
 
-			// Check this node exists within a block before inserting before, and same for others
-			if _, ok := c.Parent().(*ast.BlockStmt); ok {
-				if unary, ok := x.X.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
-					if ident, ok := unary.X.(*ast.Ident); ok {
-						c.InsertBefore(createLogRecChanStmt(ident.Name, "getGoroutineId()"))
-					}
+			// Receive by itself, '<- c', this is an expression statement
+			if unary, ok := x.X.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+				if ident, ok := unary.X.(*ast.Ident); ok {
+					c.InsertAfter(createLogRecChanStmt(ident.Name))
 				}
 			}
 
-			// Inside a function argument, foo(<- c), if the func call is by itself it exists in an expr stmt
+			// Inside a function argument, 'foo(<- c)', if the func call is by itself it also exists in an expr stmt
 			if call, ok := x.X.(*ast.CallExpr); ok {
-				if _, ok := c.Parent().(*ast.BlockStmt); ok {
-					for _, arg := range call.Args {
-						if unary, ok := arg.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
-							if ident, ok := unary.X.(*ast.Ident); ok {
-								c.InsertBefore(createLogRecChanStmt(ident.Name, "getGoroutineId()"))
-							}
+				for _, arg := range call.Args {
+					if unary, ok := arg.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+						if ident, ok := unary.X.(*ast.Ident); ok {
+							c.InsertAfter(createLogRecChanStmt(ident.Name))
 						}
 					}
 				}
 			}
 		case *ast.AssignStmt:
-			// within an assignment statement 'a := <-c'
-			if _, ok := c.Parent().(*ast.BlockStmt); ok {
-				for _, rhs := range x.Rhs {
-					if unary, ok := rhs.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
-						if ident, ok := unary.X.(*ast.Ident); ok {
-							c.InsertBefore(createLogRecChanStmt(ident.Name, "getGoroutineId()"))
-						}
+			// within an assignment statement, 'v := <-c'
+			if _, ok := c.Parent().(*ast.BlockStmt); !ok {
+				return true
+			}
+
+			for _, rhs := range x.Rhs {
+				if unary, ok := rhs.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
+					if ident, ok := unary.X.(*ast.Ident); ok {
+						c.InsertAfter(createLogRecChanStmt(ident.Name))
 					}
 				}
 			}
@@ -140,49 +129,44 @@ func rewrite(file *ast.File) *ast.File {
 			// Detecting send and receive within select statements
 			switch comm := x.Comm.(type) {
 			case *ast.SendStmt:
-				// Only get value if it's a basic lit or ident, ignore other cases
-				var value string
-				switch v := comm.Value.(type) {
-				case *ast.BasicLit:
-					value = v.Value
-				case *ast.Ident:
-					value = v.Name
-				default:
-					value = strconv.Quote("")
+				if ident, ok := comm.Chan.(*ast.Ident); ok {
+					logStmt := createLogSendChanStmt(ident.Name, getSendStmtValue(comm.Value))
+					x.Body = append([]ast.Stmt{logStmt}, x.Body...)
 				}
-
-				logStmt := createLogSendChanStmt(comm.Chan.(*ast.Ident).Name, "getGoroutineId()", value)
-				x.Body = append([]ast.Stmt{logStmt}, x.Body...)
 			case *ast.AssignStmt:
+				// 'case v := <- c'
 				if unary, ok := comm.Rhs[0].(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 					if ident, ok := unary.X.(*ast.Ident); ok {
-						logStmt := createLogRecChanStmt(ident.Name, "getGoroutineId()")
+						logStmt := createLogRecChanStmt(ident.Name)
 						x.Body = append([]ast.Stmt{logStmt}, x.Body...)
 					}
 				}
 			case *ast.ExprStmt:
+				// 'case <- c'
 				if unary, ok := comm.X.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 					if ident, ok := unary.X.(*ast.Ident); ok {
-						logStmt := createLogRecChanStmt(ident.Name, "getGoroutineId()")
+						logStmt := createLogRecChanStmt(ident.Name)
 						x.Body = append([]ast.Stmt{logStmt}, x.Body...)
 					}
 				}
 			}
 		case *ast.IfStmt:
-			// Receive within if statements
+			// Detecting receive within if statements
+			// Within short statement, 'if v := <-c; ...'
 			if assign, ok := x.Init.(*ast.AssignStmt); ok {
 				for _, rhs := range assign.Rhs {
 					if unary, ok := rhs.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 						if ident, ok := unary.X.(*ast.Ident); ok {
-							c.InsertBefore(createLogRecChanStmt(ident.Name, "getGoroutineId()"))
+							c.InsertAfter(createLogRecChanStmt(ident.Name))
 						}
 					}
 				}
 			}
 
+			// Within condition, 'if <- c {}'
 			if unary, ok := x.Cond.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 				if ident, ok := unary.X.(*ast.Ident); ok {
-					c.InsertBefore(createLogRecChanStmt(ident.Name, "getGoroutineId()"))
+					c.InsertAfter(createLogRecChanStmt(ident.Name))
 				}
 			}
 		case *ast.ReturnStmt:
@@ -190,19 +174,20 @@ func rewrite(file *ast.File) *ast.File {
 			for _, result := range x.Results {
 				if unary, ok := result.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 					if ident, ok := unary.X.(*ast.Ident); ok {
-						c.InsertBefore(createLogRecChanStmt(ident.Name, "getGoroutineId()"))
+						// Must insert before the return statement to actually execute
+						c.InsertBefore(createLogRecChanStmt(ident.Name))
 					}
 				}
 			}
 		case *ast.DeclStmt:
-			// Receive within a declaration 'var x = <- c'
+			// Receive within a declaration 'var v = <- c'
 			if genDecl, ok := x.Decl.(*ast.GenDecl); ok {
 				for _, spec := range genDecl.Specs {
 					if valueSpec, ok := spec.(*ast.ValueSpec); ok {
 						for _, value := range valueSpec.Values {
 							if unary, ok := value.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 								if ident, ok := unary.X.(*ast.Ident); ok {
-									c.InsertBefore(createLogRecChanStmt(ident.Name, "getGoroutineId()"))
+									c.InsertAfter(createLogRecChanStmt(ident.Name))
 								}
 							}
 						}
@@ -210,8 +195,9 @@ func rewrite(file *ast.File) *ast.File {
 				}
 			}
 		case *ast.RangeStmt:
+			// Ranging over channel receive, in this case ident may be another type, but it's logged anyway
 			if ident, ok := x.X.(*ast.Ident); ok {
-				logStmt := createLogRecChanStmt(ident.Name, "getGoroutineId()")
+				logStmt := createLogRecChanStmt(ident.Name)
 				x.Body.List = append([]ast.Stmt{logStmt}, x.Body.List...)
 			}
 		}
@@ -248,8 +234,23 @@ func createDeferOnMainEndStmt() *ast.DeferStmt {
 	}
 }
 
+// Gets the value sent across the channel from the AST value node
+// Only gets value if it's a basic lit or ident, ignores other cases
+func getSendStmtValue(valueNode ast.Expr) string {
+	var value string
+	switch v := valueNode.(type) {
+	case *ast.BasicLit:
+		value = v.Value
+	case *ast.Ident:
+		value = v.Name
+	default:
+		value = strconv.Quote("")
+	}
+	return value
+}
+
 // Creates a new AST expression statement node to log a send-channel event, passing in the value identifier
-func createLogSendChanStmt(channel string, parentId string, value string) *ast.ExprStmt {
+func createLogSendChanStmt(channel string, value string) *ast.ExprStmt {
 	newNode := &ast.ExprStmt{
 		X: &ast.CallExpr{
 			Fun: &ast.Ident{
@@ -261,7 +262,7 @@ func createLogSendChanStmt(channel string, parentId string, value string) *ast.E
 					Name: channel,
 				},
 				&ast.Ident{
-					Name: parentId,
+					Name: "getGoroutineId()",
 				},
 				&ast.Ident{
 					Name: value,
@@ -275,7 +276,7 @@ func createLogSendChanStmt(channel string, parentId string, value string) *ast.E
 }
 
 // Creates a new AST expression statement node to log a receive-channel event
-func createLogRecChanStmt(channel string, parentId string) *ast.ExprStmt {
+func createLogRecChanStmt(channel string) *ast.ExprStmt {
 	newNode := &ast.ExprStmt{
 		X: &ast.CallExpr{
 			Fun: &ast.Ident{
@@ -287,7 +288,7 @@ func createLogRecChanStmt(channel string, parentId string) *ast.ExprStmt {
 					Name: channel,
 				},
 				&ast.Ident{
-					Name: parentId,
+					Name: "getGoroutineId()",
 				},
 			},
 			Ellipsis: 0,
@@ -316,8 +317,8 @@ func createAssignStmt(lhs string, rhs string) ast.Stmt {
 	return newNode
 }
 
-// Creates a new call expression AST node, equivalent to go source code 'logGoroutine("event", id, parentId, "name")'
-func createLogGoCallExpr(event string, id string, parentId string, name string) *ast.CallExpr {
+// Creates a new call expression AST node, equivalent to go source code 'logGoroutine("event", getGoroutineId(), parentId, "name")'
+func createLogGoCallExpr(event string, parentId string, name string) *ast.CallExpr {
 	return &ast.CallExpr{
 		Fun: &ast.Ident{
 			Name: "logGoroutine",
@@ -328,7 +329,7 @@ func createLogGoCallExpr(event string, id string, parentId string, name string) 
 				Name: strconv.Quote(event),
 			},
 			&ast.Ident{
-				Name: id,
+				Name: "getGoroutineId()",
 			},
 			&ast.Ident{
 				Name: parentId,
@@ -342,18 +343,18 @@ func createLogGoCallExpr(event string, id string, parentId string, name string) 
 }
 
 // Creates a new AST statement node to log a goroutine event
-func createLogGoStmt(event string, id string, parentId string, name string) ast.Stmt {
+func createLogGoStmt(event string, parentId string, name string) ast.Stmt {
 	newNode := &ast.ExprStmt{
-		X: createLogGoCallExpr(event, id, parentId, name),
+		X: createLogGoCallExpr(event, parentId, name),
 	}
 	return newNode
 }
 
 // Create a new AST defer statement node to log a goroutine event
-func createDeferLogGoStmt(event string, id string, parentId string, name string) ast.Stmt {
+func createDeferLogGoStmt(event string, parentId string, name string) ast.Stmt {
 	newNode := &ast.DeferStmt{
 		Defer: 27,
-		Call:  createLogGoCallExpr(event, id, parentId, name),
+		Call:  createLogGoCallExpr(event, parentId, name),
 	}
 	return newNode
 }
@@ -371,8 +372,8 @@ func createGoCallWrapper(callExpr *ast.CallExpr) ast.Stmt {
 				},
 				Body: &ast.BlockStmt{
 					List: []ast.Stmt{
-						createLogGoStmt("create-goroutine", "getGoroutineId()", fmt.Sprintf("parentId_%d", goroutineCount), callExpr.Fun.(*ast.Ident).Name),
-						createDeferLogGoStmt("end-goroutine", "getGoroutineId()", fmt.Sprintf("parentId_%d", goroutineCount), callExpr.Fun.(*ast.Ident).Name),
+						createLogGoStmt("create-goroutine", fmt.Sprintf("parentId_%d", goroutineCount), callExpr.Fun.(*ast.Ident).Name),
+						createDeferLogGoStmt("end-goroutine", fmt.Sprintf("parentId_%d", goroutineCount), callExpr.Fun.(*ast.Ident).Name),
 						&ast.ExprStmt{
 							X: callExpr,
 						},
