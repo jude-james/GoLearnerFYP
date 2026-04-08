@@ -228,6 +228,8 @@ export function init(events) {
     camera.position.y = -yOffset + 1;
     camera.position.z = -yOffset;
     controls.update();
+
+    playButton.disabled = false;
 }
 
 /**
@@ -256,10 +258,8 @@ function displayStats()
  * @param {integer} depth - The depth from the main goroutine
  */
 function drawGoroutine(event, childNo, noChildren, depth) { 
-    if (event.end === null) {
-        // Assume main goroutine ended first
+    if (event.end === null) // Assume main goroutine ended first
         event.end = duration;
-    }
 
     let startPos = new THREE.Vector3(0, (yOffset + event.start) * distScale, 0);
     let endPos = new THREE.Vector3(0, (yOffset + event.end) * distScale, 0);
@@ -354,7 +354,6 @@ function drawChannels() {
             const from = goroutineMap[event.from];
             const to = goroutineMap[event.to];
 
-            // TODO is this needed?
             // For now, don't deal with it if parent doesn't have line for whatever reason
             if (from.line === null || to.line === null) {
                 return;

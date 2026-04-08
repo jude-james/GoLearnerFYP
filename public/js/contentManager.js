@@ -430,7 +430,9 @@ export async function getCurrentTopicCode() {
         url = `/content/${topic.slug}/${topic.goFile}`;
     }
     else {
-        url = `/content/sandbox.go`;
+        const path = window.location.pathname;
+        url = path.includes("sandbox-visualiser") ? 
+        `/content/sandbox_concurrency.go` : `/content/sandbox.go`;
     }
 
     return await getFileAsText(url);

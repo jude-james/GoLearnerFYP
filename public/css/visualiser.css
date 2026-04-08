@@ -27,6 +27,12 @@
     background-color: #23355d;
 }
 
+#play-button:disabled {
+    background-color: var(--black);
+    border: 1.5px solid var(--disabled-button-white);
+    color: var(--disabled-button-white);
+}
+
 .output {
     background-color: var(--black);
 

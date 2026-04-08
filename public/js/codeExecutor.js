@@ -11,6 +11,8 @@ const copyButton = document.getElementById("copy-button");
 
 let ws;
 
+let stopLoading;
+
 const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
     smartIndent: true,
@@ -41,19 +43,17 @@ if (saved !== null) {
 runButton.addEventListener("click", () => {
     runButton.disabled = true;
     terminateButton.disabled = false;
-
-    clearConsole();
-    updateConsole("Connecting to server...", false);
+    stopLoading = showLoading();
 
     startWebSocket();
 });
 
 terminateButton.addEventListener("click", () => {
-    if (ws.readyState === WebSocket.OPEN) 
-    {
+    if (ws.readyState === WebSocket.OPEN) {
         const message = JSON.stringify({ type: "terminate" });
         console.log("Sending message to server:", message);
         ws.send(message);
+        stopLoading();
     }
 });
 
@@ -87,7 +87,6 @@ function startWebSocket() {
 
     ws.onopen = () => {
         console.log("Successfully connected to WebSocket server.");
-        clearConsole();
         
         const message = JSON.stringify({ fileName: fileName.textContent, code: editor.getValue(), type: "run" });
         console.log("Sending message to server:", message);
@@ -126,7 +125,7 @@ function startWebSocket() {
 
     ws.onerror = () => {
         console.error("WebSocket encountered an error.");
-        clearConsole();
+        stopLoading();
     }
 
     ws.onclose = (event) => {
@@ -136,7 +135,8 @@ function startWebSocket() {
         terminateButton.disabled = true;
 
         if (!event.wasClean) {
-            displayError("Unexpected disconnection from server.")
+            displayError("Unexpected disconnection from server.");
+            stopLoading();
         }
     };
 }
@@ -164,4 +164,36 @@ function updateConsole(output, isError) {
 
 function clearConsole() {
     outputConsole.textContent = "";
+}
+
+/**
+ * Displays a loading message loop for the specified duration
+ */
+function showLoading() {
+    const duration = 3900;
+    let dots = 0;
+
+    let message = "Connecting to server";
+    outputConsole.textContent = message;
+
+    const interval = setInterval(() => {
+        dots = (dots % 3) + 1;        
+        outputConsole.textContent = message + ".".repeat(dots);
+    }, 300);
+
+    const messageTimeout = setTimeout(function() {
+        message = "Running program"
+    }, 2100);
+
+    const endTimeout = setTimeout(function() {
+        clearInterval(interval);
+        clearConsole();
+    }, duration);
+
+    return function stop() {
+        clearInterval(interval);
+        clearTimeout(messageTimeout);
+        clearTimeout(endTimeout);
+        clearConsole();
+    };
 }
