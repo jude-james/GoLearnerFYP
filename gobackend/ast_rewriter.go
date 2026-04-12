@@ -80,14 +80,14 @@ func rewrite(file *ast.File) *ast.File {
 
 			goroutineCount++
 		case *ast.SendStmt:
-			// If the parent node is a CommClause InsertBefore won't work, skip and handle in select case
+			// If the parent node is a CommClause inserting beside won't work, skip and handle in select case
 			if _, ok := c.Parent().(*ast.CommClause); ok {
 				return true
 			}
 
 			// If the chan is a simple identifier then log the event with the chan itself, otherwise ignore, same for other cases
 			if ident, ok := x.Chan.(*ast.Ident); ok {
-				c.InsertBefore(createLogSendChanStmt(ident.Name, getSendStmtValue(x.Value)))
+				c.InsertAfter(createLogSendChanStmt(ident.Name, getSendStmtValue(x.Value)))
 			}
 		case *ast.ExprStmt:
 			// Check this node exists within a block before inserting new node beside, and same for others
