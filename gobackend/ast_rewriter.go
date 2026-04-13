@@ -362,6 +362,12 @@ func createDeferLogGoStmt(event string, parentId string, name string) ast.Stmt {
 // Takes in the call expression from the goroutine call and wraps it into an anonymous goroutine call
 // Adds log statements to body as well as original call expression, and passes in the function name
 func createGoCallWrapper(callExpr *ast.CallExpr) ast.Stmt {
+	// Check function identifier is a basic ast.Ident, otherwise stick to using Id
+	var name string = ""
+	if ident, ok := callExpr.Fun.(*ast.Ident); ok {
+		name = ident.Name
+	}
+
 	newNode := &ast.GoStmt{
 		Go: 53,
 		Call: &ast.CallExpr{
@@ -372,8 +378,8 @@ func createGoCallWrapper(callExpr *ast.CallExpr) ast.Stmt {
 				},
 				Body: &ast.BlockStmt{
 					List: []ast.Stmt{
-						createLogGoStmt("create-goroutine", fmt.Sprintf("parentId_%d", goroutineCount), callExpr.Fun.(*ast.Ident).Name),
-						createDeferLogGoStmt("end-goroutine", fmt.Sprintf("parentId_%d", goroutineCount), callExpr.Fun.(*ast.Ident).Name),
+						createLogGoStmt("create-goroutine", fmt.Sprintf("parentId_%d", goroutineCount), name),
+						createDeferLogGoStmt("end-goroutine", fmt.Sprintf("parentId_%d", goroutineCount), name),
 						&ast.ExprStmt{
 							X: callExpr,
 						},
