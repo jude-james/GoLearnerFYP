@@ -189,6 +189,7 @@ export function init(events) {
                     to: null,
                     from: null,
                     line: null, 
+                    endPos: null
                 };
             }
 
@@ -207,8 +208,8 @@ export function init(events) {
 
     // Sort goroutine map by time, then add all children to each event
     Object.values(goroutineMap)
-        .sort((a, b) => a.start - b.start)
-        .forEach(e => {         
+    .sort((a, b) => a.start - b.start)
+    .forEach(e => {
         if (e.parentId && goroutineMap[e.parentId]) {            
             goroutineMap[e.parentId].children.push(e.id);
         }
@@ -240,14 +241,12 @@ function displayStats()
     output.textContent = "Click 'play animation' to replay the concurrent program.\n";
     output.textContent += "Use your mouse to move around the scene.\n";
 
-    output.textContent += `\nPROGRAM STATS:\n`;
+    output.textContent += `\nPROGRAM INFO:\n`;
 
     output.textContent += `Your program lasted ${duration} seconds.\n`;
 
     const numGoroutines = Object.values(goroutineMap).length;
     output.textContent += `You created ${numGoroutines - 1} goroutine(s).\n`;
-
-    // TODO other stats
 }
 
 /**
@@ -370,6 +369,7 @@ function drawChannels() {
             const length = startPos.distanceTo(endPos);
             const arrowedLine = new THREE.ArrowHelper(direction, startPos, length, channelColour, 0.1, 0.05);
 
+            event.endPos = endPos;
             event.line = arrowedLine;
             scene.add(arrowedLine);
 
@@ -448,23 +448,53 @@ function updateScene(time) {
         event.line.computeLineDistances();
     });
 
-    // Update channel visibility if t has passed send time
+    // Update channel line positions depending on t
     Object.values(channelMap).forEach(event => {
+        if (!event.line) return;
+
+        const startPos = event.line.position;
+
+        let label;
+        if (event.value) 
+            label = event.line.getObjectByName("value");
+
         if (time < event.sendTime) {
             // Hide line
-            if (event.line) {
-                event.line.visible = false;
-                if (event.value)
-                    event.line.getObjectByName("value").visible = false;
-            }
+            event.line.visible = false;
+            if (event.value)
+                label.visible = false;
         }
-        if (time >= event.sendTime) {
+        if (time >= event.receiveTime) {            
             // Show line
-            if (event.line) {
-                event.line.visible = true;
-                if (event.value)
-                    event.line.getObjectByName("value").visible = true;
-            }
+            event.line.visible = true;
+
+            const direction = new THREE.Vector3().subVectors(event.endPos, startPos).normalize();
+            const length = startPos.distanceTo(event.endPos);
+            event.line.setDirection(direction);
+            event.line.setLength(length, 0.1, 0.05);
+
+            if (event.value)
+                label.visible = true;
+        }
+        if (time >= event.sendTime && time < event.receiveTime) {
+            // Lerp line between start and end
+            event.line.visible = true;
+                
+            const y = (time - event.sendTime) / (event.receiveTime - event.sendTime);
+            if (event.value) {
+                if (y > 0.5)
+                    label.visible = true;
+                else
+                    label.visible = false;
+            } 
+            
+            const newEnd = new THREE.Vector3().lerpVectors(startPos, event.endPos, y);
+
+            const direction = new THREE.Vector3().subVectors(newEnd, startPos).normalize();
+            const length = startPos.distanceTo(newEnd);
+
+            event.line.setDirection(direction);
+            event.line.setLength(length, 0.1, 0.05);
         }
     });
 }
