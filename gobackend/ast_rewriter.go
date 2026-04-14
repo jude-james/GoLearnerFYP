@@ -87,7 +87,7 @@ func rewrite(file *ast.File) *ast.File {
 
 			// If the chan is a simple identifier then log the event with the chan itself, otherwise ignore, same for other cases
 			if ident, ok := x.Chan.(*ast.Ident); ok {
-				c.InsertAfter(createLogSendChanStmt(ident.Name, getSendStmtValue(x.Value)))
+				c.InsertAfter(createLogChanSendStmt(ident.Name, getSendStmtValue(x.Value)))
 			}
 		case *ast.ExprStmt:
 			// Check this node exists within a block before inserting new node beside, and same for others
@@ -98,7 +98,7 @@ func rewrite(file *ast.File) *ast.File {
 			// Receive by itself, '<- c', this is an expression statement
 			if unary, ok := x.X.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 				if ident, ok := unary.X.(*ast.Ident); ok {
-					c.InsertAfter(createLogRecChanStmt(ident.Name))
+					c.InsertAfter(createLogChanRecvStmt(ident.Name))
 				}
 			}
 
@@ -107,7 +107,7 @@ func rewrite(file *ast.File) *ast.File {
 				for _, arg := range call.Args {
 					if unary, ok := arg.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 						if ident, ok := unary.X.(*ast.Ident); ok {
-							c.InsertAfter(createLogRecChanStmt(ident.Name))
+							c.InsertAfter(createLogChanRecvStmt(ident.Name))
 						}
 					}
 				}
@@ -121,7 +121,7 @@ func rewrite(file *ast.File) *ast.File {
 			for _, rhs := range x.Rhs {
 				if unary, ok := rhs.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 					if ident, ok := unary.X.(*ast.Ident); ok {
-						c.InsertAfter(createLogRecChanStmt(ident.Name))
+						c.InsertAfter(createLogChanRecvStmt(ident.Name))
 					}
 				}
 			}
@@ -130,14 +130,14 @@ func rewrite(file *ast.File) *ast.File {
 			switch comm := x.Comm.(type) {
 			case *ast.SendStmt:
 				if ident, ok := comm.Chan.(*ast.Ident); ok {
-					logStmt := createLogSendChanStmt(ident.Name, getSendStmtValue(comm.Value))
+					logStmt := createLogChanSendStmt(ident.Name, getSendStmtValue(comm.Value))
 					x.Body = append([]ast.Stmt{logStmt}, x.Body...)
 				}
 			case *ast.AssignStmt:
 				// 'case v := <- c'
 				if unary, ok := comm.Rhs[0].(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 					if ident, ok := unary.X.(*ast.Ident); ok {
-						logStmt := createLogRecChanStmt(ident.Name)
+						logStmt := createLogChanRecvStmt(ident.Name)
 						x.Body = append([]ast.Stmt{logStmt}, x.Body...)
 					}
 				}
@@ -145,7 +145,7 @@ func rewrite(file *ast.File) *ast.File {
 				// 'case <- c'
 				if unary, ok := comm.X.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 					if ident, ok := unary.X.(*ast.Ident); ok {
-						logStmt := createLogRecChanStmt(ident.Name)
+						logStmt := createLogChanRecvStmt(ident.Name)
 						x.Body = append([]ast.Stmt{logStmt}, x.Body...)
 					}
 				}
@@ -157,7 +157,7 @@ func rewrite(file *ast.File) *ast.File {
 				for _, rhs := range assign.Rhs {
 					if unary, ok := rhs.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 						if ident, ok := unary.X.(*ast.Ident); ok {
-							c.InsertAfter(createLogRecChanStmt(ident.Name))
+							c.InsertAfter(createLogChanRecvStmt(ident.Name))
 						}
 					}
 				}
@@ -166,7 +166,7 @@ func rewrite(file *ast.File) *ast.File {
 			// Within condition, 'if <- c {}'
 			if unary, ok := x.Cond.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 				if ident, ok := unary.X.(*ast.Ident); ok {
-					c.InsertAfter(createLogRecChanStmt(ident.Name))
+					c.InsertAfter(createLogChanRecvStmt(ident.Name))
 				}
 			}
 		case *ast.ReturnStmt:
@@ -175,7 +175,7 @@ func rewrite(file *ast.File) *ast.File {
 				if unary, ok := result.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 					if ident, ok := unary.X.(*ast.Ident); ok {
 						// Must insert before the return statement to actually execute
-						c.InsertBefore(createLogRecChanStmt(ident.Name))
+						c.InsertBefore(createLogChanRecvStmt(ident.Name))
 					}
 				}
 			}
@@ -187,7 +187,7 @@ func rewrite(file *ast.File) *ast.File {
 						for _, value := range valueSpec.Values {
 							if unary, ok := value.(*ast.UnaryExpr); ok && unary.Op == token.ARROW {
 								if ident, ok := unary.X.(*ast.Ident); ok {
-									c.InsertAfter(createLogRecChanStmt(ident.Name))
+									c.InsertAfter(createLogChanRecvStmt(ident.Name))
 								}
 							}
 						}
@@ -197,7 +197,7 @@ func rewrite(file *ast.File) *ast.File {
 		case *ast.RangeStmt:
 			// Ranging over channel receive, in this case ident may be another type, but it's logged anyway
 			if ident, ok := x.X.(*ast.Ident); ok {
-				logStmt := createLogRecChanStmt(ident.Name)
+				logStmt := createLogChanRecvStmt(ident.Name)
 				x.Body.List = append([]ast.Stmt{logStmt}, x.Body.List...)
 			}
 		}
@@ -249,12 +249,12 @@ func getSendStmtValue(valueNode ast.Expr) string {
 	return value
 }
 
-// Creates a new AST expression statement node to log a send-channel event, passing in the value identifier
-func createLogSendChanStmt(channel string, value string) *ast.ExprStmt {
+// Creates a new AST expression statement node to log a channel-send event, passing in the value identifier
+func createLogChanSendStmt(channel string, value string) *ast.ExprStmt {
 	newNode := &ast.ExprStmt{
 		X: &ast.CallExpr{
 			Fun: &ast.Ident{
-				Name: "logSendChannel",
+				Name: "logChannelSend",
 			},
 			Lparen: 37,
 			Args: []ast.Expr{
@@ -275,12 +275,12 @@ func createLogSendChanStmt(channel string, value string) *ast.ExprStmt {
 	return newNode
 }
 
-// Creates a new AST expression statement node to log a receive-channel event
-func createLogRecChanStmt(channel string) *ast.ExprStmt {
+// Creates a new AST expression statement node to log a channel-receive event
+func createLogChanRecvStmt(channel string) *ast.ExprStmt {
 	newNode := &ast.ExprStmt{
 		X: &ast.CallExpr{
 			Fun: &ast.Ident{
-				Name: "logReceiveChannel",
+				Name: "logChannelReceive",
 			},
 			Lparen: 37,
 			Args: []ast.Expr{

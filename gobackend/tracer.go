@@ -27,7 +27,7 @@ var eventsMu sync.Mutex
 var startTime time.Time
 
 var sendCounters = make(map[string]uint64)
-var recCounters = make(map[string]uint64)
+var recvCounters = make(map[string]uint64)
 var countersMu sync.Mutex
 
 // Called when the source program has started running, sets the start time
@@ -50,9 +50,9 @@ func logGoroutine(event string, id uint64, parentId uint64, name string) {
 	events = append(events, Event{currentTime, event, fmt.Sprintf("%d", id), fmt.Sprintf("%d", parentId), name, ""})
 }
 
-// Creates a new send-channel event and appends to the events slice
+// Creates a new channel-send event and appends to the events slice
 // Creates an Id using the channel pointer address and a sendCounter to pair each send/receive uniquely
-func logSendChannel[T any](c any, parentId uint64, value T) {
+func logChannelSend[T any](c any, parentId uint64, value T) {
 	countersMu.Lock()
 	defer countersMu.Unlock()
 	address := fmt.Sprintf("%p", c)
@@ -63,23 +63,23 @@ func logSendChannel[T any](c any, parentId uint64, value T) {
 
 	eventsMu.Lock()
 	defer eventsMu.Unlock()
-	events = append(events, Event{currentTime, "send-channel", id, fmt.Sprintf("%d", parentId), "", fmt.Sprintf("%v", value)})
+	events = append(events, Event{currentTime, "channel-send", id, fmt.Sprintf("%d", parentId), "", fmt.Sprintf("%v", value)})
 }
 
-// Creates a new receive-channel event to the events slice
-// Creates an Id using the channel pointer address and a recCounter to pair each send/receive uniquely
-func logReceiveChannel(c any, parentId uint64) {
+// Creates a new channel-receive event to the events slice
+// Creates an Id using the channel pointer address and a recvCounter to pair each send/receive uniquely
+func logChannelReceive(c any, parentId uint64) {
 	countersMu.Lock()
 	defer countersMu.Unlock()
 	address := fmt.Sprintf("%p", c)
-	id := fmt.Sprintf("%s_%d", address, recCounters[address])
-	recCounters[address]++
+	id := fmt.Sprintf("%s_%d", address, recvCounters[address])
+	recvCounters[address]++
 
 	currentTime := time.Since(startTime).Seconds()
 
 	eventsMu.Lock()
 	defer eventsMu.Unlock()
-	events = append(events, Event{currentTime, "receive-channel", id, fmt.Sprintf("%d", parentId), "", ""})
+	events = append(events, Event{currentTime, "channel-receive", id, fmt.Sprintf("%d", parentId), "", ""})
 }
 
 // Returns the current goroutine Id of the calling goroutine.

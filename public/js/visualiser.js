@@ -179,7 +179,7 @@ export function init(events) {
             }
         }
 
-        if (e.event === "send-channel" || e.event === "receive-channel") {
+        if (e.event === "channel-send" || e.event === "channel-receive") {
             if (!channelMap[e.id]) {
                 channelMap[e.id] = {
                     id: e.id,
@@ -193,13 +193,13 @@ export function init(events) {
                 };
             }
 
-            if (e.event === "send-channel") {                
+            if (e.event === "channel-send") {                
                 channelMap[e.id].from = e.parentId;
                 channelMap[e.id].sendTime = e.time;
                 channelMap[e.id].value = e.value;
             }
 
-            if (e.event === "receive-channel") {
+            if (e.event === "channel-receive") {
                 channelMap[e.id].to = e.parentId;
                 channelMap[e.id].receiveTime = e.time;
             }

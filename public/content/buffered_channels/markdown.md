@@ -40,4 +40,6 @@ Currently the buffer size is 0 (unbuffered). Try changing the size from 0 up to 
 
 With a buffer size greater than 0, `fastProducer` is able to send immediately, and the value is stored in the buffer. As soon as `slowConsumer` receives a value, the buffer has space again, and `fastProducer` can send another value.
 
+>**Tip**: Reduce the time scale to 0.1 to notice how `fastProducer` sends the moment `slowConsumer` receives
+
 At a buffer of 5, all 5 values are sent immediately, and `slowConsumer` receives them one by one when it's ready.
