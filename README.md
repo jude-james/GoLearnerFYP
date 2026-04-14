@@ -1,13 +1,21 @@
 # GoLearner
 
+## Codebase overview
+
+- All frontend code is within the public/ directory
+- The tutorial content is within the content/ directory
+- JavaScript backend is handled in server.js
+- codeExecutor.js handles connection with server.js
+- Go backend is within gobackend/ directory, which contains the Dockerfile and all Go code
+
 ## How To Run
 
-Please contact me or my supervisor if you run into problems.
+Please contact my supervisor if you run into problems.
 
 ### Prerequisites
 
-- Node.js v22 or higher
-- Docker
+- Node.js v22 or higher (https://nodejs.org/en)
+- Docker (https://www.docker.com/get-started/)
 
 ### Setup
 
