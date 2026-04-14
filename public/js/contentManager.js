@@ -71,7 +71,7 @@ const fundamentalsChapters = [
     },
     {
         title: "Variables & Types",
-        description: "Explore how Go stores and organises data, from basic types and variables to slices, maps, and pointers",
+        description: "Explore how Go stores and organises data, from basic types and variables to slices, maps, and pointers.",
         topics: [
             {
                 title: "Variables & Declaration",
@@ -212,60 +212,198 @@ const fundamentalsChapters = [
 const concurrencyChapters = [
     {
         title: "Goroutines",
-        description: "Learn how multithreading works in Go, with it's signature goroutines",
+        description: "Learn how multithreading works in Go, with it's signature goroutines.",
         topics: [
             {
-                title: "Concurrency 1",
-                slug: "concurrency1",
+                title: "Introduction",
+                slug: "intro_concurrency",
                 layout: "lesson.html",
-            },
-            {
-                title: "Concurrency 2",
-                slug: "goroutines",
-                layout: "lesson-visualiser.html",
-                goFile: "code.go",
+                goFile: "welcome.go",
                 markdown: "markdown.md"
             },
             {
-                title: "Goroutines quiz",
+                title: "Thinking Concurrently",
+                slug: "concurrency",
+                layout: "lesson.html",
+                goFile: "sequential.go",
+                markdown: "markdown.md"
+            },
+            {
+                title: "The Goroutine",
+                slug: "goroutines",
+                layout: "lesson-grapher.html",
+                goFile: "main.go",
+                markdown: "markdown.md"
+            },
+            {
+                title: "Launching Goroutines",
+                slug: "launching_goroutines",
+                layout: "lesson-grapher.html",
+                goFile: "sequential.go",
+                markdown: "markdown.md"
+            },
+            {
+                title: "WaitGroups",
+                slug: "wait_groups",
+                layout: "lesson-grapher.html",
+                goFile: "waitGroups.go",
+                markdown: "markdown.md"
+            },
+            {
+                title: "Goroutines Quiz",
                 slug: "goroutines_quiz",
                 layout: "quiz.html",
-                question: "This is a question...?",
-                answer: 1,
+                question: "Why can you run thousands of goroutines but not thousands of OS threads?",
+                answer: 2,
                 options: [
-                    "A", "B", "C"
+                    "Goroutines are limited by the number of CPU cores available",
+                    "Goroutines start with a small stack that grows only as needed, making them much cheaper than threads",
+                    "Go automatically converts goroutines to threads when there are too many"
                 ]
+            },
+            {
+                title: "Chapter 1 Summary",
+                slug: "concurrency_chapter1_summary",
+                layout: "summary.html",
+            },
+            {
+                title: "Chapter 1 Complete",
+                slug: "concurrency_chapter1",
+                layout: "chapter-complete.html",
+                message: "Congratulations! You now understand what goroutines are, why they are useful, and how to launch them."
             }
         ]
     },
     {
         title: "Channels",
-        description: "Channels?",
+        description: "Understand how goroutines communicate and synchronise using channels.",
         topics: [
             {
-                title: "Concurrency 1",
-                slug: "concurrency1",
-                layout: "lesson.html",
-            },
-            {
-                title: "Concurrency 2",
-                slug: "goroutines",
+                title: "Channels",
+                slug: "channels",
                 layout: "lesson-visualiser.html",
-                goFile: "code.go",
+                goFile: "chan_hello.go",
                 markdown: "markdown.md"
             },
             {
-                title: "Goroutines quiz",
-                slug: "goroutines_quiz",
+                title: "Unbuffered Channels",
+                slug: "unbuffered_channels",
+                layout: "lesson-visualiser.html",
+                goFile: "unbuffered.go",
+                markdown: "markdown.md"
+            },
+            {
+                title: "Buffered Channels",
+                slug: "buffered_channels",
+                layout: "lesson-visualiser.html",
+                goFile: "buffered.go",
+                markdown: "markdown.md"
+            },
+            {
+                title: "Range & Close",
+                slug: "range_close",
+                layout: "lesson-visualiser.html",
+                goFile: "generator.go",
+                markdown: "markdown.md"
+            },
+            {
+                title: "Select",
+                slug: "select",
+                layout: "lesson-visualiser.html",
+                goFile: "worker.go",
+                markdown: "markdown.md"
+            },
+            {
+                title: "Channels Quiz",
+                slug: "channels_quiz",
                 layout: "quiz.html",
-                question: "This is a question...?",
+                question: "What happens when you send on an unbuffered channel with no receiver ready?",
                 answer: 1,
                 options: [
-                    "A", "B", "C"
+                    "The send blocks until a receiver is ready",
+                    "The value is dropped and execution continues",
+                    "The program panics immediately"
                 ]
+            },
+            {
+                title: "Chapter 2 Summary",
+                slug: "concurrency_chapter2_summary",
+                layout: "summary.html",
+            },
+            {
+                title: "Chapter 2 Complete",
+                slug: "concurrency_chapter2",
+                layout: "chapter-complete.html",
+                message: "Nice One! You now know how goroutines communicate safely through channels. Unbuffered, buffered, range, close, and select are the tools you will reach for constantly in concurrent Go programs."
             }
         ]
-    }
+    },
+    {
+        title: "Patterns & Concepts",
+        description: "Cover common design patters and concurrency bugs.",
+        topics: [
+            {
+                title: "Fibonacci Calculator",
+                slug: "fibonacci",
+                layout: "lesson-visualiser.html",
+                markdown: "markdown.md",
+                goFile: "fib.go"
+            },
+            {
+                title: "Data Races",
+                slug: "data_races",
+                layout: "lesson-grapher.html",
+                markdown: "markdown.md",
+                goFile: "counters.go"
+            },
+            {
+                title: "Race Conditions",
+                slug: "race_conditions",
+                layout: "lesson-grapher.html",
+                markdown: "markdown.md",
+                goFile: "account.go"
+            },
+            {
+                title: "Fan In",
+                slug: "fan_in",
+                layout: "lesson-visualiser.html",
+                markdown: "markdown.md",
+                goFile: "fan_in.go"
+            },
+            {
+                title: "Relay Race",
+                slug: "relay_race",
+                layout: "lesson-visualiser.html",
+                markdown: "markdown.md",
+                goFile: "runners.go"
+            },
+            {
+                title: "Timer",
+                slug: "timer",
+                layout: "lesson-visualiser.html",
+                markdown: "markdown.md",
+                goFile: "clock.go"
+            },
+            {
+                title: "Nested Goroutines",
+                slug: "nested_goroutines",
+                layout: "lesson-visualiser.html",
+                markdown: "markdown.md",
+                goFile: "meet.go"
+            },
+            {
+                title: "Concurrency vs Parallelism",
+                slug: "parallelism",
+                layout: "summary.html",
+            },
+            {
+                title: "Chapter 3 Complete",
+                slug: "concurrency_chapter3",
+                layout: "chapter-complete.html",
+                message: "Great Work! You have completed the concurrency course. Hopefully you have an improved mental model of concurrent programming, and understand some of the pitfalls and bugs that programmers struggle to deal with."
+            }
+        ]
+    },
 ]
 
 /**

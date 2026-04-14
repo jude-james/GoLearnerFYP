@@ -110,12 +110,18 @@ function startWebSocket() {
                 displayError(message.data);
                 break;
             case "events":
-                try {
-                    const { init } = await import('./visualiser.js');
-                    init(message.data);
-                }
-                catch (error) {
-                    console.warn("Could not init visualiser:", error);
+                // Send events to whichever script is attached
+                const scripts = ["./grapher.js", "./visualiser.js"];
+
+                for (const script of scripts) {
+                    try {
+                        const { init } = await import(script);
+                        init(message.data);
+                        break;
+                    } 
+                    catch (error) {
+                        console.warn(`Could not init ${script}:`, error);
+                    }
                 }
                 break;
             default:
@@ -172,6 +178,8 @@ function clearConsole() {
 function showLoading() {
     const duration = 3900;
     let dots = 0;
+
+    outputConsole.classList.remove("console-error");
 
     let message = "Connecting to server";
     outputConsole.textContent = message;

@@ -19,7 +19,7 @@
     background-color: var(--black);
 
     border: 1px solid var(--white);
-    box-shadow: 0 0 20px 2px #fdfdfd;
+    box-shadow: 0 0 10px 2px #fdfdfd;
 
     padding: 16px;
 
@@ -79,15 +79,35 @@
     background-color: white;
 }
 
+#tutorial {
+    box-shadow: 5px 10px #2b3552;
+}
+
+#tutorial:hover {
+    box-shadow: 5px 10px var(--blue);
+}
+
+#sandbox {
+    box-shadow: 5px 10px #2c6152;
+}
+
 #sandbox:hover {
     box-shadow: 5px 10px var(--green);
 }
 
-#tutorial:hover {
+#grapher {
+    box-shadow: 5px 10px #ebdc94;
+}
+
+#grapher:hover {
     box-shadow: 5px 10px var(--yellow);
 }
 
-#tutorial-concurrency:hover {
+#visualiser {
+    box-shadow: 5px 10px #a3605d;
+}
+
+#visualiser:hover {
     box-shadow: 5px 10px var(--red);
 }
 

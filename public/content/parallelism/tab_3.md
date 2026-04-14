@@ -1,0 +1,1 @@
+Concurrency is about how you structure the problem. Parallelism is a property of how it executes.
