@@ -55,7 +55,7 @@ Go does not perform implicit type conversion. You must convert explicitly:
 ```go
 var x int = 42
 var y float64 = float64(x) // explicit conversion
-var z int = int(3.9)       // truncates to 3
+var z int = int(3.9) // truncates to 3
 ```
 
 Common bugs in languages like C or JavaScript are avoided in Go because of this.

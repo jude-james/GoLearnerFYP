@@ -11,11 +11,11 @@ func main() {
 
 	// short declaration
 	country := "UK"
-	area := 1572.0 // km²
+	area := 1572.0 // km^2
 
-	fmt.Printf("City:       %s, %s\n", city, country)
+	fmt.Printf("City: %s, %s\n", city, country)
 	fmt.Printf("Population: %d\n", population)
-	fmt.Printf("Area:       %.1f km²\n", area)
+	fmt.Printf("Area: %.1f km^2\n", area)
 
 	// TODO: declare a variable for distance (e.g. 1000 metres)
 	// and print how many seconds light takes to travel that distance

@@ -24,10 +24,10 @@ primes := []int{2, 3, 5, 7, 11}
 Key operations:
 
 ```go
-len(primes)     // 5  — current number of elements
+len(primes)     // Current number of elements
 cap(primes)     // capacity of underlying array
-primes[0]       // 2  — zero-indexed access
-primes[1:3]     // [3, 5]  — slice of indices 1 and 2
+primes[0]       // zero-indexed access
+primes[1:3]     // slice of indices 1 and 2
 ```
 
 ### Appending Elements
@@ -36,7 +36,6 @@ Use the built-in `append` function to grow a slice:
 
 ```go
 primes = append(primes, 13)
-fmt.Println(primes) // [2 3 5 7 11 13]
 ```
 
 `append` returns a new slice (possibly backed by a new array if the capacity was exceeded), so you must assign the result back.
