@@ -90,8 +90,6 @@
     margin: 0;
     flex: 1;
     overflow-y: auto;
-
-    overscroll-behavior: none;
 }
 
 .console-error {

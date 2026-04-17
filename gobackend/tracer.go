@@ -33,6 +33,7 @@ var countersMu sync.Mutex
 // Called when the source program has started running, sets the start time
 func onMainStart() {
 	startTime = time.Now()
+	fmt.Println("PROGRAM STARTED:")
 }
 
 // Called when the main function ends

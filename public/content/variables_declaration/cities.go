@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-const SpeedOfLight = 299792458 // metres per second
+const SpeedOfLight = 299792458
 
 func main() {
 	// var-style declaration
@@ -11,7 +11,7 @@ func main() {
 
 	// short declaration
 	country := "UK"
-	area := 1572.0 // km^2
+	area := 1572.0
 
 	fmt.Printf("City: %s, %s\n", city, country)
 	fmt.Printf("Population: %d\n", population)

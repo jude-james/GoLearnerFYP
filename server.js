@@ -16,8 +16,8 @@ const wss = new WebSocket.Server({ server });
 const port = 8080;
 
 // Docker run options
-const cpuLimit = "2.0";
-const memoryLimit = "256m";
+const cpuLimit = "6.0";
+const memoryLimit = "512m";
 const timeoutLimit = 10; // Seconds
 const mountDir = path.join(__dirname, "gobackend"); 
 

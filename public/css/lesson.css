@@ -11,7 +11,6 @@
     border-right: 5px solid grey;
 
     overflow-y: auto;
-    overscroll-behavior-y: none;
 }
 
 .right-panel {

@@ -104,8 +104,6 @@ button, input, select, textarea, a, pre {
     resize: auto;
     padding: 0;
     line-height: 1.1;
-
-    overscroll-behavior-y: none;
 }
 
 .CodeMirror-code {

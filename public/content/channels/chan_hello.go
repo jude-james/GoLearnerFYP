@@ -11,6 +11,4 @@ func main() {
 
 	message := <-ch
 	fmt.Println(message)
-
-	// No WaitGroup needed, the receive blocks until the goroutine sends
 }

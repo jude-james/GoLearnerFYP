@@ -27,7 +27,6 @@
     background-color: var(--black);
 
     overflow-y: auto;
-    overscroll-behavior-y: none;
 
     border-bottom: 3px solid var(--panel-border-grey);
 }

@@ -12,6 +12,7 @@ const copyButton = document.getElementById("copy-button");
 let ws;
 
 let stopLoading;
+let programStarted = false;
 
 const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
@@ -44,6 +45,7 @@ runButton.addEventListener("click", () => {
     runButton.disabled = true;
     terminateButton.disabled = false;
     stopLoading = showLoading();
+    programStarted = false;
 
     startWebSocket();
 });
@@ -153,6 +155,11 @@ function startWebSocket() {
  * @param {boolean} isError - If the output was an error message.
  */
 function updateConsole(output, isError) {
+    if (!programStarted) {
+        programStarted = true;
+        stopLoading();
+    }
+
     outputConsole.textContent += output;
 
     const isAtBottom = outputConsole.scrollHeight - outputConsole.scrollTop - outputConsole.clientHeight < 40;
@@ -176,7 +183,7 @@ function clearConsole() {
  * Displays a loading message loop for the specified duration
  */
 function showLoading() {
-    const duration = 3900;
+    const duration = 10000;
     let dots = 0;
 
     outputConsole.classList.remove("console-error");
@@ -187,11 +194,11 @@ function showLoading() {
     const interval = setInterval(() => {
         dots = (dots % 3) + 1;        
         outputConsole.textContent = message + ".".repeat(dots);
-    }, 300);
+    }, 200);
 
     const messageTimeout = setTimeout(function() {
         message = "Running program"
-    }, 2100);
+    }, 2000);
 
     const endTimeout = setTimeout(function() {
         clearInterval(interval);
