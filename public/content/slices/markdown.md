@@ -7,7 +7,7 @@ Go has two closely related sequence types: arrays and slices. In practice you'll
 An array has a fixed length that is part of its type. Once declared, you cannot change its size:
 
 ```go
-var scores [3]int // Remember int's zero value - [0, 0, 0]
+var scores [3]int
 names := [3]string{"Alice", "Bob", "Carol"}
 ```
 

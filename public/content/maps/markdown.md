@@ -26,7 +26,7 @@ scores := make(map[string]int)
 
 ```go
 capitals["Germany"] = "Berlin"    // add or update
-city := capitals["France"]        // read → "Paris"
+city := capitals["France"]        // read
 ```
 
 ## Checking if a Key Exists
@@ -60,6 +60,6 @@ for country, capital := range capitals {
 }
 ```
 
-> **Note:** Map iteration order is not guaranteed in Go. Every iteration may produce a different order, this is intentional and prevents code from accidentally depending on insertion order.
+> **Note:** Map iteration order is not guaranteed in Go. Every iteration may produce a different order.
 
 Try adding two more countries to the map, then iterate over it to print all entries.

@@ -61,17 +61,4 @@ The variable `err` is scoped only to the `if` block, keeping the surrounding sco
 
 Go deliberately has no ternary operator. If you want a conditional value, write a full `if/else`:
 
-```go
-// Not valid Go:
-// result := condition ? "yes" : "no"
-
-// Do this instead:
-var result string
-if condition {
-    result = "yes"
-} else {
-    result = "no"
-}
-```
-
 Try modifying the grade checker on the right to also handle scores below 0 or above 100 as invalid inputs.

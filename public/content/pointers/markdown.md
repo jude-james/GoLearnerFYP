@@ -11,8 +11,8 @@ A pointer holds the memory address of a variable. Rather than storing a value di
 x := 42
 p := &x         // p holds the memory address of x
 
-fmt.Println(p)  // e.g. 0xc0000b4008  (the address)
-fmt.Println(*p) // 42  (the value at that address)
+fmt.Println(p)  // e.g. 0xc000 (the address)
+fmt.Println(*p) // 42 (the value at that address)
 ```
 
 The type of `p` here is `*int`, read as "pointer to int". Every type has a corresponding pointer type: `*string`, `*float64`, `*bool`, and so on.

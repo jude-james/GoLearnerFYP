@@ -27,8 +27,11 @@ cd GoLearner
 cd gobackend
 docker build -t go-runner .
 
-# 3. Start server
+# 3. Install packages
+npm install
+
+# 4. Start server
 npm run dev
 
-# 4. Visit localhost:8080
+# 5. Visit localhost:8080
 ```
