@@ -250,7 +250,7 @@ function displayStats()
 }
 
 /**
- * Spawns a goroutine line and it's parent connector lines, and stores the lines in the event object
+ * Spawns a goroutine line and its parent connector lines, and stores the lines in the event object
  * @param {any} event - The goroutine event object
  * @param {integer} childNo - The child number of this event
  * @param {integer} noChildren - The number of children the parent has

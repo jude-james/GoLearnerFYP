@@ -212,7 +212,7 @@ const fundamentalsChapters = [
 const concurrencyChapters = [
     {
         title: "Goroutines",
-        description: "Learn how multithreading works in Go, with it's signature goroutines.",
+        description: "Learn how multithreading works in Go, with its signature goroutines.",
         topics: [
             {
                 title: "Introduction",
@@ -340,7 +340,7 @@ const concurrencyChapters = [
     },
     {
         title: "Patterns & Concepts",
-        description: "Cover common design patters and concurrency bugs.",
+        description: "Cover common design patterns and concurrency bugs.",
         topics: [
             {
                 title: "Fibonacci Calculator",
